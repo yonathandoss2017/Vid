@@ -687,6 +687,15 @@
 					$OrderComa = ", ";
 				}
 			}
+
+			if(array_key_exists('InnerJoin', $MetricsSQL[$MetricName]) && count($MetricsSQL[$MetricName]['InnerJoin']) > 0){
+				foreach($MetricsSQL[$MetricName]['InnerJoin'] as $JoinTable => $JoinSQL){
+					if(!in_array($JoinTable, $UsedInnerJ)) {
+						$SQLInnerJoins .= $JoinSQL;
+						$UsedInnerJ[] = $JoinTable;
+					}
+				}
+			}
 			
 			$No++;
 		}
