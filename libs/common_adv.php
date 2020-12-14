@@ -104,7 +104,43 @@ function utf8ize($mixed) {
 			'OrderVal'		=>	"DSP",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'DSP'
-		)
+		),
+		'purchaseOrder' => array(
+			'Name'	=>	"purchase_order.name AS PurchaseOrder",
+			'SearchName'	=>	"purchase_order.name",
+			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
+			'GroupBy'		=>	"PurchaseOrder",
+			'OrderVal'		=>	"PurchaseOrder",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Purchase Order'
+		),
+		'purchaseOrder_id' => array(
+			'Name'	=>	"purchase_order.id AS PurchaseOrderId",
+			'SearchName'	=>	"purchase_order.id",
+			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
+			'GroupBy'		=>	"PurchaseOrderId",
+			'OrderVal'		=>	"PurchaseOrderId",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Purchase Order ID'
+		),
+		'creativity' => array(
+			'Name'	=>	"creativity.name AS Creativity",
+			'SearchName'	=>	"creativity.name",
+			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
+			'GroupBy'		=>	"Creativity",
+			'OrderVal'		=>	"Creativity",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Creativity'
+		),
+		'creativity_id' => array(
+			'Name'	=>	"creativity.id AS Creativity",
+			'SearchName'	=>	"creativity.id",
+			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
+			'GroupBy'		=>	"Creativity",
+			'OrderVal'		=>	"Creativity",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Creativity ID'
+		),
 	);
 	
 	$TimesSQL = array(
@@ -322,7 +358,20 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Complete75", "Impressions"),
 			'NumberF'	=>	false,
 			'HeadName'		=> '75%'
-		)
+		),
+		'budget_oc'		=> array(
+			'SQL' 		=>	", ROUND( IFNULL( $ReportsTable.Budget, '0' ), 2 ) AS Budget ",
+			'SQLCSV' 	=>	", concat('$', FORMAT( IFNULL( $ReportsTable.Budget, '0' ), 2, '$Locale') ) AS Budget ",
+			'Name'		=>	"Budget",
+			'OrderVal' 	=>	"Budget",
+			'Base' 		=>	array("Revenue","Impressions"),
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Budget',
+			'InnerJoin'		=> 	array(
+				'purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id ",
+				'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
+			),
+		),
 	);
 
 function isLocked($Table){
