@@ -51,7 +51,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 }
 
 	$Date = date('Y-m-d', time() - (3600 * 4));
-	//$Date = '2020-08-08';
+	//$Date = '2020-12-13';
 	//$Hour = date('H');
 	$Hour = 23;
 	
