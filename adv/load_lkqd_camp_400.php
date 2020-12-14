@@ -50,8 +50,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 }
 
-for($F=5; $F<= 9; $F++){
-	$Date = '2020-06-0' . $F;
+for($F=10; $F<= 30; $F++){
+	$Date = '2020-11-' . $F;
 	//$Hour = date('H');
 	$Hour = 23;
 	
@@ -70,7 +70,7 @@ for($F=5; $F<= 9; $F++){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE id = 336 OR id = 337";// ORDER BY id DESC LIMIT 90
+	$sql = "SELECT * FROM campaign WHERE id = 1257";// ORDER BY id DESC LIMIT 90
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){
@@ -144,6 +144,8 @@ for($F=5; $F<= 9; $F++){
 	
 	//$ActiveDeals = array(204 => '1029948', 205 => '1029605', 206 => '1028475');
 	//$ActiveDeals = array(408 => '1038094');
+	
+	print_r($ActiveDeals);
 	
 	$ImportData = getAdvertiserDemandReportCSV($Date, $ActiveDeals, 0, $Hour);
 
@@ -357,9 +359,9 @@ for($F=5; $F<= 9; $F++){
 								
 							WHERE id = '$idStat' LIMIT 1";
 								
-								$db->query($sql);
+								//$db->query($sql);
 
-									echo $sql . "\n";
+								echo $sql . "\n";
 
 							}else{
 								//echo "No New I CPM $CPM \n";
@@ -380,7 +382,7 @@ for($F=5; $F<= 9; $F++){
 							Rebate = $Rebate
 						WHERE id = '$idStat' LIMIT 1";
 							
-							$db->query($sql);
+							//$db->query($sql);
 							echo 'FI: ';
 							echo $sql . "\n";
 						}
