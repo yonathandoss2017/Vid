@@ -8,7 +8,7 @@
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
 	require('/var/www/html/login/reports_/adv/config.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	
 	mysqli_set_charset($db->link,'utf8');
 	mysqli_set_charset($db2->link,'utf8');

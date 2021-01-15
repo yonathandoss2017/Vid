@@ -4,7 +4,7 @@
 define('CONST',1);
 require('./config.php');
 require('../../db.php');
-$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 
 if(!isset($_POST['uuid']) || !isset($_POST['env']) || !isset($_POST['date'])){
     header('HTTP/1.0 403 Forbidden');

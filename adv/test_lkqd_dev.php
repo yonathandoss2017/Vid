@@ -9,7 +9,7 @@
 	require('/var/www/html/login/reports_/adv/config_pre.php');
 	require('/var/www/html/login/db.php');
 	require('../../config.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	//exit(0);
 	$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 	

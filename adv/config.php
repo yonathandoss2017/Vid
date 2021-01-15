@@ -1,10 +1,10 @@
 <?php
 	@require_once("secure.php");
 	
-	$dbuser="root";
-	$dbpass="VidoomyDB99";
-	$dbhost="localhost";
-	$dbname="vidoomy_adv";
+	$dbuser2="root";
+	$dbpass2="VidoomyDB99";
+	$dbhost2="localhost";
+	$dbname2="vidoomy_adv";
 	
 	date_default_timezone_set('UTC');
 ?>

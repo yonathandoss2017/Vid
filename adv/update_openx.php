@@ -8,7 +8,7 @@
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
 	require('../../config.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 
 function calcPercents($Perc , $Impressions, $Complete){
 	if($Perc == 25){

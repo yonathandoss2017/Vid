@@ -8,8 +8,8 @@
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
 	require('../../config.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	$dbd = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$dbd = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	//exit(0);
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);

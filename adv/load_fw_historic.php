@@ -36,7 +36,7 @@
 		
 		$Json = file_get_contents('http://sfx.stickyadstv.com/api/stats/publisher?token=a40f7640279cd9ba87d47c1a74ceefa236c36f5c&group=deal&start=' . $DateNoSlash . '&end=' . $DateNoSlash . '&id=872257');
 		
-		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 		//$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 		$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 		

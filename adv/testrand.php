@@ -15,7 +15,7 @@
 	require('../../db.php');
 	require('../libs/common_adv.php');
 	require('../../config.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	
 	$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
