@@ -14,13 +14,10 @@
 	require('config.php');
 	require('../../db.php');
 	require('../libs/common_adv.php');
+	require('../../config.php');
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
-	$dbuser2 = "root";
-	$dbpass2 = "vidoopre-pass_2020";
-	$dbhost2 = "aa1nh4ao2doeo1w.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy-advertisers-panel";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
 	$UserId = 5;
 	
@@ -40,18 +37,11 @@
 	}
 
 
-
-	$dbuser2 = "root";
-	$dbpass2 = "vidoopre-pass_2020";
-	$dbhost2 = "aa1nh4ao2doeo1w.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy-advertisers-panel";
-	
-
 	$dblink2=mysqli_connect('127.0.0.1', 'root', 'VidoomyDB99');
 	mysqli_select_db($dblink2, 'vidoomy_adv');
 	
-	$dblink1=mysqli_connect($dbhost2, 'root', $dbpass2);
-	mysqli_select_db($dblink1, $dbname2);
+	$dblink1=mysqli_connect($advPre['host'], 'root', $advPre['pass']);
+	mysqli_select_db($dblink1, $advPre['db']);
 	
 	$table = 'campaign_country';
 	

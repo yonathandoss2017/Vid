@@ -3,13 +3,9 @@
 	define('CONST',1);
 	require('/var/www/html/login/db.php');
 	require('/var/www/html/login/reports_/libs/common_adv.php');
+	require('../../config.php');
 	
-	$dbuser2 = "root";
-	$dbpass2 = "vidooprod-pass_2020";
-	//$dbhost2 = "aa4mgb1tsk2y6v.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbhost2 = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy-advertisers-panel";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
 	require('/var/www/html/login/reports_/adv/config.php');
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);

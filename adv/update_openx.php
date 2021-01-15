@@ -7,6 +7,7 @@
 	define('CONST',1);
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
+	require('../../config.php');
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 
 function calcPercents($Perc , $Impressions, $Complete){
@@ -32,11 +33,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 }
 
-	$dbuser3 = "root";
-	$dbpass3 = "vidooprod-pass_2020";
-	$dbhost3 = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy-advertisers-panel";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
 	require_once '/var/www/html/login/reports_/adv/ODS-PHP-API-Client/OX_ODS_API.php';
 

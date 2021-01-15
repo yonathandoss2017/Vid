@@ -1,6 +1,7 @@
 <?php	
 	@session_start();
 	define('CONST',1);
+	require('../../config.php');
 	require('../../db.php');
 	require('../libs/common_adv.php');
 	
@@ -14,22 +15,12 @@
 	}
 	
 	if($_POST['env'] == 'pre' || $_POST['env'] == 'dev'){
-		$dbuser2 = "root";
-		$dbpass2 = "vidoopre-pass_2020";
-		//$dbhost2 = "aa1nh4ao2doeo1w.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbhost2 = "aazw79txt1iy6x.cme5dsqa4tew.us-east-2.rds.amazonaws.com";
-		$dbname2 = "vidoomy-advertisers-panel";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 		
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	}elseif($_POST['env'] == 'prod'){
-		$dbuser2 = "root";
-		$dbpass2 = "vidooprod-pass_2020";
-		//$dbhost2 = "aa4mgb1tsk2y6v.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbhost2 = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy-advertisers-panel";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 		
 		require('config.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
