@@ -75,12 +75,39 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Country'
 		),
-		'sales_manager' => array(
-			'Name'	=>	"user.nick AS SalesManager",
-			'SearchName'	=>	"user.id",
+		'sales_vp' => array(
+			'Name'	=>	"vp.nick AS SalesVP",
+			'SearchName'	=>	"vp.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'user' 	=> "INNER JOIN user ON user.id = agency.sales_manager_id "
+				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id ",
+				'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id ",
+				'vp'	=> "INNER JOIN user vp ON smh.sales_vp_id = vp.id "
+			),
+			'GroupBy'		=>	"SalesVP",
+			'OrderVal'		=>	"SalesVP",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'VP'
+		),
+		'sales_manager_head' => array(
+			'Name'	=>	"smh.nick AS SalesManagerHead",
+			'SearchName'	=>	"smh.id",
+			'InnerJoin'		=> 	array(
+				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
+				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id ",
+				'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
+			),
+			'GroupBy'		=>	"SalesManagerHead",
+			'OrderVal'		=>	"SalesManagerHead",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Sales Manager Head'
+		),
+		'sales_manager' => array(
+			'Name'	=>	"sm.nick AS SalesManager",
+			'SearchName'	=>	"sm.id",
+			'InnerJoin'		=> 	array(
+				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
+				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
 			),
 			'GroupBy'		=>	"SalesManager",
 			'OrderVal'		=>	"SalesManager",

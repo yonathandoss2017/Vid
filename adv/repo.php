@@ -708,7 +708,8 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals 
+			INNER JOIN agency ON campaign.agency_id = agency.id 
+			INNER JOIN purchase_order ON campaign.purchase_order_id = purchase_order.id $SQLInnerJoinsTotals 
 			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter ";
 			
 			/*if(count($UnionTables) > 1){
@@ -795,7 +796,8 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins 
+		INNER JOIN agency ON campaign.agency_id = agency.id 
+		INNER JOIN purchase_order ON campaign.purchase_order_id = purchase_order.id $SQLInnerJoinsTotals 
 		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter ";
 		
 		/*
