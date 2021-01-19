@@ -49,7 +49,7 @@ header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Conte
 header("Access-Control-Allow-Methods: POST");
 header("Allow: POST");
 
-$sql = "SELECT purchase_order_id, SUM(Revenue) AS revenue FROM vidoomy_adv.reports_test WHERE Date = '{$_POST["date"]}' GROUP BY purchase_order_id";
+$sql = "SELECT purchase_order_id, SUM(Revenue) AS revenue FROM vidoomy_adv.reports_test2 WHERE Date = '{$_POST["date"]}' GROUP BY purchase_order_id";
 $query = $db->query($sql);
 $campaigns = $query->fetch_all(MYSQLI_ASSOC);
 

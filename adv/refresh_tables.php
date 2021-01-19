@@ -3,7 +3,7 @@
 	define('CONST',1);
 	require('/var/www/html/login/db.php');
 	require('/var/www/html/login/reports_/libs/common_adv.php');
-	require('../../config.php');
+	require('/var/www/html/login/config.php');
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	

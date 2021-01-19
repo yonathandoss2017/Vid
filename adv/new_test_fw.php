@@ -8,15 +8,39 @@
 	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
-	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	//$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 	$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
 	require('/var/www/html/login/reports_/adv/common.php');
+
+function calcPercents($Perc , $Impressions, $Complete){
+	if($Perc == 25){
+		$VarP = rand(2100, 2400) / 1000;
+	}elseif($Perc == 50){
+		$VarP = rand(1500, 1640) / 1000;
+	}else{
+		$VarP = rand(1150, 1260) / 1000;
+	}
 	
+	$Diff = $Impressions - $Complete;
+	$Result = $Impressions - round(($Diff / $VarP));
+	
+	if($Result < $Impressions){
+		if($Result > $Complete){
+			return $Result;
+		}else{
+			return $Complete;
+		}
+	}else{
+		return $Impressions;
+	}
+}
+
+
 	$Date1 = date('Y-m-d', time() - 3600);
-	//$Date1 = '2021-01-17';
+	//$Date1 = '2020-08-08';
 	/*
 	$date2 = new DateTime($Date1);
 	$date2->modify('-1 day');
@@ -25,7 +49,7 @@
 	
 	//$DateNoSlash2 = date('Ymd', time() - (24 * 3600));
 	$DateNoSlash = date('Ymd', time() - 3600);
-	//$DateNoSlash = '20210117';
+	//$DateNoSlash = '20200808';
 	
 	$Json = file_get_contents('http://sfx.stickyadstv.com/api/stats/publisher?token=a40f7640279cd9ba87d47c1a74ceefa236c36f5c&group=deal&start=' . $DateNoSlash . '&end=' . $DateNoSlash . '&id=872257');
 	
@@ -53,6 +77,31 @@
 			}
 			
 			$CampaingData[$idCamp]['Country'] = $countryId;
+			
+			//FIXED RANGES
+			if($Camp['vtr_from'] > 0 && $Camp['vtr_to'] > 0){
+				$CampaingData[$idCamp]['VTRFrom'] = $Camp['vtr_from'];
+				$CampaingData[$idCamp]['VTRTo'] = $Camp['vtr_to'];
+				$CampaingData[$idCamp]['CVTR'] = true;
+			}else{
+				$CampaingData[$idCamp]['CVTR'] = false;
+			}
+				
+			if($Camp['ctr_from'] > 0 && $Camp['ctr_to'] > 0){
+				$CampaingData[$idCamp]['CTRFrom'] = $Camp['ctr_from'];
+				$CampaingData[$idCamp]['CTRTo'] = $Camp['ctr_to'];
+				$CampaingData[$idCamp]['CCTR'] = true;
+			}else{
+				$CampaingData[$idCamp]['CCTR'] = false;
+			}
+			
+			if($Camp['viewability_from'] > 0 && $Camp['viewability_to'] > 0){
+				$CampaingData[$idCamp]['ViewFrom'] = $Camp['viewability_from'];
+				$CampaingData[$idCamp]['ViewTo'] = $Camp['viewability_to'];
+				$CampaingData[$idCamp]['CView'] = true;
+			}else{
+				$CampaingData[$idCamp]['CView'] = false;
+			}
 		}
 	}
 	
@@ -64,9 +113,13 @@
 			$DealID = $CampaingData[$idCampaing]['DealId'];
 			$idCountry = $CampaingData[$idCampaing]['Country'];
 			
+			$CVTR = $CampaingData[$idCampaing]['CVTR'];
+			$CCTR = $CampaingData[$idCampaing]['CCTR'];
+			$CView = $CampaingData[$idCampaing]['CView'];
+
+			
 			//$Date = date('Y-m-d', time() - 3600);
 			$Hour = date('H', time() - 3600);
-			//exit(0);
 			//$Hour = 23;
 			
 			$Requests = $Deal->offered;
@@ -119,6 +172,35 @@
 				$Rebate = 0;
 			}
 			
+			//APPLY FIXED RANGES
+			if($CCTR === true){
+				$CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
+				$CTRTo = $CampaingData[$idCampaing]['CTRTo'] * 100;
+				
+				$RandCTR = rand($CTRFrom, $CTRTo) / 10000;
+				$Clicks = intval($Impressions * $RandCTR);
+			}
+			
+			if($CVTR === true){
+				$VTRFrom = $CampaingData[$idCampaing]['VTRFrom'] * 100;
+				$VTRTo = $CampaingData[$idCampaing]['VTRTo'] * 100;
+				
+				$RandVTR = rand($VTRFrom, $VTRTo) / 10000;
+				$CompleteV = intval($Impressions * $RandVTR);
+				$CompleteVPerc = $RandVTR;
+					
+				$Complete25 = calcPercents(25, $Impressions, $CompleteV);
+				$Complete50 = calcPercents(50, $Impressions, $CompleteV);
+				$Complete75 = calcPercents(75, $Impressions, $CompleteV);
+			}
+			
+			if($CView === true){
+				$ViewFrom = $CampaingData[$idCampaing]['ViewFrom'] * 100;
+				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
+				
+				$RandView = rand($ViewFrom, $ViewTo) / 10000;
+				$VImpressions = intval($Impressions * $RandView);
+			}
 			
 			$sql = "INSERT INTO reports
 			(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
@@ -128,7 +210,6 @@
 			(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour) 
 			VALUES (1, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Rebate', '$Date1', '$Hour')";
 			*/
-			//echo $sql;
 			$db->query($sql);
 		}
 	}

@@ -1,7 +1,7 @@
 <?php	
 	@session_start();
 	define('CONST',1);
-	require('../../config.php');
+	require('/var/www/html/login/config.php');
 	require('../../db.php');
 	require('../libs/common_adv.php');
 	
@@ -23,7 +23,7 @@
 		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 		
 		require('config.php');
-		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	}else{
 		header($_SERVER["SERVER_PROTOCOL"] . ' Wrong ENV', true, 500);
 		exit(0);
@@ -478,7 +478,7 @@
 		}
 		
 		
-		
+		$SQLInnerJoinsTotals = "";
 		//SI HAY FILTROS, CALCULA LOS TOTALES SIN FILRTOS
 		$Nd = 0;
 		if($ThereAreFilters){
@@ -697,12 +697,13 @@
 		
 		if($CachedReport === false || 1==1){
 			$Cached = 0;
+			error_log(0);
 			$SuperQuery = $db->query($SQLQuery);
-			
+			error_log(1);
 			$sqlCount = 'SELECT FOUND_ROWS();';
 			$CntTotal = $db->getOne($sqlCount);
 			$TDim = 0;
-			
+			error_log(2);
 			if($db->num_rows($SuperQuery) > 0){
 				while($Da = $db->fetch_array($SuperQuery)){
 					if($IncludeTime){
@@ -746,6 +747,8 @@
 					}
 					$Nd++;
 				}
+			}else{
+				error_log('ERROR');
 			}
 			
 			$CacheArray['Data'] = $Data;
@@ -807,5 +810,5 @@
   "recordsFiltered": <?php echo $CntTotal; ?>,
   "data": <?php echo safe_json_encode($Data); ?>,
   "dataT": <?php echo json_encode($DataT); ?>,
-  "SQL": "<?php //echo $SQLQuery; ?>"
+  "SQL": "<?php echo $SQLQuery; ?>"
 }

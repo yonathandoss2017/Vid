@@ -6,9 +6,9 @@
 	ini_set('memory_limit', '-1');
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	define('CONST',1);
+	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
-	require('../../config.php');
 	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 
 	//$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);

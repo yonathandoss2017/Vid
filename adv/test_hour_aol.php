@@ -5,9 +5,9 @@
 	ini_set('memory_limit', '-1');
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	define('CONST',1);
+	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
-	require('../../config.php');
 	require('/var/www/html/login/reports_/adv/common.php');
 	
 	$Date = date('Y-m-d', time() - (12 * 3600));
@@ -137,8 +137,11 @@
 	foreach($Decoded->data->blocks as $RepData){
 		
 		foreach($RepData->rows as $Deal){
+			//print_r($ActiveDeals);
 			//if($Deal->fields->sellerDealId1V == 15471){
 			if(in_array($Deal->fields->sellerDealId1V, $ActiveDeals)){
+				print_r($Deal);
+				
 				$idCampaing = array_search($Deal->fields->sellerDealId1V, $ActiveDeals);
 				$RebatePercent = $CampaingData[$idCampaing]['Rebate'];
 				$DealID = $CampaingData[$idCampaing]['DealId'];
@@ -163,6 +166,7 @@
 				
 				$Hour = $Deal->fields->hour1V;
 				$Date = date('Y-m-d', $Deal->fields->scaledDay1V / 1000);
+				echo "Reg Date: $Date\n";
 				
 				if($RebatePercent > 0 && $Revenue > 0){
 					$Rebate = $Revenue * $RebatePercent / 100;
@@ -196,12 +200,12 @@
 					*/
 				}
 				$db->query($sql);
-						
+						echo $sql;
 						
 			}
 		}
 	}
 	
-	$Date = date('Y-m-d', time() - 3600);
+	echo $Date = date('Y-m-d', time() - 3600);
 	updateReportCards($db3, $Date);
 	//updateReportCards($db2, $Date);
