@@ -19,7 +19,7 @@ function utf8ize($mixed) {
 }
 	$Locale = 'en_EN';
 	$ReportsTable = '{ReportsTable}';
-	
+
 	$DimensionsSQL = array(
 		'campaign_name' => array(
 			'Name'	=>	"concat(campaign.name, '--',campaign.id) AS CampaignName",
@@ -82,7 +82,7 @@ function utf8ize($mixed) {
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id ",
 				'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id ",
-				'vp'	=> "INNER JOIN user vp ON smh.sales_vp_id = vp.id "
+				'vp'	=> "INNER JOIN user vp ON smh.sales_manager_head_id = vp.id "
 			),
 			'GroupBy'		=>	"SalesVP",
 			'OrderVal'		=>	"SalesVP",
@@ -169,7 +169,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Creativity ID'
 		),
 	);
-	
+
 	$TimesSQL = array(
 		'monthly' => array(
 			'Name'	=> 	"concat(MONTHNAME($ReportsTable.Date), ' ', YEAR($ReportsTable.Date)) AS Month, concat(YEAR($ReportsTable.Date), MONTH($ReportsTable.Date)) AS MonthN",
@@ -204,7 +204,7 @@ function utf8ize($mixed) {
 			'OrderVal'		=>	"Overall"
 		)
 	);
-		
+
 	$MetricsSQL = array(
 		'request' 	=> array(
 			'SQL' 		=>	", SUM($ReportsTable.Requests) AS Requests ",
@@ -424,24 +424,24 @@ function waitUnlock($Table){
 
 function getLiveData($Date){
 	global $db;
-	
+
 	waitUnlock('reports');
-	
-	$sql = "SELECT 
-		round(SUM(Revenue), 2) AS Revenue, 
-		SUM(Impressions) AS Impressions, 
-		SUM(formatLoads) AS formatLoads, 
+
+	$sql = "SELECT
+		round(SUM(Revenue), 2) AS Revenue,
+		SUM(Impressions) AS Impressions,
+		SUM(formatLoads) AS formatLoads,
 		round((SUM(Revenue) - SUM(Coste) - SUM(Extraprima)),2) AS Profit,
 		round( (SUM(Impressions) / SUM(formatLoads) * 100), 2) AS formatLoadFill
 		FROM `reports_resume201909` WHERE Date = '$Date'";
 	$query = $db->query($sql);
 	$Data = $db->fetch_array($query);
-	
+
 	return $Data;
 }
 function checkTableExists($TableName){
 	global $db;
-	
+
 	$sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" . $db->dbname . "' AND table_name = '" . $TableName . "' LIMIT 1";
 	$chck = $db->getOne($sql);
 	if($chck == 0){
