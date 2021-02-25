@@ -2,6 +2,7 @@
 
 @session_start();
 define('CONST',1);
+require('/var/www/html/login/config.php');
 require('./config.php');
 require('../../db.php');
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
@@ -14,17 +15,9 @@ if(!isset($_POST['uuid']) || !isset($_POST['env']) || !isset($_POST['date'])){
 
 /*
 if($_POST['env'] == 'prod'){
-    $dbuser2 = "root";
-    $dbpass2 = "ViDo0-PROD_2020";
-    $dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-    $dbname2 = "vidoomy";
-    $db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+    $db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 }else{
-    $dbuser2 = "root";
-    $dbpass2 = "vidooDev-Pass_2020";
-    $dbhost2 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-    $dbname2 = "vidoomy";
-    $db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+    $db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 }
 
 $UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
@@ -49,7 +42,7 @@ header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Conte
 header("Access-Control-Allow-Methods: POST");
 header("Allow: POST");
 
-$sql = "SELECT purchase_order_id, SUM(Revenue) AS revenue FROM vidoomy_adv.reports_test2 WHERE Date = '{$_POST["date"]}' GROUP BY purchase_order_id";
+$sql = "SELECT purchase_order_id, SUM(Revenue) AS revenue FROM vidoomy_adv.reports_test WHERE Date = '{$_POST["date"]}' GROUP BY purchase_order_id";
 $query = $db->query($sql);
 $campaigns = $query->fetch_all(MYSQLI_ASSOC);
 

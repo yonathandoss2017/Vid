@@ -1,0 +1,22 @@
+{
+    "report":
+    {
+        "report_type":"video_analytics_network",
+        "columns":[
+            "hour",
+            "deal_id",
+            "imps",
+            "25_pcts",
+            "50_pcts",
+            "75_pcts",
+            "completions",
+            "clicks",
+            "revenue",
+            "ad_responses",
+			"ad_requests"
+        ],
+        "report_interval":"last_48_hours",
+        "format":"csv"
+    }
+}
+

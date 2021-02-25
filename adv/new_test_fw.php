@@ -8,7 +8,7 @@
 	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	
 	//$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 	$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
@@ -155,7 +155,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$Impressions = $Impressions - $W['Impressions'];
 			
 			$RandVI = rand(8000,8600)/10000;
-			$VImpressions = $Impressions * $RandVI;
+			$VImpressions = ceil($Impressions * $RandVI);
 			
 			//$VImpressions = $VImpressions - $W['VImpressions'];
 			if($VImpressions < 0){ $VImpressions = 0; }
@@ -199,12 +199,14 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
 				
 				$RandView = rand($ViewFrom, $ViewTo) / 10000;
-				$VImpressions = intval($Impressions * $RandView);
+				$VImpressions = ceil($Impressions * $RandView);
 			}
 			
 			$sql = "INSERT INTO reports
 			(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
 			VALUES (1, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date1', '$Hour')";
+			
+			//echo $sql . "\n\n";
 			/*
 			$sql = "INSERT INTO reports
 			(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour) 
