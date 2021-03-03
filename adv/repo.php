@@ -14,17 +14,22 @@
 		exit(0);
 	}
 	
-	if($_POST['env'] == 'pre' || $_POST['env'] == 'dev'){
+	if ($_POST['env'] == 'pre' || $_POST['env'] == 'dev') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
-		
+
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	}elseif($_POST['env'] == 'prod'){
+	} elseif ($_POST['env'] == 'staging') {
+		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
+
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	} elseif ($_POST['env'] == 'prod') {
 		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
-		
+
 		require('config.php');
 		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	}else{
+	} else {
 		header($_SERVER["SERVER_PROTOCOL"] . ' Wrong ENV', true, 500);
 		exit(0);
 	}
@@ -485,8 +490,7 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id 
-			INNER JOIN purchase_order ON campaign.purchase_order_id = purchase_order.id $SQLInnerJoinsTotals 
+			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
 			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter ";
 			
 			/*if(count($UnionTables) > 1){
@@ -573,8 +577,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id 
-		INNER JOIN purchase_order ON campaign.purchase_order_id = purchase_order.id $SQLInnerJoinsTotals 
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
 		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter ";
 		
 		/*

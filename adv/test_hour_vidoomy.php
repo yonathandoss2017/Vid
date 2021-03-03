@@ -91,6 +91,7 @@ VALUES
 SQL;
 
     $parsedDate = Carbon::parse($date->toDateTime()->format("Y-m-d h:m:s"));
+    $revenue = $document["revenue"] / CPM_DIVIDER;
 
     $stmt = $pdoLocal->prepare($sql);
 
@@ -100,7 +101,7 @@ SQL;
     $stmt->bindValue(":requests", $document["requests"]);
     $stmt->bindValue(":bids", $document["bids"]);
     $stmt->bindValue(":impressions", $document["impressions"]);
-    $stmt->bindValue(":revenue", $document["revenue"] / CPM_DIVIDER);
+    $stmt->bindValue(":revenue", $revenue);
     $stmt->bindValue(":v_impressions", $document["impressions"]);
     $stmt->bindValue(":clicks", $document["clicks"]);
     $stmt->bindValue(":complete_v", $document["impressions"]);
@@ -108,7 +109,7 @@ SQL;
     $stmt->bindValue(":complete_50", $document["impressions"]);
     $stmt->bindValue(":complete_75", $document["impressions"]);
     $stmt->bindValue(":complete_v_per", 0);
-    $stmt->bindValue(":rebate", getRebate($document["revenue"], $deal["rebate"]));
+    $stmt->bindValue(":rebate", getRebate($revenue, $deal["rebate"]));
     $stmt->bindValue(":date", $parsedDate->format("Y-m-d"));
     $stmt->bindValue(":hour", $parsedDate->hour);
 
