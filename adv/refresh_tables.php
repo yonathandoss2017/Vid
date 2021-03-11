@@ -25,7 +25,7 @@
 			$id = $U['id'];
 			$created_by_id = $U['created_by_id'];
 			$updated_by_id = $U['updated_by_id'];
-			$sales_manager_head_id = $U['sales_manager_head_id'];
+			$manager_id = $U['manager_id'];
 			$user_id = $U['user_id'];
 			$country_id = $U['country_id'];
 			$username = $U['username'];
@@ -47,7 +47,7 @@
 			$email = $U['email'];
 			$last_login = $U['last_login'];
 			
-			$sql = "INSERT INTO user (id, created_by_id, updated_by_id, sales_manager_head_id, user_id, country_id, username, roles, password, name, last_name, status, locale, picture, created_at, updated_at, ip_address, nick, monthly_target, show_global_stats, phone, comments, email, last_login) VALUES ('$id', '$created_by_id', '$updated_by_id', '$sales_manager_head_id', '$user_id', '$country_id', '$username', '$roles', '$password', '$name', '$last_name', '$status', '$locale', '$picture', '$created_at', '$updated_at', '$ip_address', '$nick', '$monthly_target', '$show_global_stats', '$phone', '$comments', '$email', '$last_login')";
+			$sql = "INSERT INTO user (id, created_by_id, updated_by_id, manager_id, user_id, country_id, username, roles, password, name, last_name, status, locale, picture, created_at, updated_at, ip_address, nick, monthly_target, show_global_stats, phone, comments, email, last_login) VALUES ('$id', '$created_by_id', '$updated_by_id', '$manager_id', '$user_id', '$country_id', '$username', '$roles', '$password', '$name', '$last_name', '$status', '$locale', '$picture', '$created_at', '$updated_at', '$ip_address', '$nick', '$monthly_target', '$show_global_stats', '$phone', '$comments', '$email', '$last_login')";
 			$db->query($sql);
 		}
 	}
@@ -58,13 +58,13 @@
 		while($U = $db2->fetch_array($query2)){
 
 			$idU = $U['id'];
-			$sales_manager_head_id = $U['sales_manager_head_id'];
+			$manager_id = $U['manager_id'];
 			$name = $U['name'];
 			$last_name = $U['last_name'];
 			$status = $U['status'];
 			$nick = $U['nick'];
 			
-			$sql = "UPDATE user SET sales_manager_head_id = '$sales_manager_head_id', name = '$name', last_name = '$last_name', status = '$status', nick = '$nick' WHERE id = '$idU' LIMIT 1";
+			$sql = "UPDATE user SET manager_id = '$manager_id', name = '$name', last_name = '$last_name', status = '$status', nick = '$nick' WHERE id = '$idU' LIMIT 1";
 			$db->query($sql);
 		}
 	}

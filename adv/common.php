@@ -9,18 +9,64 @@
 			while($User = $db2->fetch_array($query)){
 				$Roles = json_decode($User['roles']);
 				if(in_array('ROLE_ADMIN', $Roles)){
-					updateUserCards($db2, $User['id'], $Date, true);
+					updateUserCards($db2, $User['id'], $Date, $Roles, true);
 					//echo "Update Admin " . $User['id'] . "\n";
 				}else{
-					updateUserCards($db2, $User['id'], $Date, false);	
+					updateUserCards($db2, $User['id'], $Date, $Roles, false);
 					//echo "Update Sales " . $User['id'] . "\n";
 				}
 				
 			}	
 		}	
 	}
+
+	/**
+	 * Gets the string with subordinates user for the head
+	 *
+	 * @param string $idUser
+	 * @param SQL $db2
+	 *
+	 * @return string subordinates user string
+	 */
+	function getUsersQueryForManagerHeads(string $idUser, SQL $db2): string {
+		$PubManFilter = " AND (agency.sales_manager_id = '$idUser'";
+		$sqlUsers = "SELECT id FROM user WHERE manager_id = '$idUser'";
+		$queryS = $db2->query($sqlUsers);
+		if($db2->num_rows($queryS) > 0){
+			while($U = $db2->fetch_array($queryS)){
+				$idS = $U['id'];
+				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+			}
+		}
+		$PubManFilter .= ")";
+
+		return $PubManFilter;
+	}
+
+	/**
+	 * Gets the string with suboordinates user for the vp
+	 *
+	 * @param string $idUser
+	 * @param SQL $db2
+	 *
+	 * @return string subordinates user string
+	 */
+	function getUsersQueryForVp(string $idUser, SQL $db2): string {
+		$PubManFilter = " AND (agency.sales_manager_id = '$idUser'";
+		$sqlUsers = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$idUser' OR manager.manager_id = '$idUser'";
+		$queryS = $db2->query($sqlUsers);
+		if($db2->num_rows($queryS) > 0){
+			while($U = $db2->fetch_array($queryS)){
+				$idS = $U['id'];
+				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+			}
+		}
+		$PubManFilter .= ")";
+
+		return $PubManFilter;
+	}
 	
-	function updateUserCards($db2, $idUser, $Date, $Admin = false){
+	function updateUserCards($db2, $idUser, $Date, $Roles, $Admin = false){
 		global $db;
 		
 		$DateTime = new DateTime($Date);
@@ -33,10 +79,26 @@
 			$sql = "SELECT SUM(Revenue) FROM reports
 			WHERE reports.Date BETWEEN '$FirstDay' AND '$LastDate'";
 		}else{
-			$sql = "SELECT SUM(Revenue) FROM reports
-			INNER JOIN campaign ON campaign.id = reports.idCampaing
-			INNER JOIN agency ON campaign.agency_id = agency.id 
-			WHERE agency.sales_manager_id = '$idUser' AND reports.Date BETWEEN '$FirstDay' AND '$LastDate'";
+            if (in_array("ROLE_SALES_MANAGER_HEAD", $Roles)) {
+                $sql = "SELECT SUM(Revenue) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE reports.Date BETWEEN '$FirstDay' AND '$LastDate'";
+
+				$sql = $sql . getUsersQueryForManagerHeads($idUser, $db2);
+            } elseif (in_array("ROLE_SALES_VP", $Roles)) {
+				$sql = "SELECT SUM(Revenue) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE reports.Date BETWEEN '$FirstDay' AND '$LastDate'";
+
+				$sql = $sql . getUsersQueryForVp($idUser, $db2);
+			} else {
+				$sql = "SELECT SUM(Revenue) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE agency.sales_manager_id = '$idUser' AND reports.Date BETWEEN '$FirstDay' AND '$LastDate'";
+			}
 		}
 		$Revenue = $db->getOne($sql);
 		
@@ -56,10 +118,26 @@
 			INNER JOIN campaign ON campaign.id = reports.idCampaing
 			WHERE reports.Date = '$Date' AND reports.Impressions > 0 AND campaign.type = 1";
 		}else{
-			$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
-			INNER JOIN campaign ON campaign.id = reports.idCampaing
-			INNER JOIN agency ON campaign.agency_id = agency.id 
-			WHERE agency.sales_manager_id = '$idUser' AND campaign.type = 1 AND reports.Date = '$Date' AND reports.Impressions > 0";
+			if (in_array("ROLE_SALES_MANAGER_HEAD", $Roles)) {
+                $sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE campaign.type = 1 AND reports.Date = '$Date' AND reports.Impressions > 0";
+
+				$sql = $sql . getUsersQueryForManagerHeads($idUser, $db2);
+            } elseif (in_array("ROLE_SALES_VP", $Roles)) {
+				$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE campaign.type = 1 AND reports.Date = '$Date' AND reports.Impressions > 0";
+
+				$sql = $sql . getUsersQueryForVp($idUser, $db2);
+			} else {
+				$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE agency.sales_manager_id = '$idUser' AND campaign.type = 1 AND reports.Date = '$Date' AND reports.Impressions > 0";
+			}
 		}
 		$ActiveDeals = $db->getOne($sql);
 		
@@ -69,10 +147,26 @@
 			INNER JOIN campaign ON campaign.id = reports.idCampaing
 			WHERE reports.Date = '$Date' AND reports.Impressions > 0 AND campaign.type = 2";
 		}else{
-			$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
-			INNER JOIN campaign ON campaign.id = reports.idCampaing
-			INNER JOIN agency ON campaign.agency_id = agency.id 
-			WHERE agency.sales_manager_id = '$idUser' AND campaign.type = 2 AND reports.Date = '$Date' AND reports.Impressions > 0";
+			if (in_array("ROLE_SALES_MANAGER_HEAD", $Roles)) {
+                $sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE campaign.type = 2 AND reports.Date = '$Date' AND reports.Impressions > 0";
+
+				$sql = $sql . getUsersQueryForManagerHeads($idUser, $db2);
+            } elseif (in_array("ROLE_SALES_VP", $Roles)) {
+				$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE campaign.type = 2 AND reports.Date = '$Date' AND reports.Impressions > 0";
+
+				$sql = $sql . getUsersQueryForVp($idUser, $db2);
+			} else {
+				$sql = "SELECT COUNT(DISTINCT(idCampaing)) FROM reports
+				INNER JOIN campaign ON campaign.id = reports.idCampaing
+				INNER JOIN agency ON campaign.agency_id = agency.id
+				WHERE agency.sales_manager_id = '$idUser' AND campaign.type = 2 AND reports.Date = '$Date' AND reports.Impressions > 0";
+			}
 		}
 		$ActiveCamp = $db->getOne($sql);
 		

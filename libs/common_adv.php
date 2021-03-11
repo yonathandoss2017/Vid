@@ -80,9 +80,9 @@ function utf8ize($mixed) {
 			'SearchName'	=>	"vp.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id ",
-				'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id ",
-				'vp'	=> "INNER JOIN user vp ON smh.sales_manager_head_id = vp.id "
+				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
 			),
 			'GroupBy'		=>	"SalesVP",
 			'OrderVal'		=>	"SalesVP",
@@ -90,12 +90,13 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'VP'
 		),
 		'sales_manager_head' => array(
-			'Name'	=>	"smh.nick AS SalesManagerHead",
-			'SearchName'	=>	"smh.id",
+			'Name'	=>	"manager_head.nick AS SalesManagerHead",
+			'SearchName'	=>	"manager_head.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id ",
-				'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
+				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
 			'GroupBy'		=>	"SalesManagerHead",
 			'OrderVal'		=>	"SalesManagerHead",

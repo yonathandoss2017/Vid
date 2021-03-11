@@ -128,11 +128,24 @@
 		}else{
 			$PubManFilter = " AND campaign.id = 0";
 		}
+	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
+		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
+		$sql = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$UserId' OR manager.manager_id = '$UserId'";
+		$queryS = $db2->query($sql);
+		if ($db2->num_rows($queryS) > 0) {
+			while($U = $db2->fetch_array($queryS)) {
+				$idS = $U['id'];
+				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+			}
+		} else {
+			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+		}
+		$PubManFilter .= ")";
 	}else{
 		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
 			//echo 'HEAD';
 			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-			$sql = "SELECT id FROM user WHERE sales_manager_head_id = '$UserId'";
+			$sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
 			$queryS = $db2->query($sql);
 			if($db2->num_rows($queryS) > 0){
 				while($U = $db2->fetch_array($queryS)){
