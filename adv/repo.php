@@ -433,8 +433,11 @@
 								$FVal = str_replace('*', '%', trim($arFv[0]));
 							}
 							
-							$FVal = mysqli_real_escape_string($db->link, $FVal);
+							if($KFilter == 'deal_id' && strpos($FVal, '%') === false){
+								$FVal = $FVal . '%';
+							}
 							
+							$FVal = mysqli_real_escape_string($db->link, $FVal);
 							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 						}else{
 							if($KFilter == 'type'){
@@ -736,6 +739,13 @@
 								if($DimensionName == 'campaign_name'){
 									$arSS = explode('--',$DimensionValue);
 									$Data[$Nd][] = $arSS[0];
+								}elseif($DimensionName == 'deal_id'){
+									if(strpos($DimensionValue, '(') !== false){
+										$arSS = explode('(',$DimensionValue);
+										$Data[$Nd][] = $arSS[0];
+									}else{
+										$Data[$Nd][] = $DimensionValue;
+									}
 								}else{
 									$Data[$Nd][] = $DimensionValue;
 								}

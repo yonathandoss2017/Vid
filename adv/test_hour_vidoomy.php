@@ -32,43 +32,62 @@ $collection = $client->bidoomy->StatsAggregate;
 
 $deals = getDeals();
 $countries = getCountries();
-$date = getLastHourDate();
 
-foreach ($deals as $deal) {
-    $cursor = $collection->aggregate([
-        [
-            '$match' => [
-                "deal" => $deal["deal_id"],
-                "date" => $date,
-                ],
-        ],
-        [
-            '$group' => [
-                "_id" => '$country',
-                "requests" => ['$sum' => '$bidRequest'],
-                "bids" => ['$sum' => '$bidResponse'],
-                "impressions" => ['$sum' => '$impression'],
-                "revenue" => ['$sum' => '$impressionMoney'],
-                "clicks" => ['$sum' => '$click']
-            ],
-        ],
-    ]);
-    foreach ($cursor as $document) {
-        $countryId = getCountryId($countries, $document["_id"], $deal);
-        insertRecord($countryId, $document, $deal);
-    }
+for($D = 26; $D <= 28; $D++){
+	for($H = 0; $H <= 23; $H++){
+		$date = getLastHourDate(2, $D, $H);
+		
+		foreach ($deals as $deal) {
+			
+			if(strpos($deal["deal_id"], '(') !== false){
+				$exD = explode('(', $deal["deal_id"]);
+				$dealID = $exD[0];
+			}else{
+				$dealID = $deal["deal_id"];
+			}
+			
+		    $cursor = $collection->aggregate([
+		        [
+		            '$match' => [
+		                "deal" => $dealID,
+		                "date" => $date,
+		            ],
+		        ],
+		        [
+		            '$group' => [
+		                "_id" => '$country',
+		                "requests" => ['$sum' => '$bidRequest'],
+		                "bids" => ['$sum' => '$bidResponse'],
+		                "impressions" => ['$sum' => '$impression'],
+		                "revenue" => ['$sum' => '$impressionMoney'],
+		                "clicks" => ['$sum' => '$click']
+		            ],
+		        ],
+		    ]);
+		    
+		    foreach ($cursor as $document) {
+		        $countryId = getCountryId($countries, $document["_id"]);
+		        //print_r($document);
+		        insertRecord($countryId, $document, $deal);
+		    }
+		    
+		}
+	}
 }
-
 /**
  * Returns the current date and previous hour
  *
  * @return Carbon $date
  */
-function getLastHourDate (): UTCDateTime {
-    $date = Carbon::now();
-    $date = Carbon::parse($date->format("Y-m-d h:m:s"));
-    $date->subHour()->minute = 0;
+function getLastHourDate ($M, $D, $H): UTCDateTime {
+    //$date = Carbon::now();
+    $date = Carbon::create(2021, $M, $D, $H, 0, 0, 'UTC');
+    $date = Carbon::parse($date->format("Y-m-d H:i:s"));
+    //$date->subHour()->minute = 0;
+    $date->minute = 0;
     $date->second = 0;
+    
+    echo $date->format("Y-m-d H:i:s");
 
     return new UTCDateTime($date);
 }
@@ -164,7 +183,7 @@ SQL;
  * @return string id of the country
  */
 function getCountryId (array $countries, string $iso): string {
-    $key = array_search("CL", array_column($countries, "iso"));
+    $key = array_search($iso, array_column($countries, "iso"));
 
     if ($key) {
         return $countries[$key]["id"];
