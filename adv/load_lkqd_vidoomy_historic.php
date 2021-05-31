@@ -42,7 +42,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 }
 
 	//$Date = date('Y-m-d', time() - (3600 * 4));
-	$Date = '2021-04-05';
+	$Date = '2021-05-26';
 	//$Hour = date('H');
 	$Hour = 23;
 	
@@ -61,24 +61,30 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2287";// AND id = 2157
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2735";// AND id = 2157
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){
 			$idCamp = $Camp['id'];
 			//$Camp['deal_id'] = "VDMY_CC_10395(1050826-1050825)";
 			
-			if(strpos($Camp['deal_id'], '-') !== false && strpos($Camp['deal_id'], '(') !== false && strpos($Camp['deal_id'], ')') !== false){
+			if(strpos($Camp['deal_id'], '(') !== false && strpos($Camp['deal_id'], ')') !== false){
 				
 				$exDID = explode('(', $Camp['deal_id']);
 				$DTags = str_replace(')', '', $exDID[1]);
 				
-				$DTagsArray = explode('-', $DTags);
-				
-				foreach($DTagsArray as $DTag){
-					$ActiveDeals[$idCamp][] = $DTag;
-					$TagCampaing[$DTag] = $idCamp;
-					$DemandTags[] = $DTag;
+				if(strpos($Camp['deal_id'], '-') !== false){
+					$DTagsArray = explode('-', $DTags);
+					
+					foreach($DTagsArray as $DTag){
+						$ActiveDeals[$idCamp][] = $DTag;
+						$TagCampaing[$DTag] = $idCamp;
+						$DemandTags[] = $DTag;
+					}
+				}else{
+					$ActiveDeals[$idCamp][] = $DTags;
+					$TagCampaing[$DTags] = $idCamp;
+					$DemandTags[] = $DTags;
 				}
 				
 				//$CampaingData[$idCamp]['DealId'] = $Camp['deal_id'];

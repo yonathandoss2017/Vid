@@ -23,23 +23,8 @@
 	$date2 = new DateTime($Date1);
 	$date2->modify('-1 day');
 	$Date2 = $date2->format('Y-m-d');
-
 	
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 2 AND status = 1";
-	$queryC = $db3->query($sql);
-	if($db3->num_rows($queryC) > 0){
-		while($Camp = $db3->fetch_array($queryC)){
-			//print_r($Camp);
-			$idCampaing = $Camp['id'];
-			$RebatePercent = $Camp['rebate'];
-			$DealID = $Camp['deal_id'];
-			
-			$idCountry = 999;
-			$sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCampaing' ";
-			if($db3->getOne($sql) == 1){
-				$sql = "SELECT country_id FROM campaign_country WHERE campaign_id = '$idCampaing' ";
-				$idCountry = $db3->getOne($sql);
-			}
+
 			
 			$curl = curl_init();
 			curl_setopt_array($curl, array(
@@ -63,6 +48,26 @@
 			
 			$Decoded = json_decode($Json);
 			$Token = $Decoded->value->data->access_token;
+
+
+	
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 2 AND status = 1";
+	$queryC = $db3->query($sql);
+	if($db3->num_rows($queryC) > 0){
+		while($Camp = $db3->fetch_array($queryC)){
+			//print_r($Camp);
+			$idCampaing = $Camp['id'];
+			$RebatePercent = $Camp['rebate'];
+			$DealID = $Camp['deal_id'];
+			
+			$idCountry = 999;
+			$sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCampaing' ";
+			if($db3->getOne($sql) == 1){
+				$sql = "SELECT country_id FROM campaign_country WHERE campaign_id = '$idCampaing' ";
+				$idCountry = $db3->getOne($sql);
+			}
+			
+			
 			
 			//exit(0);
 			$curl = curl_init();

@@ -3,7 +3,7 @@
 	define('CONST',1);
 	require('/var/www/html/login/config.php');
 	require('../../db.php');
-	require('../libs/common_adv.php');
+	require('../libs/common_adv_deals.php');
 	
 	$mem_var = new Memcached('reps');
 	$mem_var->addServer("localhost", 11211);
@@ -14,12 +14,7 @@
 		exit(0);
 	}
 	
-	if ($_POST['env'] == 'dev') {
-		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
-
-		require('config.php');
-		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	} elseif ($_POST['env'] == 'pre') {
+	if ($_POST['env'] == 'pre' || $_POST['env'] == 'dev') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
 		require('config_pre.php');
@@ -27,8 +22,8 @@
 	} elseif ($_POST['env'] == 'staging') {
 		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
 
-		require('config.php');
-		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	} elseif ($_POST['env'] == 'prod') {
 		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
@@ -85,84 +80,10 @@
 	//$RolesJSON = json_decode($Roles);
 	
 	$AdvRep = false;
-	if(in_array('ROLE_ADMIN', $RolesJSON)){
-		//echo 'ADMIN';
-		$PubManFilter = "";
-	}elseif(in_array('ROLE_ADVERTISER', $RolesJSON)){
-		$sql = "SELECT id FROM advertiser WHERE user_id = $UserId LIMIT 1";
-		$AdvID = $db2->getOne($sql);
-		$PubManFilter = " AND campaign.advertiser_id = $AdvID AND {ReportsTable}.Impressions > 0 ";
-		
-		$AdvRep = true;
-		
-		if(isset($_POST['Dimensions'])){
-			$Dimensions = $_POST['Dimensions'];
-			if(is_array($Dimensions)){
-				foreach($_POST['Dimensions'] as $K => $D){
-					$_POST['Dimensions'][$K] = 'campaign_name';
-				}
-			}
-		}
-	}elseif(in_array('ROLE_CAMPAIGN_VIEWER', $RolesJSON)){
-		$sql = "SELECT * FROM campaign_viewer_campaigns WHERE user_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if($db2->num_rows($queryS) > 0){
-			$PubManFilter = " AND (";
-			$OrC = "";
-			while($U = $db2->fetch_array($queryS)){
-				$idC = $U['campaign_id'];
-				$PubManFilter .= $OrC . "campaign.id = '$idC'";
-				$OrC = " OR ";
-			}
-			$PubManFilter .= ")";
-		}else{
-			$PubManFilter = " AND campaign.id = 0 ";
-		}
-	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)){
-		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if($db2->num_rows($queryS) > 0){
-			$PubManFilter = " AND (";
-			$OrC = "";
-			while($U = $db2->fetch_array($queryS)){
-				$idC = $U['campaign_id'];
-				$PubManFilter .= $OrC . "campaign.id = '$idC'";
-				$OrC = " OR ";
-			}
-			$PubManFilter .= ")";
-		}else{
-			$PubManFilter = " AND campaign.id = 0";
-		}
-	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
-		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-		$sql = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$UserId' OR manager.manager_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if ($db2->num_rows($queryS) > 0) {
-			while($U = $db2->fetch_array($queryS)) {
-				$idS = $U['id'];
-				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
-			}
-		} else {
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
-		}
-		$PubManFilter .= ")";
+	if(in_array('ROLE_ADMIN', $RolesJSON) || in_array('ROLE_REPORTS_DEALS', $RolesJSON)){
+
 	}else{
-		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
-			//echo 'HEAD';
-			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-			$sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
-			$queryS = $db2->query($sql);
-			if($db2->num_rows($queryS) > 0){
-				while($U = $db2->fetch_array($queryS)){
-					$idS = $U['id'];
-					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
-				}
-			}
-			$PubManFilter .= ")";
-		}else{
-			//echo 'SALES';
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
-		}
+		exit(0);
 	}
 			
 	header('Access-Control-Allow-Origin: *');
@@ -221,21 +142,17 @@
 		$RepType = $_POST['reportType'];
 		//$RepType = 'overall';
 		
-		if($RepType != 'hourly'){
-			$BaseTable = 'reports_resume';
-		}else{
-			$BaseTable = 'reports';
-		}
+		$BaseTable = 'reports_deals';
+		
 		if($RepType != 'overall' || count($Dimensions) == 0){
 			$IncludeTime = true;
 		}
 		if($RepType == 'overall'){
 			$Overall = true;
-		}
-		
+		}		
 		
 		//$NewTable = $BaseTable . $StartMonth;
-		$NewTable = 'reports';
+		$NewTable = 'reports_deals';
 		if(checkTableExists($NewTable)){
 			$UnionTables[] = $NewTable;
 		}
@@ -267,8 +184,6 @@
 		}
 	}
 	
-	//print_r($UnionTables);
-	//exit(0);
 	if($DatesOK && $TypeOK){
 		if(isset($_POST['Metrics'])){
 			$Metrics = $_POST['Metrics'];
@@ -280,7 +195,6 @@
 		}
 	}
 	
-	//print_r($_POST);
 	if($DimensionsOK){
 		if(isset($_POST['Filters'])){
 			if(is_array($_POST['Filters'])){
@@ -680,7 +594,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics , reports.SSP AS idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
@@ -723,13 +637,13 @@
 		
 		if($CachedReport === false || 1==1){
 			$Cached = 0;
-			error_log(0);
+			//error_log(0);
 			$SuperQuery = $db->query($SQLQuery);
-			error_log(1);
+		//	error_log(1);
 			$sqlCount = 'SELECT FOUND_ROWS();';
 			$CntTotal = $db->getOne($sqlCount);
 			$TDim = 0;
-			error_log(2);
+		//	error_log(2);
 			if($db->num_rows($SuperQuery) > 0){
 				while($Da = $db->fetch_array($SuperQuery)){
 					if($IncludeTime){

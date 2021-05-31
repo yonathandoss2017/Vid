@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-01-14';
-	$idCampaing = 1726;
+	$Date = '2021-05-18';
+	$idCampaing = 2724;
 	
 	/*
 	$date2 = new DateTime($Date1);
@@ -129,6 +129,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//$Requests = intval($Row['Requests'] * $PercCh);
 			//$Bids = intval($Row['Bids'] * $PercCh);
 			$Impressions = intval($Row['Impressions'] * $PercCh);
+			$CompleteV = intval($Row['CompleteV'] * $PercCh);
 			
 			if($CCTR === true){
 				$CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
@@ -139,7 +140,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}else{
 				$Clicks = intval($Row['Clicks'] * $PercCh);
 			}
-			
+			/*
 			if($CVTR === true){
 				$VTRFrom = $CampaingData[$idCampaing]['VTRFrom'] * 100;
 				$VTRTo = $CampaingData[$idCampaing]['VTRTo'] * 100;
@@ -157,7 +158,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$Complete50 = intval($Row['Complete50'] * $PercCh);
 				$Complete75 = intval($Row['Complete75'] * $PercCh);
 			}
-			
+			*/
 			if($CView === true){
 				$ViewFrom = $CampaingData[$idCampaing]['ViewFrom'] * 100;
 				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
@@ -177,7 +178,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				echo "CPM: " . $CPM . "\n";
 			}elseif($CompleteV > 0 && $CPV > 0){
 				$Revenue = $CompleteV * $CPV;
-				echo "CPV: " . $CPV . "\n";
+				echo "CPV: $CompleteV * $CPV = $Revenue \n";
 			}else{
 				$Revenue = $Row['Revenue'] * $PercCh;
 			}

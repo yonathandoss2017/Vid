@@ -54,7 +54,7 @@ function csvToJson($fname) {
 
 
 	$Date1 = date('Y-m-d', time() - 3600);
-	//$Date1 = '2020-08-08';
+	$Date1 = '2021-05-13';
 	/*
 	$date2 = new DateTime($Date1);
 	$date2->modify('-1 day');
@@ -85,7 +85,7 @@ function csvToJson($fname) {
 	$Res = curl_exec($curl);
 	curl_close($curl);
 	
-	print_r($Res);
+	//print_r($Res);
 	
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
@@ -168,7 +168,8 @@ function csvToJson($fname) {
 	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 6 AND status = 1";
+	//$sql = "SELECT * FROM campaign WHERE ssp_id = 6 AND status = 1";
+	$sql = "SELECT * FROM campaign WHERE id = 2709 LIMIT 1";
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){

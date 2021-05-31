@@ -68,18 +68,26 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$idCamp = $Camp['id'];
 			//$Camp['deal_id'] = "VDMY_CC_10395(1050826-1050825)";
 			
-			if(strpos($Camp['deal_id'], '-') !== false && strpos($Camp['deal_id'], '(') !== false && strpos($Camp['deal_id'], ')') !== false){
+			if(strpos($Camp['deal_id'], '(') !== false && strpos($Camp['deal_id'], ')') !== false){
 				
 				$exDID = explode('(', $Camp['deal_id']);
 				$DTags = str_replace(')', '', $exDID[1]);
 				
-				$DTagsArray = explode('-', $DTags);
-				
-				foreach($DTagsArray as $DTag){
-					$ActiveDeals[$idCamp][] = $DTag;
-					$TagCampaing[$DTag] = $idCamp;
-					$DemandTags[] = $DTag;
+				if(strpos($Camp['deal_id'], '-') !== false){
+					$DTagsArray = explode('-', $DTags);
+					
+					foreach($DTagsArray as $DTag){
+						$ActiveDeals[$idCamp][] = $DTag;
+						$TagCampaing[$DTag] = $idCamp;
+						$DemandTags[] = $DTag;
+					}
+				}else{
+					$ActiveDeals[$idCamp][] = $DTags;
+					$TagCampaing[$DTags] = $idCamp;
+					$DemandTags[] = $DTags;
 				}
+				
+				
 				
 				//$CampaingData[$idCamp]['DealId'] = $Camp['deal_id'];
 				$CampaingData[$idCamp]['Rebate'] = $Camp['rebate'];
