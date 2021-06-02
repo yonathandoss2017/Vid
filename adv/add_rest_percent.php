@@ -9,7 +9,7 @@
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
 	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	//exit(0);
+	exit(0);
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-04-08';
-	$idCampaing = 2307;
+	$Date = '2021-05-31';
+	$idCampaing = 2535;
 	
 	
 	//exit(0);
@@ -111,7 +111,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}
 	}
 	
-	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;// 
+	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date' AND reports.Hour = 9" ;// 
 	//$sql = "SELECT reports.* FROM reports WHERE (reports.idCampaing = 923 OR reports.idCampaing = 924 OR reports.idCampaing = 925 OR reports.idCampaing = 926 OR reports.idCampaing = 927 OR reports.idCampaing = 928 OR reports.idCampaing = 929 OR reports.idCampaing = 930 OR reports.idCampaing = 931 OR reports.idCampaing = 932) AND reports.Date = '$Date'";
 	//echo "$sql\n\n";
 	
@@ -135,8 +135,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 
 			
-			$PercCh = 1;
-			$PercCh2 = 1;
+			$PercCh = 0.25;
+			$PercCh2 = 0.25;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
 			$Bids = intval($Row['Bids'] * $PercCh);

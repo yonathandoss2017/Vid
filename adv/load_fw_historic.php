@@ -11,7 +11,7 @@
 	require('/var/www/html/login/reports_/adv/common.php');
 	
 	//$Date1 = date('Y-m-d', time() - 3600);
-	for($D = 1; $D <= 17; $D++){
+	for($D = 14; $D <= 14; $D++){
 		
 		if($D <= 9){
 			$Dd = "0$D";
@@ -19,8 +19,8 @@
 			$Dd = "$D";
 		}
 		
-		$Date1 = '2020-11-' . $Dd;
-		$DateNoSlash = '202011' . $Dd;
+		$Date1 = '2021-05-' . $Dd;
+		$DateNoSlash = '202105' . $Dd;
 		
 		echo $DateNoSlash . "\n";
 	//	exit(0);
@@ -45,7 +45,7 @@
 		//exit(0);
 		$ActiveDeals = array();
 		$CampaingData = array();
-		$sql = "SELECT * FROM campaign WHERE id = 1394";
+		$sql = "SELECT * FROM campaign WHERE ssp_id = 1";
 		$query = $db3->query($sql);
 		if($db3->num_rows($query) > 0){
 			while($Camp = $db3->fetch_array($query)){
@@ -66,6 +66,9 @@
 				$CampaingData[$idCamp]['Country'] = $countryId;
 			}
 		}
+		
+		//print_r($ActiveDeals);
+		//exit(0);
 		
 		foreach($Decoded->results as $Deal){
 			//if($Deal->deal_id == 'VID-CAD-00003'){	
@@ -112,7 +115,7 @@
 				$Impressions = $Impressions - $W['Impressions'];
 				
 				$RandVI = rand(8000,8600)/10000;
-				$VImpressions = $Impressions * $RandVI;
+				$VImpressions = intval($Impressions * $RandVI);
 				
 				//$VImpressions = $VImpressions - $W['VImpressions'];
 				if($VImpressions < 0){ $VImpressions = 0; }

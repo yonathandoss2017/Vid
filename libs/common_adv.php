@@ -118,7 +118,7 @@ function utf8ize($mixed) {
 		),
 		'ssp' => array(
 			'Name'	=> 	"ssp.name AS SSP",
-			'SearchName'	=> 	"ssp.id",
+			'SearchName'	=> 	"$ReportsTable.SSP",
 			'InnerJoin'		=> 	array('ssp' => "INNER JOIN ssp ON ssp.id = $ReportsTable.SSP "),
 			'GroupBy'		=>	"SSP",
 			'OrderVal'		=>	"SSP",

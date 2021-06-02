@@ -44,8 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-05-18';
-	$idCampaing = 2724;
+	$Date1 = '2021-06-01';
+	$Date2 = '2021-06-01';
+	$idCampaing = 2546;
 	
 	/*
 	$date2 = new DateTime($Date1);
@@ -57,7 +58,32 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$ActiveDeals = array();
 	$CampaingData = array();
 	
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id = $idCampaing";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:PT_vtr:70_va:80_MaxColchon_Familia_137.500_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Todos_225.000_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Pareja_225.000_30Jun";	
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Chica_225.000_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:FR_vtr:70_va:80_MaxColchon_Chica_137.500_30Jun";	
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:FR_vtr:70_va:80_MaxColchon_Familia_137.500_30Jun";	
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Familia_225.000_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:PT_vtr:70_va:80_MaxColchon_Todos_137.500_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:PT_vtr:70_va:80_MaxColchon_Chica_137.500_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:PT_vtr:70_va:80_MaxColchon_Pareja_137.500_30Jun";	
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:FR_vtr:70_va:80_MaxColchon_Todos_137.500_30Jun";
+	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:FR_vtr:70_va:80_MaxColchon_Pareja_137.500_30Jun";
+	
+	$MultiCamp = "";
+	$Orr = "";
+	foreach($CampNames as $CampName){
+		$sql = "SELECT id FROM campaign WHERE name LIKE '$CampName' LIMIT 1";
+		$idCampaing = $db2->getOne($sql);
+		
+		$MultiCamp .= " $Orr id = $idCampaing ";
+		$Orr = " OR ";
+	}
+		
+	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id = $idCampaing";
+	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND (deal_id = '1053196' OR deal_id = '1053199' OR deal_id = '1053198' OR deal_id = '1053197' OR deal_id = '1053200' OR deal_id = '1053203' OR deal_id = '1053202' OR deal_id = '1053201' OR deal_id = '1053204' OR deal_id = '1053207' OR deal_id = '1053206' OR deal_id = '1053205')";
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND ($MultiCamp)";
 	$query = $db2->query($sql);
 	if($db2->num_rows($query) > 0){
 		while($Camp = $db2->fetch_array($query)){
@@ -108,20 +134,35 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}
 	}
 	
-	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'";
+	$CampsSQL = "";
+	$OR = "";
+	foreach($ActiveDeals as $idC => $CID){
+		$CampsSQL .= " $OR reports.idCampaing = $idC ";
+		
+		$OR = " OR ";
+	}
+	
+	
+	$sql = "SELECT reports.* FROM reports WHERE $CampsSQL AND reports.Date BETWEEN '$Date1' AND '$Date2'";
+	
+	//exit(0);
 	//echo "\n\n";
 	
-	$CVTR = $CampaingData[$idCampaing]['CVTR'];
-	$CCTR = $CampaingData[$idCampaing]['CCTR'];
-	$CView = $CampaingData[$idCampaing]['CView'];
-	$CPM = $CampaingData[$idCampaing]['CPM'];
-	$CPV = $CampaingData[$idCampaing]['CPV'];
-	$RebatePer = $CampaingData[$idCamp]['Rebate'];
+
 	
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Row = $db->fetch_array($query)){
 			$idRow = $Row['id'];
+			$idCampaing = $Row['idCampaing'];
+			
+			
+			$CVTR = $CampaingData[$idCampaing]['CVTR'];
+			$CCTR = $CampaingData[$idCampaing]['CCTR'];
+			$CView = $CampaingData[$idCampaing]['CView'];
+			$CPM = $CampaingData[$idCampaing]['CPM'];
+			$CPV = $CampaingData[$idCampaing]['CPV'];
+			$RebatePer = $CampaingData[$idCamp]['Rebate'];
 			
 			$PercCh = 1;
 			$PercCh2 = 1;
@@ -173,8 +214,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			if($Impressions > 0 && $CPM > 0){
 				$Revenue = $Impressions * $CPM / 1000;
-				
-				
 				echo "CPM: " . $CPM . "\n";
 			}elseif($CompleteV > 0 && $CPV > 0){
 				$Revenue = $CompleteV * $CPV;
@@ -192,6 +231,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//
 			echo $sql . "\n";
 			
-			$db->query($sql);
+			//$db->query($sql);
 		}
 	}
