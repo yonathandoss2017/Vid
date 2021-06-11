@@ -12,7 +12,7 @@ class AdsTxt {
      */
     public function run() {
         $scans = [];
-        if (! $this->isValid()) {
+        if (!$this->isValid()) {
             return $this->doResponse($scans);
         }
         set_time_limit(300);
@@ -63,15 +63,21 @@ class AdsTxt {
      * @return boolean
      */
     private function contentHasText(string $content, string $text): bool {
-        $content = $this->cleanRecord($content);
         $text = $this->cleanRecord($text);
 
-        // If it doesn't have the text OR it's a comment
-        if (!preg_match("/\b$text\b/", $content) || preg_match("/\#$text/", $content)) {
-            return false;
+        $records = explode("\n", $content);
+        foreach ($records as $record) {
+            $record = $this->cleanRecord($record);
+
+            // If it doesn't have the text OR it's a comment
+            if (!preg_match("/\b$text\b/", $record) || preg_match("/#$text/", $record)) {
+                continue;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -134,7 +140,7 @@ class AdsTxt {
     }
 
     /**
-     * Print tthe json response
+     * Print the json response
      *
      * @param array $result
      * @return void
