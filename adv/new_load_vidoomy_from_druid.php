@@ -140,11 +140,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
-			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$Date $Hour:00:00' AND  __time <= '$Date $Hour:00:00' AND Deal = '$DealID' GROUP BY __time, Deal, Country ORDER BY 1 DESC";
+			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$Date $Hour:00:00' AND  __time <= '$Date $Hour:00:00' AND Deal = '$DealID' GROUP BY __time, Country ORDER BY 3 DESC";
 			//echo $Query . "\n\n";
 			
 			$context = new \stdClass();
-			$context->sqlOuterLimit = 300;
+			$context->sqlOuterLimit = 30000;
 			
 			$payload = new \stdClass();
 			$payload->query = $Query;
@@ -162,49 +162,67 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//print_r($result);
 			
 			if(array_key_exists(1, $result)){
+				foreach($result as $kres => $res){
+					if($kres >= 1){
+						
+						//print_r($res);
+				
+						$Time = $res[0];
+						$Country = $res[1];
+						$Requests = $res[2];
+						$Bids = $res[3];
+						$Complete25 = $res[4];
+						$Complete50 = $res[5];
+						$Complete75 = $res[6];
+						$CompleteV = $res[7];
+						$Impressions = $res[8];
+						$VImpressions = $res[9];
+						$Clicks = $res[10];
+						//$Money = $result[1][10];
+						
+						if($Impressions > 0 && $CPM > 0){
+							$Revenue = $Impressions * $CPM / 1000;
+						}elseif($CompleteV > 0 && $CPV > 0){
+							$Revenue = $CompleteV * $CPV;
+						}else{
+							$Revenue = 0;
+						}
+						
+						if($RebatePercent > 0 && $Revenue > 0){
+							$Rebate = $Revenue * $RebatePercent / 100;
+						}else{
+							$Rebate = 0;
+						}
+						
+						$sql = "SELECT id FROM country WHERE iso = '$Country' LIMIT 1";
+						$idCountry = $db->getOne($sql);
+						
+						$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour' AND DemangTagId = '' LIMIT 1";
+						$idStat = $db->getOne($sql);
+						
+						
+						
+						$CompleteVPerc = 0;
 			
-				$Time = $result[1][0];
-				$Country = $result[1][1];
-				$Requests = $result[1][2];
-				$Bids = $result[1][3];
-				$Complete25 = $result[1][4];
-				$Complete50 = $result[1][5];
-				$Complete75 = $result[1][6];
-				$CompleteV = $result[1][7];
-				$Impressions = $result[1][8];
-				$VImpressions = $result[1][9];
-				$Clicks = $result[1][10];
-				//$Money = $result[1][10];
-				
-				if($Impressions > 0 && $CPM > 0){
-					$Revenue = $Impressions * $CPM / 1000;
-				}elseif($CompleteV > 0 && $CPV > 0){
-					$Revenue = $CompleteV * $CPV;
-				}else{
-					$Revenue = 0;
-				}
-				
-				if($RebatePercent > 0 && $Revenue > 0){
-					$Rebate = $Revenue * $RebatePercent / 100;
-				}else{
-					$Rebate = 0;
-				}
-				
-				$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND Date = '$Date' AND Hour = '$Hour' AND DemangTagId = '' LIMIT 1";
-				$idStat = $db->getOne($sql);
-				
-				$sql = "SELECT id FROM country WHERE iso = '$Country' LIMIT 1";
-				$idCountry = $db->getOne($sql);
-				
-				$CompleteVPerc = 0;
-	
-				
-				if(intval($idStat) == 0){
-					$sql = "INSERT INTO reports
-					(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, DemangTagId) 
-					VALUES (7, $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', '')";
-					$db->query($sql);
-					//echo $sql . "\n";	
+						
+						if(intval($idStat) == 0){
+							$sql = "INSERT INTO reports
+							(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, DemangTagId) 
+							VALUES (7, $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', '')";
+							$db->query($sql);
+							//echo $sql . "\n";	
+						}else{
+		
+							$sql = "UPDATE reports SET 
+								Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue',
+								VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', 
+								Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
+								WHERE id = $idStat LIMIT 1";
+							//exit(0);
+							$db->query($sql);
+							//echo $sql . "\n";	
+						}
+					}
 				}
 			}
 		}

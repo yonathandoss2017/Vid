@@ -76,26 +76,40 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Country'
 		),
 		'sales_vp' => array(
-			'Name'	=>	"vp.nick AS SalesVP",
-			'SearchName'	=>	"vp.id",
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
+				'manager'         => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
+				'manager_head'    => "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'country_manager' => "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
+				'vp' 	          => "LEFT JOIN user as vp ON vp.id = country_manager.manager_id ",
 			),
 			'GroupBy'		=>	"SalesVP",
 			'OrderVal'		=>	"SalesVP",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'VP'
 		),
+		'sales_country_manager' => array(
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.id when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.id else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.id, country_manager.id) end",
+			'InnerJoin'		=> 	array(
+				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'country_manager' 	=> "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
+			),
+			'GroupBy'		=>	"SalesCountryManager",
+			'OrderVal'		=>	"SalesCountryManager",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Sales Country Manager'
+		),
 		'sales_manager_head' => array(
-			'Name'	=>	"manager_head.nick AS SalesManagerHead",
-			'SearchName'	=>	"manager_head.id",
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.id else manager_head.id end",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
 			'GroupBy'		=>	"SalesManagerHead",

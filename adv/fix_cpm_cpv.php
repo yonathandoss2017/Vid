@@ -44,9 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date1 = '2021-06-01';
-	$Date2 = '2021-06-01';
-	$idCampaing = 2546;
+	$Date1 = '2021-05-07';
+	$Date2 = '2021-05-11';
+	$idCampaing = 2606;
 	
 	/*
 	$date2 = new DateTime($Date1);
@@ -58,6 +58,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$ActiveDeals = array();
 	$CampaingData = array();
 	
+	/*
 	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:PT_vtr:70_va:80_MaxColchon_Familia_137.500_30Jun";
 	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Todos_225.000_30Jun";
 	$CampNames[] = "JRU_MediterraneaDeMedios_ES_All_CPV_USD:0.012_EUR:0.01_GeoIP:ES_vtr:70_va:80_MaxColchon_Pareja_225.000_30Jun";	
@@ -80,10 +81,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 		$MultiCamp .= " $Orr id = $idCampaing ";
 		$Orr = " OR ";
 	}
+	*/
 		
-	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id = $idCampaing";
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id = $idCampaing";
 	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND (deal_id = '1053196' OR deal_id = '1053199' OR deal_id = '1053198' OR deal_id = '1053197' OR deal_id = '1053200' OR deal_id = '1053203' OR deal_id = '1053202' OR deal_id = '1053201' OR deal_id = '1053204' OR deal_id = '1053207' OR deal_id = '1053206' OR deal_id = '1053205')";
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND ($MultiCamp)";
+	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND ($MultiCamp)";
 	$query = $db2->query($sql);
 	if($db2->num_rows($query) > 0){
 		while($Camp = $db2->fetch_array($query)){
@@ -231,6 +233,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//
 			echo $sql . "\n";
 			
-			//$db->query($sql);
+			$db->query($sql);
 		}
 	}

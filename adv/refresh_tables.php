@@ -63,8 +63,9 @@
 			$last_name = $U['last_name'];
 			$status = $U['status'];
 			$nick = $U['nick'];
+			$roles = $U['roles'];
 			
-			$sql = "UPDATE user SET manager_id = '$manager_id', name = '$name', last_name = '$last_name', status = '$status', nick = '$nick' WHERE id = '$idU' LIMIT 1";
+			$sql = "UPDATE user SET manager_id = '$manager_id', name = '$name', last_name = '$last_name', status = '$status', nick = '$nick', roles = '$roles' WHERE id = '$idU' LIMIT 1";
 			$db->query($sql);
 		}
 	}
@@ -195,6 +196,10 @@
 			$rebate = $S['rebate'];
 			$status = $S['status'];
 			$created_at = $S['created_at'];
+			
+			if(intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9){
+				$dsp_id = 11;
+			}
 			
 			$deleted = $S['deleted'];
 			

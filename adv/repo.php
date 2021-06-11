@@ -611,7 +611,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
 		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter ";
 		
 		/*

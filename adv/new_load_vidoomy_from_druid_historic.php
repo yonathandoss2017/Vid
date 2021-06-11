@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	$Date = date('Y-m-d', time() - (3600 * 1));
-	$Date = '2021-05-26';
+	$Date = '2021-05-20';
 	$Hour = date('H', time() - (3600 * 1));
 	//$Hour = '6';
 	//$Hour = 23;
@@ -74,7 +74,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		id = 2035 OR id = 2251 OR id = 2208 OR id = 2510 OR id = 2511 OR id = 2594 OR id >= 2596 
 	)";*/
 	
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2796 ";
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2813 ";
 
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
@@ -143,7 +143,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
-			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1 WHERE __time >= '$Date $Hour1:00:00' AND  __time <= '$Date $Hour2:00:00' AND Deal = '$DealID' GROUP BY __time, Deal, Country ORDER BY 1 DESC";
+			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1 WHERE __time >= '$Date $Hour1:00:00' AND  __time <= '$Date $Hour2:00:00' AND Deal = '$DealID' GROUP BY __time, Country ORDER BY 3 DESC";
 			//echo $Query . "\n\n";
 			//exit(0);
 			
@@ -201,14 +201,13 @@ function calcPercents($Perc , $Impressions, $Complete){
 							$Rebate = 0;
 						}
 						
-						$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND Date = '$Date' AND Hour = '$Hour' AND DemangTagId = '' LIMIT 1";
-						$idStat = $db->getOne($sql);
-						
 						$sql = "SELECT id FROM country WHERE iso = '$Country' LIMIT 1";
 						$idCountry = $db->getOne($sql);
 						
-						$CompleteVPerc = 0;
-			
+						$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour' AND DemangTagId = '' LIMIT 1";
+						$idStat = $db->getOne($sql);
+						
+						$CompleteVPerc = 0;			
 						
 						if(intval($idStat) == 0){
 							$sql = "INSERT INTO reports
