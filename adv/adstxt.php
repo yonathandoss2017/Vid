@@ -63,12 +63,30 @@ class AdsTxt {
      * @return boolean
      */
     private function contentHasText(string $content, string $text): bool {
+        $content = $this->cleanRecord($content);
+        $text = $this->cleanRecord($text);
+
         // If it doesn't have the text OR it's a comment
         if (!preg_match("/\b$text\b/", $content) || preg_match("/\#$text/", $content)) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Receives a text string, then:
+     * removes whitespace, sets the case to lowercase,
+     * and trims a trailing comma if present
+     *
+     * @param string $text
+     * @return string
+     */
+    private function cleanRecord(string $text): string {
+        $text = strtolower($text);
+        $text = preg_replace('/\s+/', '', $text);
+
+        return rtrim($text, ',');
     }
 
     /**
