@@ -1,0 +1,24 @@
+version: "3.2"
+services:
+  php:
+    build: '.platform/php/'
+    networks:
+      - backend
+    volumes:
+      - ./:/var/www/html/
+      - ./platform/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+  apache:
+    build: '.platform/apache/'
+    depends_on:
+      - php
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html/
+networks:
+  frontend:
+  backend:
+
