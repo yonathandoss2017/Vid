@@ -1,5 +1,20 @@
-adv/ODS-PHP-API-Client
+reports_/adv/ODS-PHP-API-Client
 
-adv/cookie_xandr
-adv/xandr.csv
-.history/
+reports_/adv/cookie_xandr
+reports_/adv/xandr.csv
+reports_/.history/
+
+admin/lkqdimport/adsfile2.zip
+admin/lkqdimport/adsfile.zip
+admin/lkqdimport/json
+admin/lkqdimport/log
+admin/lkqdimport/demos_log
+admin/lkqdimport/cookie.txt
+admin/lkqdimport/cookie2.txt
+admin/lkqdimport/cookie3.txt
+admin/lkqdimport/cookie4.txt
+admin/lkqdimport/cookie5.txt
+
+updates/PhpSpreadsheet-master
+
+worldcitiespop.txt

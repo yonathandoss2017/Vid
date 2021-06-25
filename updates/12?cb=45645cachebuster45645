@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+   <Ad id="VPAID">
+      <InLine>
+         <AdSystem>Vidoomy Vpaid</AdSystem>
+         <AdTitle>Vidoomy Vpaid</AdTitle>
+         <Creatives>
+            <Creative sequence="1">
+               <Linear>
+                  <Duration>00:00:30</Duration>
+                 <AdParameters><![CDATA[{"ip":"3.129.250.65", "c":"US", "la":"39.9625", "lo":"-83.0061", "w": 0, "h": 0, "schain":"", "gdpr":false, "gdprcs":"", "zid":12, "sspid":1, "pid":53575}]]></AdParameters>
+                  <MediaFiles>
+                     <MediaFile delivery="progressive" width="640" height="480" apiFramework="VPAID" type="application/javascript"><![CDATA[https://vpaid.vidoomy.com/vast-adapter/vpaid.js]]></MediaFile>
+                  </MediaFiles>
+               </Linear>
+            </Creative>
+         </Creatives>
+      </InLine>
+   </Ad>
+</VAST>

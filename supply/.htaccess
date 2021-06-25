@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule "source$" "/supply/source.php"
+RewriteRule "source_update$" "/supply/source_update.php"
+RewriteRule "partner$" "/supply/partner.php"

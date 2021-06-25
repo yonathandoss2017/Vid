@@ -1,0 +1,190 @@
+<?php
+function my_clean($string, $html=FALSE) {
+    $string=(get_magic_quotes_gpc()==0) ? addslashes($string) : $string;
+    $string=trim($string);
+	$string=($html==TRUE) ? $string : htmlspecialchars($string);
+	return $string;
+}
+function convertirModRewrite($texto){
+	$url = strtolower($texto);
+	$url = str_replace("á","a",$url);
+	$url = str_replace("é","e",$url);
+	$url = str_replace("í","i",$url);
+	$url = str_replace("ó","o",$url);
+	$url = str_replace("ú","u",$url);
+	$url = str_replace("ñ","n",$url);
+	$find = array(' ',
+	'&',
+	'\r\n',
+	'\n',
+	'+');
+	$url = str_replace ($find, '-', $url);
+	$find = array('/[^a-z0-9\-<>]/',
+	'/[\-]+/',
+	'/<[^>]*>/');
+	$repl = array('',
+	'-',
+	'');
+	$url = preg_replace ($find, $repl, $url); 
+	return $url;
+}
+function check($valor){
+	if($valor==1){return "checked";}
+}
+function get_ext($key) { 
+	$key=strtolower(substr(strrchr($key, "."), 1));
+	$key=str_replace("jpeg","jpg",$key);
+	return $key;
+}
+function cortarTexto($texto,$largo){
+	if(strlen($texto)>$largo){
+		$array = explode(' ',$texto);
+		$longitud = 0;
+		$texto_salida = '';
+		foreach($array as $palabra){
+			$longitud += strlen($palabra) + 1;
+			if($longitud<$largo){
+				$texto_salida .= $palabra . " ";
+			}
+		}
+		$texto = trim($texto_salida) . '...';
+	}
+	return $texto;
+}
+function check_mail($mail){
+	if ((strlen($mail) >= 6) && (substr_count($mail,"@") == 1) && (substr($mail,0,1) != "@") && (substr($mail,strlen($mail)-1,1) != "@")){
+		if (substr_count($mail,".")>= 1){
+			$term_dom = substr(strrchr ($mail, '.'),1);
+			if (strlen($term_dom)>1 && strlen($term_dom)<5 && (!strstr($term_dom,"@")) ){
+				$antes_dom = substr($mail,0,strlen($mail) - strlen($term_dom) - 1);
+				$caracter_ult = substr($antes_dom,strlen($antes_dom)-1,1);
+				if ($caracter_ult != "@" && $caracter_ult != "."){
+					return true;
+				}else{return false;}
+			}else{return false;}
+		}else{return false;}
+	}else{return false;}
+}
+function check_usuario($string) {
+	$permitidos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	for ($i=0; $i<strlen($string); $i++){
+		if (strpos($permitidos, substr($string,$i,1))===false){
+		return false;}
+	}return true;
+}
+function generaClave($longitud){
+	$password = "";
+	if(!is_numeric($longitud) || $longitud <= 0){
+		$longitud = 8;
+	}
+	if($longitud > 32){
+		$longitud = 32;
+	}
+	$caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	mt_srand(microtime() * 1000000);
+	for($i = 0; $i < $longitud; $i++){
+		$key = mt_rand(0,strlen($caracteres)-1);
+		$password = $password . $caracteres{$key};
+	}
+	return $password;
+}
+function send_mail($mail, $titulo, $body, $from = 'noresponder@tudescargadirecta.com'){
+	$headers .= "MIME-Version: 1.0\n";
+	$headers .= "Content-type: text/html;charset=ISO-8859-9\n";
+	$headers .= "FROM: $from\n";
+	if(mail($mail, $titulo, $body, $headers)){
+		return true;
+	}else{
+		return false;
+	}
+}
+function redirect($url)
+{
+    $string = '<script type="text/javascript">';
+    $string .= 'window.location = "' . $url . '"';
+    $string .= '</script>';
+
+    echo $string;
+}
+function readmonth($m){
+	$mm = intval($m);
+	$AMonth = array(
+		1 => 'January',
+		2 => 'February',
+		3 => 'March',
+		4 => 'April',
+		5 => 'May',
+		6 => 'June',
+		7 => 'July',
+		8 => 'August',
+		9 => 'September',
+		10 => 'October',
+		11 => 'November',
+		12 => 'December'
+	);
+	return $AMonth[$mm];
+}
+function correctCurrency($value, $currency = 1){
+	if($currency == 1){
+		return $value;
+	}else{
+		if($value > 0){
+			$value = $value - ($value * 20 / 100);
+		}
+		return $value;
+	}
+}
+
+function generateJS($idSite){
+	global $db;
+	
+	$sql = "SELECT * FROM " . ADS . " WHERE idSite = '$idSite' ";
+	$query = $db->query($sql);
+	if($db->num_rows($query) > 0){
+		
+		$sql = "SELECT filename FROM " . SITES . " WHERE id = '$idSite' LIMIT 1";
+		$Filename = $db->getOne($sql);
+		
+		$arFilename = explode('/',$Filename);
+		$Filename = $arFilename[3];
+		
+		$NewCode = '';
+		
+		while($Ads = $db->fetch_array($query)){
+			$Type = $Ads['Type'];
+			
+			if($Type != 5){
+				$sql = "SELECT Code FROM " . ADSCODES . " WHERE Type = '$Type' LIMIT 1";
+				$Code = $db->getOne($sql);
+				
+				$Code = str_replace('#IDLKQD',$Ads['idLKQD'],$Code);
+				$Code = str_replace('#divID',$Ads['divID'],$Code);
+				$Code = str_replace('#Width',$Ads['Width'],$Code);
+				$Code = str_replace('#Height',$Ads['Height'],$Code);
+				if($Ads['Override'] == 1){ $OverrideTF = 'true'; } else { $OverrideTF = 'false'; }
+				$Code = str_replace('#Override',$OverrideTF,$Code);
+				if($Ads['DFP'] == 1){ $DFPTF = 'true'; } else { $DFPTF = 'false'; }
+				$Code = str_replace('#DFP',$DFPTF,$Code);
+				if($Ads['SPosition'] == 1){ $SposTF = 'right'; } else { $SposTF = 'left'; }
+				$Code = str_replace('#Spos',$SposTF,$Code);
+				if($Ads['Close'] == 1){ $CloseTF = 'true'; } else { $CloseTF = 'false'; }
+				$Code = str_replace('#Close',$CloseTF,$Code);
+				if($Ads['HeightA'] == 0){
+					$Code = str_replace('#AA','',$Code);
+				} else {
+					$Code = str_replace('#AA',"\nbottomPadding: ".$Ads['HeightA'].",",$Code);
+				}
+			}else{
+				$Code = "// custome code \n\n" . $Ads['CCode'];
+			}
+			
+			$NewCode .= $Code . "\n\n";
+		}
+		//echo "../../Vidoomy/ads/$Filename";
+		$myfile = fopen("/var/www/html/ads/$Filename", "w") or die("Unable to open file!");
+		//$myfile = fopen("ads/$Filename", "w") or die("Unable to open file!");
+		fwrite($myfile, $NewCode);
+		fclose($myfile);
+	}
+}
+?>

@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^checkdspid/([^/]*)$ check_buyer_id.php?dspid=$1 [QSA]

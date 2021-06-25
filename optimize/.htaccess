@@ -1,0 +1,8 @@
+AuthType Basic
+AuthName "Vidoomy Optimize"
+AuthUserFile /var/www/html/login/optimize/.htpasswd
+Require valid-user
+
+
+Options +Indexes 
+IndexOptions +FancyIndexing

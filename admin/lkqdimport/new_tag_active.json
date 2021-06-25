@@ -1,0 +1,501 @@
+{
+   "tagId":{TAGID},
+   "dealCpm":0.1,
+   "dealCpmType":"fixed",
+   "dealId":989623,
+   "dealTier":1,
+   "dealStatus":"active",
+   "name":"{NAME}",
+   "status":"active",
+   "tagType":"lkqd-hosted",
+   "tagSource":"lkqd",
+   "caps":[
+      {
+         "eventId":16,
+         "eventName":"impression",
+         "capPeriod":"daily",
+         "timezone":"America/New_York",
+         "cap":1000
+      }
+   ],
+   "frequencyCaps":[
+
+   ],
+   "frequencyCapKey":null,
+   "frequencyCapNoUid":"allowed",
+   "environments":[
+      {
+         "id":1
+      },
+      {
+         "id":3
+      }
+   ],
+   "adType":"video",
+   "adDeliveryType":"guaranteed",
+   "targeting":{
+      "deviceOses":[
+
+      ],
+      "browserTargetingEntries":[
+
+      ],
+      "connectionTypeTargetingEntries":[
+
+      ],
+      "behavioralTargeting":{
+         "relationshipTypeBetweenProfiles":null,
+         "profiles":[
+
+         ]
+      },
+      "playerFormatTargetingEntries":[
+
+      ],
+      "geoTargetingData":null,
+      "deviceOsTargetingType":null,
+      "browserTargetingType":null,
+      "connectionTypeTargetingType":null,
+      "playerTargetingType":null,
+      "playerTargetingEntries":[
+
+      ],
+      "playerFormatTargetingType":null,
+      "lkqdAccountTargetingType":"disabled",
+      "supplyTagTargetingType":null,
+      "supplyTagTargetingEntries":[
+
+      ],
+      "viewabilityTargeting":null,
+      "volumeTargetingType":null,
+      "volumeTargeting":null,
+      "performanceTargeting":{
+         "vtr":null,
+         "ctr":null,
+         "viewabilityMeasured":null,
+         "viewabilityRate":null,
+         "lkqdEstimatedInvalid":null,
+         "moatSuspiciousBot":null,
+         "whiteOpsIvt":null,
+         "whiteOpsSivt":null,
+         "minDaysLive":null,
+         "efficiencyRate":null,
+         "moatGroupm":null,
+         "mpEfficiencyRate":null,
+         "moatVerifiedImps":null,
+         "whiteopsVerifiedImps":null,
+         "moatHumanAvoc":null,
+         "whiteopsIncompleteLoad":null,
+         "dvMonitoredImpressions":null,
+         "dvFraudRate":null
+      },
+      "customParameterTargeting":{
+         "levels":[
+            {
+               "levelNum":1,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":2,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":3,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":4,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":5,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":6,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":7,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":8,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":9,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":10,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":11,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":12,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":13,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":14,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":15,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":16,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":17,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":18,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":19,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":20,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":21,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":22,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":23,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":24,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":25,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":26,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":27,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":28,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":29,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":30,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":31,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":32,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":33,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":34,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":35,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":36,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":37,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":38,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":39,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            },
+            {
+               "levelNum":40,
+               "targetingType":null,
+               "parameters":[
+
+               ]
+            }
+         ]
+      },
+      "playerSizeTargeting":{
+         "method":"detected",
+         "allowUndetectable":1,
+         "environmentChoice":"same-for-all-environments",
+         "widthHeightSpecifications":{
+            "all":{
+               "environmentId":null,
+               "targetingType":null,
+               "relationshipType":null,
+               "targetingEntries":[
+
+               ]
+            },
+            "mobileWeb":{
+               "environmentId":1,
+               "targetingType":null,
+               "relationshipType":null,
+               "targetingEntries":[
+
+               ]
+            },
+            "mobileApp":{
+               "environmentId":2,
+               "targetingType":null,
+               "relationshipType":null,
+               "targetingEntries":[
+
+               ]
+            },
+            "desktop":{
+               "environmentId":3,
+               "targetingType":null,
+               "relationshipType":null,
+               "targetingEntries":[
+
+               ]
+            },
+            "ctv":{
+               "environmentId":4,
+               "targetingType":null,
+               "relationshipType":null,
+               "targetingEntries":[
+
+               ]
+            }
+         }
+      },
+      "eligibleWithoutAdsTxt":false,
+      "adsTxtIgnorePid":false,
+      "playInitTargeting":null
+   },
+   "adTag":null,
+   "sslAdTag":null,
+   "supportsSsl":1,
+   "requiredMacros":[
+
+   ],
+   "partnerId":null,
+   "partnerName":null,
+   "programmaticBuyerId":null,
+   "isProgrammaticBuyerPrivateDealTag":null,
+   "clickthroughUrl":{CTURL},
+   "hapticPlayerUrl":null,
+   "companionAssetClickthroughUrl":null,
+   "daypartStatus":"inactive",
+   "daypartTimezone":"America/New_York",
+   "daypartEntries":[
+
+   ],
+   "parentSiteApplicationType":"all",
+   "targetedParentSiteIds":[
+
+   ],
+   "verificationVendors":[
+
+   ],
+   "trackingPixels":[
+
+   ],
+   "timeout":"",
+   "clientSideFirstLookTimeoutMs":null,
+   "adTagRequestMethod":null,
+   "prebidFilters":{
+      "whiteOps":{
+         "environmentChoice":"default",
+         "all":false,
+         "mobileWeb":false,
+         "mobileApp":false,
+         "desktop":false,
+         "ctv":false
+      },
+      "pixalate":{
+         "environmentChoice":"disabled",
+         "all":false,
+         "mobileWeb":false,
+         "mobileApp":false,
+         "desktop":false,
+         "ctv":false
+      },
+      "brightcom":{
+         "environmentChoice":"default",
+         "all":false,
+         "mobileWeb":false,
+         "mobileApp":false,
+         "desktop":false,
+         "ctv":false
+      },
+      "doubleVerify":{
+         "environmentChoice":"default",
+         "all":false,
+         "mobileWeb":false,
+         "mobileApp":false,
+         "desktop":false,
+         "ctv":false
+      }
+   },
+   "weight":100,
+   "lkqdAccountPublishersSelected":[
+
+   ],
+   "supplyTargetingType":"open",
+   "googleImaSdkSupport":false,
+   "startTs":null,
+   "endTs":null,
+   "customFlightTimeZone":null
+}

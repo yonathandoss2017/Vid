@@ -1,0 +1,324 @@
+/* Sidebar menu
+-------------------------------------------------------------- */
+
+.navbar{
+	position:fixed;
+	width:$navbar;
+	height:100vh;
+	padding-top:$header;
+	background:$white;
+	font-size:0.875em;
+	overflow-x:hidden;
+	white-space:nowrap;
+	z-index:99;
+	transition: .2s cubic-bezier(0.59, 0.26, 0.21, 0.9);
+	padding-bottom: 50px;
+	h3{
+		padding:17px 0 16px 14px;
+	}
+	.row-user{
+		@extend %clearfix;
+		color:#1b1b1b;
+		.user-image{
+			float:left;
+			padding:15px;
+			width:100px;
+			height:100px;
+		}
+		.user-info{
+			margin-left:100px;
+		}
+		.user-name{
+			padding-top:31px;
+			font-weight:700;
+			font-size:1rem;
+			margin-bottom:6px;
+		}
+		.user-status{
+			font-size:0.9376rem;
+			&:before{
+				display:inline-block;
+				content:'';
+				width:10px;
+				height:10px;
+				border-radius:50%;
+				margin-right:4px;
+			}
+			&.online:before{
+				background:$online-green;
+			}
+		}
+	}
+}
+
+.menu {
+	& > li {
+		& > a:before {
+			content: '';
+			position: absolute;
+			width: 11px;
+			height: 7px;
+			right: 20px;
+			top: 50%;
+			background: url(../img/menu-chevron.png) no-repeat center / contain;
+			transition: .2s;
+			transform: translateY(-50%) rotate(-90deg);
+		}
+
+		&.has-sub > a:before {
+			transform: translateY(-50%);
+		}
+
+		&.active > a:before {
+			background-image: url(../img/menu-chevron2.png);
+		}
+
+		&.active.has-sub > a:before {
+			transform: translateY(-50%) rotate(180deg);
+		}
+	}
+}
+
+.menu li{
+	color:$black;
+	border-bottom:1px solid $dirty-blue;
+	&.active > a{}
+	&:hover:not(.active) > a{
+		background:$light-blue;
+		color:$bright-blue;
+	}
+	a{
+		position: relative;
+		padding:22px 0 22px 22px;
+		display:block;
+		span{
+			display:inline-block;
+			vertical-align:middle;
+		}
+	}
+	[class^="icon"]{
+		position:relative;
+		width:26px;
+		height:26px !important;
+		margin-right:7px;
+		&:before{
+			position:absolute;
+			content:'';
+			top:0;
+			left:0;
+			width:100%;
+			height:100%;
+			text-align:center;
+			background:no-repeat center / contain;
+		}
+	}
+	.icon{
+		&:before {
+			background-image:url('../img/icon.png');
+		}
+
+		&.monetization:before{
+			background-image:url('../img/menu-icons/monetization.svg');
+		}
+		&.dashboard:before{
+			background-image:url('../img/menu-icons/dashboard.svg');
+		}
+		&.websites:before{
+			background-image:url('../img/menu-icons/websites.svg');
+		}
+		&.add-website:before{
+			background-image:url('../img/menu-icons/add-websites.svg');
+		}
+		&.account:before{
+			background-image:url('../img/menu-icons/account.svg');
+		}
+		&.account-property:before{
+			background-image:url('../img/menu-icons/propiedad-cuenta.svg');
+		}
+		&.billing:before{
+			background-image:url('../img/menu-icons/billing.svg');
+		}
+		&.notifications:before{
+			background-image:url('../img/menu-icons/notifications.svg');
+		}
+		&.payments:before{
+			background-image:url('../img/menu-icons/payments.svg');
+		}
+		&.help-menu:before{
+			background-image:url('../img/menu-icons/help.svg');
+		}
+		&.comments:before{
+			background-image:url('../img/menu-icons/send-comments.svg');
+		}
+		&.politics:before{
+			background-image:url('../img/menu-icons/politics-center.svg');
+		}
+		&.user-admins:before{
+			background-image:url('../img/menu-icons/users-admin.svg');
+		}
+	}
+
+	&.active>a{
+		&>.icon {
+			&.monetization:before{
+				background-image:url('../img/menu-icons/monetization2.svg');
+			}
+			&.dashboard:before{
+				background-image:url('../img/menu-icons/dashboard2.svg');
+			}
+			&.websites:before{
+				background-image:url('../img/menu-icons/websites2.svg');
+			}
+			&.add-website:before{
+				background-image:url('../img/menu-icons/add-websites2.svg');
+			}
+			&.account:before{
+				background-image:url('../img/menu-icons/account2.svg');
+			}
+			&.account-property:before{
+				background-image:url('../img/menu-icons/propiedad-cuenta2.svg');
+			}
+			&.billing:before{
+				background-image:url('../img/menu-icons/billing2.svg');
+			}
+			&.notifications:before{
+				background-image:url('../img/menu-icons/notifications2.svg');
+			}
+			&.payments:before{
+				background-image:url('../img/menu-icons/payments2.svg');
+			}
+			&.help-menu:before{
+				background-image:url('../img/menu-icons/help2.svg');
+			}
+			&.comments:before{
+				background-image:url('../img/menu-icons/send-comments2.svg');
+			}
+			&.politics:before{
+				background-image:url('../img/menu-icons/politics-center2.svg');
+			}
+			&.user-admins:before{
+				background-image:url('../img/menu-icons/users-admin2.svg');
+			}
+		}
+	}
+}
+
+.submenu{
+	display:none;
+	.active &{
+		display:block;
+	}
+	li{
+		width:100%;
+		color:$dark-blue;
+		border-bottom:none;
+		&.active > a{
+			background:$light-blue;
+			color: $bright-blue;
+			border-right: 5px solid $bright-blue;
+		}
+		a{
+			transition: .2s ease-out;
+			padding: 12px 0 12px 53px;
+		}
+	}
+}
+
+.navbar-collapse .navbar{
+	width:$navbarCollapsed;
+	overflow:visible;
+	@media #{$tablet}{
+		width: 0;
+		overflow: hidden;
+	}
+	.row-user{
+		height:90px;
+		padding:25px 0 35px;
+		position:relative;
+		&:after{
+			position:absolute;
+			top:25%;
+			right:15%;
+			content:'';
+			width:9px;
+			height:9px;
+			border-radius:50%;
+			margin-right:4px;
+		}
+		&:after{
+			background:$online-green;
+		}
+	}
+	.user-info{
+		@extend %hidden;
+	}
+	.user-image{
+		float:none;
+		width:34px;
+		height:34px;
+		display:block;
+		margin:0 auto;
+		padding:0;
+	}
+	h3{
+		display:none;
+	}
+	li{
+		position:relative;
+		// &:hover{
+		// 	width:$navbar + $navbarCollapsed;
+		// 	&:not(.active) a{
+		// 		background-color:$white;
+		// 	}
+		// 	&.active{
+		// 		.submenu{
+		// 			@extend %visible;
+		// 			width: $navbar;
+		// 		}
+		// 	}
+		// 	span{
+		// 		@extend %visible;
+		// 	}
+		// }
+
+		a:before {
+			display: none;
+		}
+		span:not([class^="icon"]){
+			@extend %hidden;
+		}
+	}
+	[class^="icon"]{
+		margin-right:10px;
+	}
+	.submenu{
+		// @extend %hidden;
+		// margin-left:$navbarCollapsed;
+		// position:absolute;
+		// top:100%;
+		// width:$navbar;
+		// padding:10px 0;
+		&:before{
+			display:block;
+			content:'';
+			background:url('../img/caret-white@2x.png') no-repeat center / 11px 5.5px;
+			width:11px;
+			height:5.5px;
+			position:absolute;
+			top:-23px;
+			right:15px;
+			cursor:pointer;
+		}
+		li{
+			a{
+		    padding-left: 23px;
+			}
+		}
+		li:hover{
+			width:100%;
+			a{
+				background:$light-blue;
+			}
+		}
+	}
+}

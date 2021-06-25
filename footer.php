@@ -1,0 +1,16 @@
+
+		<!--<ftcn>-->
+		<footer class="ftcn">
+			<div class="ftcn-a">
+				<div class="cnt">
+					<?php /* <p>Vidoomy Media S.L. – ESB87794665 – C/ Arlaban 7, Piso 5, Pta. 51, Madrid, España (28014) - info@vidoomy.com</p> */ ?>
+					<p>Vidoomy Media S.L. – ESB87794665 – C/ Quintana 2, 2ª Planta Madrid, España (28008) - info@vidoomy.com</p>
+				</div>
+			</div>
+			<div class="ftcn-b"> 
+				<div class="cnt">
+                    <p><strong>© 2018 <span>VIDOOMY MEDIA S.L.</span> <a href="https://www.vidoomy.com/privacy-policy" target="_blank" style="color:#fff;">Política de privacidad</a></strong></p>
+				</div>
+			</div>
+		</footer>
+		<!--</ftcn>-->

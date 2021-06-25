@@ -1,0 +1,184 @@
+{
+    "name": "Pub 1234 Campaign 5678",
+    "status": "Active",
+    "paused": false,
+    "metadata": {
+        "Publisher Custom Setting #1": "Setting 1 Value",
+        "Publisher Custom Setting #2": "Setting 2 Value"
+    },
+    "priority": "1",
+    "reporting_timezone": "+0000",
+    "price_floor_currency": "USD",
+    "source": "Programmatic Direct",
+    "fixed_cpm": 4,
+    "fixed_cpm_type": "Fixed",
+    "dsp_partner_id": 1234,
+    "disable_ad_blocking": true,
+    "automated_guaranteed": true,
+    "ad_review_enabled": true,
+    "honor_channel_price_floor": true,
+    "creatives": [
+        {
+            "name": "Creative One",
+            "weight": 50,
+            "creative_id": 1,
+            "companion_banner_creative_id": 2,
+            "companion_banner_clickthrough_url": "http://domain.com/page.html",
+            "adomains": [
+                "adomain1.com",
+                "adomain2.com"
+            ],
+            "categories": [
+                101,
+                102
+            ]
+        },
+        {
+            "name": "Creative Two",
+            "weight": 50,
+            "creative_id": 1,
+            "companion_banner_creative_id": 2,
+            "companion_banner_clickthrough_url": "http://domain.com/another_page.html",
+            "adomains": [
+                "adomain1.com",
+                "adomain2.com"
+            ],
+            "categories": [
+                101,
+                102
+            ]
+        }
+    ],
+    "start_datetime": {
+        "date": "2020-12-17",
+        "time": "11:16 AM",
+        "timezone": "+0000"
+    },
+    "end_datetime": {
+        "date": "2025-12-17",
+        "time": "11:16 AM",
+        "timezone": "+0000"
+    },
+    "frequency_capping": {
+        "enabled": true,
+        "impressions": 10,
+        "period": 1,
+        "period_unit": "day"
+    },
+    "share_of_voice": {
+        "enabled": true,
+        "share": 50
+    },
+    "preferred_slot": null,
+    "pacing": {
+        "enabled": true,
+        "impressions": 100,
+        "period": "impressions per day",
+        "rate": "evenly"
+    },
+    "targeting_options": [
+        {
+            "category_id": 7,
+            "operator": "is any of",
+            "options": [
+                "132210"
+            ]
+        },
+        {
+            "category_id": 23,
+            "operator": "is any of",
+            "options": [
+                "1",
+                "3"
+            ]
+        }
+    ],
+    "third_party_beacons": [
+        {
+            "label": "beacon1",
+            "url_type": "Image",
+            "protocol": "dynamic",
+            "type": "Mute",
+            "url": "http://www.image.com"
+        },
+        {
+            "label": "beacon2",
+            "url_type": "Image",
+            "protocol": "fixed",
+            "type": "Rewind",
+            "url": "http://www.rewind.com"
+        }
+    ],
+    "dayparting": {
+        "enabled": true,
+        "timezone": "-0700",
+        "schedule": {
+            "Monday": [
+                [
+                    "10:00",
+                    "11:00"
+                ]
+            ],
+            "Tuesday": [
+                [
+                    "08:15",
+                    "09:15"
+                ],
+                [
+                    "09:30",
+                    "10:45"
+                ],
+                [
+                    "11:15",
+                    "13:15"
+                ]
+            ],
+            "Wednesday": [
+                [
+                    "08:30",
+                    "09:30"
+                ],
+                [
+                    "09:45",
+                    "11:00"
+                ]
+            ],
+            "Thursday": [],
+            "Friday": [
+                [
+                    "00:00",
+                    "00:00"
+                ]
+            ],
+            "Saturday": [
+                [
+                    "08:15",
+                    "10:15"
+                ],
+                [
+                    "11:30",
+                    "13:45"
+                ],
+                [
+                    "17:15",
+                    "19:15"
+                ]
+            ],
+            "Sunday": [
+                [
+                    "10:45",
+                    "12:00"
+                ],
+                [
+                    "20:30",
+                    "23:30"
+                ]
+            ]
+        }
+    },
+    "audience_lock": {
+        "proxy_creative_beacons": "no",
+        "id_mode": "standard",
+        "ip_privacy": "standard"
+    }
+}

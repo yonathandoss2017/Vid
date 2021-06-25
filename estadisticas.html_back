@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Vidoomy</title>
+    <meta name="description" content="Vidoomy">
+    <meta name="keywords" content="Vidoomy">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Cabin:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/fa.css">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+</head>
+<body>
+
+	<!--<all>-->
+	<div class="all">
+	
+		<!--<hdcn>-->
+		<header class="hdcn">
+			<div class="cnt a-fx">
+                                
+				<div class="logo">
+                                    <div class="on-user dropdown drp-lf hidden visible-xs">
+								<a href="#" data-toggle="dropdown">
+									<!--<img src="img/cnt/user.jpg" alt="user">-->
+									<i class="material-icons menu-hd">menu</i>
+								</a>
+								<div class="dropdown-menu">
+									<div class="bx-cn">
+										<div class="bx-hd dfl b-fx">
+											<span>Tienes 56 Avisos</span>
+										</div>
+										<div class="bx-bd">
+											<ul class="lst-dpdw">
+												<li>
+													<a href="#">Mi Cuenta <span>configura tus datos</span><i class="material-icons">settings</i></a>
+												</li>
+												<li>
+													<a href="#">Facturación <span>Realiza tus cobros</span><i class="material-icons">euro_symbol</i></a>
+												</li>
+												<li>
+													<a href="#">Estadisticas <span>Informes avanzados</span><i class="material-icons">pie_chart</i></a>
+												</li>
+												<li>
+													<a href="#">Zonas <span>Da de alta tus webs</span><i class="material-icons">create_new_folder</i></a>
+												</li>
+												<li>
+													<a href="#">Tickets <span>Historial de mensajeria</span><i class="material-icons">message</i></a>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+                                    
+                                    <a href="#"><img src="img/vidoomy-logo.png" class="mh-logo" alt="vidoomy"></a></div>
+				<nav class="mn-user a-flx1">
+					<ul class="0-fx">
+						<li class="nt-user 0-fx 0-flx1">
+                                                        <div class="mj-user dropdown drp-lf">
+								<a href="#" class="fa-envelope-o mat-email"><!--<span>Account Manager asignado <span>Marcos Cuesta</span></span>--><i class="lb-num">3</i></a>
+								<div class="dropdown-menu">
+									<div class="bx-cn">
+										<div class="bx-hd dfl 0-fx">
+											<span>Tienes 56 Avisos</span>
+											<span class="0-rt">Caracteres <small>0/400</small></span>
+										</div>
+										<div class="bx-bd">
+											<form action="#" class="bx-pd frm-sndmj">
+												<div class="frm-group">
+													<textarea cols="66" rows="6" placeholder="Escrtibe aqui tu mensaje"></textarea>
+												</div>
+												<div class="dfl b-fx">
+													<div class="frm-group b-flx1">
+														<input type="file" class="filestyle" data-input="false" data-icon="false" data-buttonName="uplfil" data-buttonText="Adjuntar archivo <span class='fa-file-pdf-o'>.pdf</span> o <span class='fa-file-picture-o'>.jpg</span>">
+													</div>
+													<div class="frm-group b-rt">
+														<button type="submit">Enviar</button>
+													</div>
+												</div>												
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="dropdown drp-lf">
+								<a href="#" class="fa-bell-o mat-bell bt-dpdw" data-toggle="dropdown"><i class="lb-num-b">3</i></a>
+								<div class="dropdown-menu">
+									<div class="bx-cn">
+										<div class="bx-hd dfl b-fx"><!-- bghd-c-->
+											<span>Tienes 56 Avisos</span>
+										</div>
+										<div class="bx-bd">
+											<ul class="lst-dpdw">
+												<li>
+													<a href="#">Marcos Cuesta <span>Pago realizado con éxito</span> <small>5 min.</small><i class="material-icons">add_alarm</i></a>
+												</li>
+												<li>
+													<a href="#">Marcos Cuesta <span>Pago realizado con éxito</span> <small>5 min.</small><i class="material-icons">add_alarm</i></a>
+												</li>
+												<li>
+													<a href="#">Marcos Cuesta <span>Pago realizado con éxito</span> <small>5 min.</small><i class="material-icons">add_alarm</i></a>
+												</li>
+												<li>
+													<a href="#">Marcos Cuesta <span>Pago realizado con éxito</span> <small>5 min.</small><i class="material-icons">add_alarm</i></a>
+												</li>
+												<li class="dpdw-f"><a href="#">Ver todos los avisos</a></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+                                                        
+						</li>
+						<li class="op-user 0-fx 0-rt hidden-xs menu-r">
+                                                    <a href="#"><i class="material-icons">settings</i><span>Mi Cuenta</span></a>
+                                                    <a href="#"><i class="material-icons">euro_symbol</i><span>Facturación</span></a>
+                                                    <a href="#"><i class="material-icons">pie_chart</i><span>Estadisticas</span></a>
+                                                    <a href="#"><i class="material-icons">create_new_folder</i><span>Zonas</span></a>
+                                                    <a href="#"><i class="material-icons">message</i><span>Tickets</span></a>
+												
+							<!--<div class="dropdown drp-lf">
+								<a href="#" class="fa-envelope-o bt-dpdw" data-toggle="dropdown"><i class="lb-num">3</i></a>
+								<div class="dropdown-menu">
+									<div class="bx-cn">
+										<div class="bx-hd dfl b-fx bghd-b">
+											<span>Acceso afiliados</span>
+										</div>
+										<div class="bx-bd">
+											<ul class="lst-dpdw">
+												<li>
+													<a href="#">Joel cabezapolla <span>Aviso administrativo</span> <small>5 min.</small><i class="fa-user"></i></a>
+												</li>
+												<li>
+													<a href="#">Respuesta Ticket <span>En respuesta a su ticket</span> <small>5 min.</small><i class="fa-envelope-o"></i></a>
+												</li>
+												<li>
+													<a href="#">Respuesta Ticket <span>En respuesta a su ticket</span> <small>5 min.</small><i class="fa-envelope-o"></i></a>
+												</li>
+												<li>
+													<a href="#">Respuesta Ticket <span>En respuesta a su ticket</span> <small>5 min.</small><i class="fa-envelope-o"></i></a>
+												</li>
+												<li class="dpdw-f"><a href="#">Ver todos los mensajes</a></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>-->
+							
+							<!--<div class="on-user dropdown drp-rt">
+								<a href="#" data-toggle="dropdown">
+									<img src="img/cnt/user.jpg" alt="user">
+									<i class="material-icons menu-hd">menu</i>
+								</a>
+								<div class="dropdown-menu">
+									<div class="bx-cn">
+										<div class="bx-hd dfl b-fx">
+											<span>Tienes 56 Avisos</span>
+										</div>
+										<div class="bx-bd">
+											<ul class="lst-dpdw">
+												<li>
+													<a href="#">Mi Cuenta <span>configura tus datos</span><i class="fa-cog"></i></a>
+												</li>
+												<li>
+													<a href="#">Facturación <span>Realiza tus cobros</span><i class="fa-euro"></i></a>
+												</li>
+												<li>
+													<a href="#">Estadisticas <span>Informes avanzados</span><i class="fa-pie-chart"></i></a>
+												</li>
+												<li>
+													<a href="#">Zonas <span>Da de alta tus webs</span><i class="fa-folder"></i></a>
+												</li>
+												<li>
+													<a href="#">Tickets <span>Historial de mensajeria</span><i class="fa-envelope-o"></i></a>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>-->
+                                                        
+                                                        
+							
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</header>
+		<!--<hdcn>-->
+		
+		<!--<bdcn>-->
+		<div class="bdcn">
+			<div class="cnt">
+				<!--<cls>-->
+				<div class="cls c-fx">
+                                        <!--<aside>-->
+					<aside class="clmc035 c-flx1">
+						<!--<Accesos Rápidos>-->
+						<!--<div class="bx-cn">
+							<div class="bx-hd dfl b-fx">
+								<div class="titl">Accesos Rápidos</div>
+							</div>
+							<div class="bx-bd">
+								<ul class="lst-acrap 0-fx ax06dx03">
+									<li><a href="#" class="fa-cog">Mi cuenta</a></li>
+									<li><a href="#" class="fa-folder">Zonas</a></li>
+									<li><a href="#" class="fa-pie-chart">Estadisticas</a></li>
+									<li><a href="#" class="fa-euro">Facturación</a></li>
+								</ul>
+							</div>
+						</div>-->
+						<!--</Accesos Rápidos>-->						
+						<!--<Cuenta de Ingresos>-->						
+						<div class="bx-cn bx-shnone">
+							<div class="bx-hd dfl b-fx"><!-- bghd-c-->
+								<div class="titl">Cuenta de Ingresos</div>
+							</div>
+							<div class="bx-bd">
+								<div class="ngrs-cn">
+									<div>
+										<div>
+											<p class="ttl-2">Hoy</p>
+											<div class="0-fx padbt-15">
+												<div class="numb-3">999<strong>,31€</strong></div>
+												<div class="cpm-txt">
+													<span>CPM Actual <strong>0,128 €</strong> <i class="fa-caret-up"></i></span>
+												</div>
+											</div>
+										</div>
+                                                                                <div class="ms-cn">
+											<div class="a-fx">
+											<div class="a-flx1 c-noflx1">
+												<p class="ttl-2">Ayer</p>
+												<div>
+													<div class="numb-2">83000<strong>,28€</strong></div>
+												</div>
+											</div>
+										</div>
+										</div>
+
+                               
+									</div>
+									<div class="cngr-ft">
+										<div>
+											<p class="ttl-3 padtop-20 padbt-15 fuc">Acumulado este mes</p>
+											<div class="numb-2 padbt-20">12350,98€ <span class="fa-chevron-circle-up mr1">+23%</span></div>
+										</div>
+									</div>
+                                                                        
+                                                                            
+                                                                        <a href="#" class="btn-hd-ref mat-record_voice_over">Ver Referidos</a>
+                                                                            
+                                                                        
+								</div>
+							</div>
+						</div>
+						<!--</Cuenta de Ingresos>-->
+					</aside>
+					<!--</aside>-->
+					<!--<main>-->
+					<main class="clmc095">
+					
+					<!--<Estadisticas Avanzadas>-->
+						<div class="bx-cn bx-shnone">
+							<div class="bx-hd dfl b-fx bghd-e">
+								<div class="titl">Últimos 10 días</div>
+								<!--<a href="#" class="btn-hd fa-group mat-record_voice_over b-rt btn-nbd">Ir a Referidos</a>-->
+                                         
+							</div>
+							<div class="bx-bd">
+								<div class="bx-pd">
+									<div class="bx-hd dfl b-fx">
+								
+										<!--<div class="titl">Herramientas</div>-->
+										
+										<!--<div class="tgs-lnk ctr a-o1">
+											<span>Clicks <strong>215</strong></span> <span>Clicks <strong>215</strong></span> <span>Clicks <strong>215</strong></span>
+										</div>-->
+									</div>
+									
+									<div>
+										<div id="choices"></div>
+										<div class="chart-toggle" style="height: 300px; width: 100%;"></div>
+										<div class="chrt-inf"><strong>Nota:</strong> Las estadisticas se actualizan cada una hora</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						<!--</Estadisticas Avanzadas>-->
+						
+						
+						
+					</main>
+					<!--<main>-->
+					
+				</div>
+				<!--</cls>-->
+				
+                                
+                                <!--<Control de Estadísticas>-->
+				<div class="bx-cn bx-shnone">
+					<div class="bx-hd dfl b-fx bghd-b">
+						<div class="titl">Control de Estadísticas</div>
+					</div>
+					<div class="bx-bd">
+						<div class="bx-pd">
+							<ul class="lst-tbs b-fx mb2">
+								<li class="active"><a href="#">Datos</a></li>
+								<li><a href="#" class="fa-street-view">Paises</a></li>
+								<!--<li><a href="#" class="fa-list-alt">Sitios</a></li>-->
+								<li><a href="#" class="fa-android">Plataformas</a></li>
+								<li><a href="#" class="fa-flag">Website</a></li>
+								<li><a href="#" class="fa-globe">Zonas</a></li>
+								<!--<li><a href="#" class="fa-mobile-phone">Compañias</a></li>-->
+								<li class="b-rt"><a href="#" class="fa-download mat-get_app">PDF</a></li>
+							</ul>						
+							<!--<table>-->
+							<div class="tbl-cn">
+								<table id="tbl-estats">
+									<thead>
+										<tr>
+											<th>Fecha</th>
+											<!--<th>Clicks</th>
+											<th>Altas</th>-->
+											<th>Impresiones</th>
+											<!--<th>% de Conversión</th>-->
+											<th>eCPM</th>
+											<th>Ganancias</th><!-- class="tx-dr"-->
+										</tr>
+									</thead>
+									<tfoot>
+										<tr>
+											<th colspan="4"><span>Totales: <!--Clicks:-->Impresiones:</span><!-- <strong>48.629</strong> <span class="txspr">·</span> <span>Altas: <strong>28</strong></span> <span class="txspr">·</span> <span>Impresiones:--> <strong>2.342.432</strong></span> <span class="txspr">·</span> <!--<span>% de Conversiones: <strong>1.19%</strong></span> <span class="txspr">·</span>--> <span>CPM: <strong>1,23€</strong></span> <span class="txspr">·</span> <span>Ganancias: <strong>231.343€</strong></span></th>
+										</tr>
+									</tfoot>
+									<tbody>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+                                                                                <tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+                                                                                <tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+                                                                                <tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+                                                                                <tr>
+											<td data-title="Fecha"> 25 de Diciembre 2017</td>
+											<!--<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>-->
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<!--<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>-->
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<!--<tr>
+											<td data-title="Fecha">25 de FEB 2015</td>
+											<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias" class="tx-dr"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha">25 de FEB 2015</td>
+											<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias" class="tx-dr"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha">25 de FEB 2015</td>
+											<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias" class="tx-dr"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>
+										<tr>
+											<td data-title="Fecha">25 de FEB 2015</td>
+											<td data-title="Clicks">2,043 <i class="fa-caret-up"></i></td>
+											<td data-title="Altas">124 <i class="fa-caret-down"></i></td>
+											<td data-title="Impresiones">1.345.432 <i class="fa-caret-up"></i></td>
+											<td data-title="% de Conversión">1.18% <i class="fa-caret-up"></i></td>
+											<td data-title="eCPM">0.141€ <i class="fa-caret-up"></i></td>
+											<td data-title="Ganancias" class="tx-dr"><strong><span>2,043€</span></strong> <i class="fa-caret-down"></i></td>
+										</tr>-->
+									</tbody>
+								</table>
+							</div>
+							<!--</table>-->
+						</div>
+						
+					</div>
+				</div>
+				<!--</Control de Estadísticas>-->
+										
+				
+			</div>
+		</div>
+		<!--</bdcn>-->
+		<!--<ftcn>-->
+		<footer class="ftcn">
+			<div class="ftcn-a">
+				<div class="cnt">
+					
+					<p>Inscrita en el Registro Mercantil de Madrid, Tomo 00000, Folio 00, Inscripción 1, Hoja M-000000, con CIF B-00000000<br> vidoomy s.l. C/ Pedro Almodovar nº 0, Local X 28006, Madrid (España). e-mail: info[at]vidoomy.com | tlf: +34 900 00 00 00</p>
+				</div>
+			</div>
+			<div class="ftcn-b">
+				<div class="cnt">
+                                        <p><strong>© 2018 <span>VIDOOMY S.L.</span> <a href="#" style="color:#fff;">Política de privacidad</a></strong></p>
+					<!--<p><strong>Tus ingresos han descendido o no sabes como empezar. <span><a href="#">¿Te podemos ayudar?</a></span> <i class="material-icons">mail_outline</i></strong></p>-->
+				</div>
+			</div>
+		</footer>
+		<!--</ftcn>-->		
+	</div>
+	<!--</all>-->
+    
+    <!-- Javascript -->
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-filestyle.js"></script>
+    
+    <!-- Grafica -->
+    <script src="js/charts/jquery.flot.min.js"></script>
+    <script src="js/charts/jquery.flot.resize.min.js"></script>
+    <script src="js/charts/charts.js"></script>
+    <script type="text/javascript">jQuery(document).ready(function () {"use strict";Charts.init();});</script>
+
+    <!-- Tables -->
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script>
+		jQuery(document).ready(function($){
+			$('#tbl-estats').dataTable({
+				"paging": false,
+				"lengthChange": false,
+				"searching": false,
+				"info":     false,
+                                "autoWidth": false,
+                                "columns": [
+                                null,
+                                { "width": "18%" },
+                                { "width": "15%" },
+                                { "width": "15%" }
+                                ]
+    		});
+		});
+    </script>
+	
+</body>
+</html>

@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+<link rel="stylesheet" href="https://use.typekit.net/bxo2shj.css">
+<link rel="stylesheet" href="js/assets/bootstrap-datepicker-1.6.4/css/bootstrap-datepicker3.standalone.min.css">
+<link rel="stylesheet" href="css/main.css">
+<script>(function(h){h.className=h.className.replace(/\bno-js\b/,'')})(document.documentElement);</script>
+<!--[if lt IE 9]>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+<![endif]-->
+</head>
+<body>
+	<!-- <div class="design design3"></div> -->
+	<div class="action-modals-wrapper">
+		<div class="action-modals success">
+			<div class="icon"></div>
+			<p>Tus cambios se han realizado correctamente</p>
+		</div>
+		<div class="action-modals error">
+			<div class="icon"></div>
+			<p>Ops, los cambios no se han guardado correctamente</p>
+		</div>
+	</div>
+	<div class="container">
+		<header>
+			<div class="row-logo">
+				<div class="logo1">
+					<a href="javascript:void(0)">
+						<img src="img/logo.png" alt="vidoomy logo">
+					</a>
+				</div>
+				<button type="button" class="burger">
+					<span class="line"></span>
+					<span class="line"></span>
+					<span class="line"></span>
+				</button>
+			</div>
+			<div class="breadcrumb">
+				<a href="/">Payments</a>
+			</div>
+			<div class="notif-bell">
+				<a href="javascript:void(0)" class="bell-trigger new"></a>
+				<div class="notifications-dropdown">
+					<p class="nd-title">Notificaciones</p>
+					<a href="javascript:void(0)" class="notif-close"></a>
+					<ul class="notifs-list">
+						<li>
+							<a href="notification-single.html" class="notif-item new">
+								<span class="title"><span class="circle red"></span>Akjnas</span>
+								<span class="time">Ayer. a las 15:45	   No leído</span>
+								<span class="body">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</span>
+							</a>
+						</li>
+						<li>
+							<a href="notification-single.html" class="notif-item">
+								<span class="title"><span class="circle"></span>Akjnas</span>
+								<span class="time">Ayer. a las 15:45	   Leído</span>
+								<span class="body">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="user dropdown">
+				<div class="user-img"></div>
+				<span>vidoomy</span>
+				<ul class="dropdown-menu">
+					<li>
+						<a href="javascript:void(0)">Cerrar sesión</a>
+					</li>
+				</ul>
+			</div>
+		</header>
+
+		<nav class="navbar">
+			<ul class="menu">
+				<li class="has-sub">
+					<a href="javascript:void(0)">
+						<span class="icon monetization"></span>
+						<span>Monetization</span>
+					</a>
+					<ul class="submenu">
+						<li>
+							<a href="index.html">
+								<span class="icon dashboard"></span>
+								<span>Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="websites.html">
+								<span class="icon websites"></span>
+								<span>Websites</span>
+							</a>
+						</li>
+						<li>
+							<a href="javascript:void(0)" class="popup-trigger">
+								<span class="icon add-website"></span>
+								<span>Add website</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li class="has-sub">
+					<a href="javascript:void(0)">
+					<span class="icon account"></span>
+						<span>Account</span>
+					</a>
+					<ul class="submenu">
+						<li>
+							<a href="account.html">
+								<span class="icon account-property"></span>
+								<span>Propiedad de cuenta</span>
+							</a>
+						</li>
+						<li>
+							<a href="user-admins.html">
+								<span class="icon user-admins"></span>
+								<span>User admins</span>
+							</a>
+						</li>
+						<li>
+							<a href="politics-center.html">
+								<span class="icon politics"></span>
+								<span>Politics center</span>
+							</a>
+						</li>
+						<li>
+							<a href="billing.html">
+								<span class="icon billing"></span>
+								<span>Billing</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="notifications.html">
+						<span class="icon notifications"></span>
+						<span>Notifications</span>
+					</a>
+				</li>
+				<li class="active">
+					<a href="payments.html">
+						<span class="icon payments"></span>
+						<span>Payments</span>
+					</a>
+				</li>
+				<li>
+					<a href="help.html">
+						<span class="icon help-menu"></span>
+						<span>Help</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" class="popup-trigger btn-comments">
+						<span class="icon comments"></span>
+						<span>Send comments</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+
+		<section class="main">
+      <h1 class="page-title">Payments</h1>
+      <p class="page-subtitle">Sed ut perspiciatis unde omnis iste natus</p>
+
+			<div class="row-featured">
+				<div class="item red quarter">
+					<p class="pretitle">Dinero pendiente de cobrar</p>
+					<h2>$12,587</h2>
+					<p class="subtitle">El pago se realiza 60 días después de finalizar el mes</p>
+					<div class="help">
+					  <p class="help-inner">Adofi asodiuao weior qpoeb utlos as</p>
+					</div>
+				</div>
+				<div class="item green quarter lighter">
+					<p class="pretitle">Tu último pago</p>
+					<h2>$15,842</h2>
+					<p class="subtitle">Realizado el 21 de ene. de 2019</p>
+					<div class="help">
+					  <p class="help-inner">Adofi asodiuao weior qpoeb utlos as</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-table">
+				<div class="panel-header">
+					<h2>Últimos pagos</h2>
+					<div class="help">
+					  <p class="help-inner right">Adofi asodiuao weior qpoeb utlos as</p>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="table-container">
+						<table>
+							<thead>
+								<tr>
+									<th scope="col" class="sortable" data-sort="int">Período de factura</th>
+									<th scope="col" class="sortable" data-sort="int">Fecha estimado de pago</th>
+									<th scope="col" class="sortable" data-sort="string">Estado del pago</th>
+									<th scope="col" class="sortable m-hidden" data-sort="int">Importe</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="bold">
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon pending"></span><span class="m-hidden">Pendiente</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+								<tr>
+									<td>01/01/2019</td>
+									<td>01/01/2019</td>
+									<td><span class="payment-icon"></span><span class="m-hidden">Pagado</span></td>
+									<td class="m-hidden">$10,584</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="popup-wrapper">
+        <div class="bg-screen"></div>
+				<div class="popup-container popup-edit">
+          <div class="popup-header">
+            <h4><span class="icon"></span>Crear sitio web</h4>
+            <a href="javascript:void(0)" class="close-btn"></a>
+          </div>
+          <div class="popup-body">
+            <div class="info">
+              <h3>A - WEB name</h3>
+              <a href="" target="_blank">www.webname.com</a>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
+            </div>
+            <hr>
+            <form>
+							<p class="check-message"></p>
+              <div class="form-field">
+                <label for="webName"><span class="required">*</span>WEB NAME</label>
+                <input type="text" id="webName" placeholder="Introduce el nombre de tu página web...">
+								<div class="help">
+								  <p class="help-inner left">Adofi asodiuao weior qpoeb utlos as</p>
+								</div>
+              </div>
+              <div class="form-field">
+                <label for="webUrl"><span class="required">*</span>URL</label>
+                <input type="text" id="webUrl" placeholder="Introduce la URL de tu página web...">
+								<div class="help">
+  <p class="help-inner left">Adofi asodiuao weior qpoeb utlos as</p>
+</div>
+              </div>
+              <div class="form-field">
+                <label for="periodicType"><span class="required">*</span>TIPO DE CONTENIDO</label>
+                <div class="field-container">
+                  <div class="radio-field">
+                    <input type="radio" name="type" value="periodic" id="periodicType" checked="checked">
+                    <label for="periodicType">Periódico</label>
+                  </div>
+                  <div class="radio-field">
+                    <input type="radio" name="type" value="onlineTv" id="onlineTvType">
+                    <label for="periodicType">TV online</label>
+                  </div>
+                  <div class="radio-field">
+                    <input type="radio" name="type" value="viral" id="viralType">
+                    <label for="periodicType">Viral</label>
+                  </div>
+                  <div class="radio-field">
+                    <input type="radio" name="type" value="games" id="gamesType">
+                    <label for="periodicType">Juegos</label>
+                  </div>
+                  <div class="radio-field">
+                    <input type="radio" name="type" value="other" id="otherType">
+                    <label for="periodicType">Otros</label>
+                  </div>
+                </div>
+              </div>
+              <p class="advice">Selecciona correctamente el contenido de tu página porque te recordamos que la publicidad depende del tipo de contenido.</p>
+              <div class="form-field">
+    						<label for="categories" class="align-middle"><span class="required">*</span>CATEGORÍAS</label>
+
+								<div id="categories-filter" class="slide-panel form">
+									<button type="button">Selecciona al menos una categoría...</button>
+									<ul class="slide-menu checkboxes" style="margin-left: -157.672px;">
+										<li class="block">
+											<input id="select-all-cats" class="select-all" type="checkbox" value="">
+											<label for="select-all-cats">Select all</label>
+										</li>
+										<li>
+											<input id="cat1" type="checkbox" value="AF" class="inputC">
+											<label for="cat1">
+												<span class="icon"></span>
+												<span title="cat1">1</span>
+											</label>
+										</li>
+										<li>
+											<input id="cat2" type="checkbox" value="AX" class="inputC">
+											<label for="cat2">
+												<span class="icon"></span>
+												<span title="cat2">2</span>
+											</label>
+										</li>
+										<li>
+											<input id="cat3" type="checkbox" value="AX" class="inputC">
+											<label for="cat3">
+												<span class="icon"></span>
+												<span title="cat3">3</span>
+											</label>
+										</li>
+									</ul>
+								</div>
+    					</div>
+							<hr>
+							<div class="form-field">
+								<div class="align-right">
+									<a href="javascript:void(0)" class="btn btn-square close-btn">Cancelar</a>
+									<a href="javascript:void(0)" class="btn btn-square flat-btn form-submit">Guardar cambios</a>
+								</div>
+							</div>
+            </form>
+          </div>
+        </div>
+				<div class="popup-container popup-comments">
+          <div class="popup-header">
+            <h4><span class="icon"></span>Enviar comentarios</h4>
+            <a href="javascript:void(0)" class="close-btn"></a>
+          </div>
+          <div class="popup-body">
+            <div class="info">
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
+            </div>
+            <form>
+							<p class="check-message"></p>
+              <div class="form-field">
+                <textarea name="comments"></textarea>
+              </div>
+							<div class="form-field">
+								<button class="btn btn-add add-img-btn">Adjuntar imagen</button>
+								<p class="image-message">Consectetur adipiscing elit, sed do eiusmod.</p>
+							</div>
+
+							<hr>
+							<div class="form-field">
+								<div class="align-right">
+									<a href="javascript:void(0)" class="btn btn-square close-btn">Cancelar</a>
+									<a href="javascript:void(0)" class="btn btn-square flat-btn form-submit">Enviar</a>
+								</div>
+							</div>
+            </form>
+          </div>
+        </div>
+			</div>
+		</section>
+
+		<footer>
+			<div class="address m-hidden">
+				<span>Vidoomy Media S.L.</span> – ESB87794665 – C/ Quintana 2, 2ª Planta Madrid, España (28008) - info@vidoomy.com
+			</div>
+			<div class="copyright">
+				© 2019 Vidoomy Media S.L.  |  <a href="#"><span>Política de privacidad</span></a>
+			</div>
+		</footer>
+	</div>
+
+<script src="js/assets/jquery-3.2.1.min.js"></script>
+<script src="js/assets/bootstrap-datepicker-1.6.4/js/bootstrap-datepicker.min.js"></script>
+<script src="js/assets/bootstrap-datepicker-1.6.4/locales/bootstrap-datepicker.es.min.js"></script>
+<!-- <script src="js/assets/Chart.bundle.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script src="js/assets/stupid-table/stupidtable.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+AuthType Basic
+AuthName "Repositorios"
+AuthUserFile /var/www/html/login/repo/.htpasswd
+Require valid-user
+
+
+Options +Indexes 
+IndexOptions +FancyIndexing
