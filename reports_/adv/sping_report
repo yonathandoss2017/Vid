@@ -1,0 +1,8 @@
+{
+    "start_date": "{Start}",
+    "end_date": "{End}",
+    "timezone": "UTC",
+    "interval": "hour",
+    "dimensions": ["demand_tag_id"],
+    "demand_tag_ids": [{IDS}]
+}

@@ -191,6 +191,7 @@ function getTodayMore1000FL($LimitForNew = 1000){
 										$mail->AddBCC('eric.raventos@vidoomy.com');
 										$mail->AddBCC('angel.burgos@vidoomy.com');
 										$mail->AddBCC('raquel.fernandez@vidoomy.com');
+										$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 										
 										
 										if(intval($SubHeadId) > 0){

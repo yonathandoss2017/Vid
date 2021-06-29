@@ -130,7 +130,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Device'
 		),
 		'product' => array(
-			'Name'	=>	"$ReportsTable.Product AS Product",
+			'Name'	=>	"CASE Product WHEN 0 THEN 'Video' WHEN 1 THEN 'Display' END AS Product",
 			'SearchName'	=>	"",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"Product",
@@ -140,7 +140,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Product'
 		),
 		'player' => array(
-			'Name'	=>	"$ReportsTable.Player AS Player",
+			'Name'	=>	"CASE Player WHEN 1 THEN 'LKQD' WHEN 2 THEN 'Vidoomy' END AS Player",
 			'SearchName'	=>	"",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"Player",

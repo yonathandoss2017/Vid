@@ -334,6 +334,13 @@
 							$FilterHTo = $arFv[1];
 							$SQLWhere .= $Or . " Hour NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
 							$ForceHourTable = true;
+						}elseif($KFilter == 'player'){
+							if($FVal == 'Vidoomy'){
+								$SQLWhere .= $Or . $KeySearch . " != 2";
+							}
+							if($FVal == 'LKQD'){
+								$SQLWhere .= $Or . $KeySearch . " != 1";
+							}
 						}else{
 							$SQLWhere .= $And . $KeySearch . " != '$FVal'";
 						}
@@ -351,6 +358,13 @@
 							$FilterHTo = $arFv[1];
 							$SQLWhere .= $Or . " Hour BETWEEN '$FilterHFrom' AND '$FilterHTo'";
 							$ForceHourTable = true;
+						}elseif($KFilter == 'player'){
+							if($FVal == 'Vidoomy'){
+								$SQLWhere .= $Or . $KeySearch . " = 2";
+							}
+							if($FVal == 'LKQD'){
+								$SQLWhere .= $Or . $KeySearch . " = 1";
+							}
 						}else{
 							$SQLWhere .= $Or . $KeySearch . " = '$FVal'";
 						}

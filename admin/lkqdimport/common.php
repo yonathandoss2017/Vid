@@ -1347,6 +1347,7 @@ function getDemandPartner($supplyPartnerName)
 		'Content-Type: application/json;charset=UTF-8',
 		'Origin: https://ui.lkqd.com',
 		'Referer: https://ui.lkqd.com/login',
+		'lkqd-api-version: 88',
 		'Sec-Fetch-Mode: cors',
 		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
 	);
@@ -1359,12 +1360,12 @@ function getDemandPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	curl_close($ch); 
+	curl_close($ch);
 
 	$data = json_decode($result, true);
 	
-	$demandPartner = array_filter($data, function ($partner) use ($demandPartnerName) {
-		return $partner["sourceName"] === $demandPartnerName;
+	$demandPartner = array_filter($data["data"], function ($partner) use ($supplyPartnerName) {
+		return $partner["sourceName"] === $supplyPartnerName;
 	});
 
 	if ($demandPartner) {
@@ -1412,7 +1413,7 @@ function getOrder(int $partnerId, string $name)
 	}
 }
 
-function newOrder(string $sourceId, string $name) {
+function newOrder(int $sourceId, string $name) {
 	global $cookie_file;
 
 	$URL = 'https://ui-api.lkqd.com/orders';
@@ -1426,7 +1427,7 @@ function newOrder(string $sourceId, string $name) {
 
 	$payloadJson = json_encode($payload);
 	
-	$Headers = array(
+	$Headers = [
 		'Accept: application/json, text/plain, */*',
 		'Content-Type: application/json;charset=UTF-8',
 		'Origin: https://ui.lkqd.com',
@@ -1434,7 +1435,7 @@ function newOrder(string $sourceId, string $name) {
 		'lkqd-api-version: 88',
 		'Sec-Fetch-Mode: cors',
 		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-	);
+	];
 	
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $URL);
@@ -1447,9 +1448,14 @@ function newOrder(string $sourceId, string $name) {
 
 	$result = curl_exec($ch);
 	curl_close($ch);
-	return $result;
 
-	return json_decode($result);
+	$data = json_decode($result);
+
+	if(!empty($data->errors)){
+		return $data->errors;
+	}
+
+	return $data->data->orderId;
 }
 
 function updateOrder(int $orderId, int $sourceId, string $name) {

@@ -14,7 +14,7 @@
 	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
-	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 15813";
+	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 16309";
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Site = $db->fetch_array($query)){

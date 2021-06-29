@@ -701,7 +701,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			    SUM(ThirdQuartiles) AS ThirdQuartiles,
 			    SUM(CompletedViews) AS CompletedViews
 		    
-		    FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 AND Player = 1
+		    FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 
 		    GROUP BY idUser, idTag, idSite, Domain, Country, Player";
 			
 			$query = $db->query($sql);
