@@ -38,30 +38,32 @@
 		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 		*/
 		$dbuser2 = "root";
-		$dbpass2 = "N6kdTJ66kFjNHByUU9tJW5V";
-		$dbhost2 = "vidoomy-integration.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-		$dbname2 = "staging";
+		$dbpass2 = "123123123";
+		$dbhost2 = "reports-db";
+		$dbname2 = "vidoomy_login";
 		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 		
 	}
 	
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-	
-	$sql = "SELECT report_key.*, user.show_only_own_stats FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
-	$query = $db2->query($sql);
-	if($db2->num_rows($query) > 0){
-		$Repo = $db2->fetch_array($query);
-		$RepId = $Repo['id'];
-		$UserId = $Repo['user_id'];
-		$SOOS = $Repo['show_only_own_stats'];
 
-		$sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
-		//$db2->query($sql);
-	}else{
-		header('HTTP/1.0 403 Forbidden');
-		echo 'Access denied';
-		exit(0);
-	}
+	if ($_POST['env'] == 'prod') {
+        $sql   = "SELECT report_key.*, user.show_only_own_stats FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
+        $query = $db2->query($sql);
+        if ($db2->num_rows($query) > 0) {
+            $Repo   = $db2->fetch_array($query);
+            $RepId  = $Repo['id'];
+            $UserId = $Repo['user_id'];
+            $SOOS   = $Repo['show_only_own_stats'];
+
+            $sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+            //$db2->query($sql);
+        } else {
+            header('HTTP/1.0 403 Forbidden');
+            echo 'Access denied';
+            exit(0);
+        }
+    }
 	
 	header('Access-Control-Allow-Origin: *');
 	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -241,7 +243,7 @@
 		$SQLGroups = "";
 		
 		if($IncludeTime){
-			
+
 			$SQLDimensions .= $TimesSQL[$RepType]['Name'];
 			$SQLDimensionsOverall .= $TimesSQL[$RepType]['Name'];
 			if($TimesSQL[$RepType]['GroupBy'] !== false){

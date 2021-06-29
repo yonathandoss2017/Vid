@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Vidoomy</title>
+    <meta name="description" content="Vidoomy">
+    <meta name="keywords" content="Vidoomy">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Cabin:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/fa.css">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <style>
+     body {
+         font-size: 17px; color: #555; line-height: 3rem; margin: 0; padding: 0;
+     }
+     .code {
+         font-family: Consolas, Arial, sans-serif;
+         font-size: 14px; padding: 5px 10px; width: max-content;
+         background-color: #dfdfdf; border: 1px solid #999;
+         border-radius: 5px;
+     }
+     .small {
+         font-size: 15px;
+         line-height: 2rem;
+     }
+     li {
+         line-height: 3.5rem;
+     }
+     p {
+         margin-bottom: 0;
+     }
+    </style>
+</head>
+<body>
+
+    <div class="d-lg-flex flex-shrink-1 fa-align-center pad-10">
+        <div class="logo"><img src="img/vidoomy-logo.png" alt="vidoomy"></div>
+        <div class="d-lg-flex flex-grow-1 pad-10">
+            <h5>VIDOOMY REPORTS SERVER (LEGACY)</h5>
+            <ul>
+                <li>Endpoint to advertisers reports: <span class="code">http://local.reports.vidoomy.com:8080/reports_/adv/repo.php</span></li>
+                <li>Endpoint to publishers reports: <span class="code">http://local.reports.vidoomy.com:8080/reports/repo.php</span></li>
+            </ul>
+            <h5>PREREQUISITES</h5>
+            <ul>
+                <li>docker</li>
+                <li>docker-compose</li>
+                <li>run: <span class="code">sudo apt install build-essential</span></li>
+            </ul>
+            <h5>INSTALLATION INSTRUCTIONS</h5>
+            <ol>
+                <li>git clone <span class="code">https://github.com/vidoomymedia/report-server.git</span></li>
+                <li><span class="code">cd report-server</span></li>
+                <li><span class="code">make init</span></li>
+                <li><span class="code">make php-shell</span></li>
+                <li><span class="code">composer install</span></li>
+                <li>ask for DB dumps
+                    <p>tables required for DB advertisers: <strong>(vidoomy_adv)</strong></p>
+                    <ul>
+                        <li class="small">agency</li>
+                        <li class="small">campaign</li>
+                        <li class="small">reports</li>
+                        <li class="small">country</li>
+                        <li class="small">users</li>
+                        <li class="small">advertiser</li>
+                        <li class="small">ssp</li>
+                        <li class="small">dsp</li>
+                    </ul>
+                    <p>tables required for DB publishers: <strong>(vidoomy_login)</strong></p>
+                    <ul>
+                        <li class="small">reports202106</li>
+                        <li class="small">reports_resume202106</li>
+                        <li class="small">supplytag</li>
+                    </ul>
+                </li>
+                <li>add to your hosts file: <span class="code">127.0.0.1 local.reports.vidoomy.com</span></li>
+                <li>
+                    <p>update your panels .env.local file with:</p>
+                    <textarea class="code" style="resize: none; width: 100%; background-color: #dfdfdf; border: 1px solid #999;" disabled>
+### Vidoomy reports server ###
+REPORTS_ENDPOINT='http://local.reports.vidoomy.com:8080/reports/repo.php'</textarea>
+                </li>
+                <li>browse: <span class="code">local.reports.vidoomy.com:8080</span></li>
+            </ol>
+            <p></p>
+        </div>
+    </div>
+
+    <script src="js/lib/jquery.js"></script>
+</body>
+</html>
