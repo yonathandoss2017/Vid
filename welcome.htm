@@ -19,17 +19,35 @@
      .code {
          font-family: Consolas, Arial, sans-serif;
          font-size: 14px; padding: 5px 10px; width: max-content;
+         font-style: normal;
          background-color: #dfdfdf; border: 1px solid #999;
          border-radius: 5px;
      }
+     .code--small {
+         font-size: 12px; padding: 3px 6px;
+     }
+     .separator {
+         display: flex;
+         background-color: #ccc;
+         width: 70%;
+         height: 1px;
+         margin: 15px auto;
+     }
+     .separator--big {
+         margin: 40px auto 100px;
+     }
+     .separator--blank {
+         background: none;
+     }
      .small {
          font-size: 15px;
-         line-height: 2rem;
+         line-height: 2.5rem;
      }
      li {
          line-height: 3.5rem;
      }
      p {
+         margin-top: 4px;
          margin-bottom: 0;
      }
     </style>
@@ -39,17 +57,24 @@
     <div class="d-lg-flex flex-shrink-1 fa-align-center pad-10">
         <div class="logo"><img src="img/vidoomy-logo.png" alt="vidoomy"></div>
         <div class="d-lg-flex flex-grow-1 pad-10">
+            <span class="separator separator--blank"></span>
             <h5>VIDOOMY REPORTS SERVER (LEGACY)</h5>
             <ul>
                 <li>Endpoint to advertisers reports: <span class="code">http://local.reports.vidoomy.com:8080/reports_/adv/repo.php</span></li>
                 <li>Endpoint to publishers reports: <span class="code">http://local.reports.vidoomy.com:8080/reports/repo.php</span></li>
+                <p class="small"><em>NOTE: <span class="code code--small">local.reports.vidoomy.com</span>
+                    is the hostname defined in your <span class="code code--small">.hosts</span> file</em></p>
+                <p class="small"><em>The port by default is set to <span class="code code--small">8080</span> but it can also be modified in
+                    <span class="code code--small">docker-composer.yml</span></em></p>
             </ul>
+            <span class="separator separator--blank"></span>
             <h5>PREREQUISITES</h5>
             <ul>
                 <li>docker</li>
                 <li>docker-compose</li>
                 <li>run: <span class="code">sudo apt install build-essential</span></li>
             </ul>
+            <span class="separator separator--blank"></span>
             <h5>INSTALLATION INSTRUCTIONS</h5>
             <ol>
                 <li>git clone <span class="code">https://github.com/vidoomymedia/report-server.git</span></li>
@@ -57,17 +82,18 @@
                 <li><span class="code">make init</span></li>
                 <li><span class="code">make php-shell</span></li>
                 <li><span class="code">composer install</span></li>
+                <li>ask for <span class="code">.env</span> file</li>
                 <li>ask for DB dumps
                     <p>tables required for DB advertisers: <strong>(vidoomy_adv)</strong></p>
                     <ul>
+                        <li class="small">advertiser</li>
                         <li class="small">agency</li>
                         <li class="small">campaign</li>
-                        <li class="small">reports</li>
                         <li class="small">country</li>
-                        <li class="small">users</li>
-                        <li class="small">advertiser</li>
-                        <li class="small">ssp</li>
                         <li class="small">dsp</li>
+                        <li class="small">reports</li>
+                        <li class="small">ssp</li>
+                        <li class="small">user</li>
                     </ul>
                     <p>tables required for DB publishers: <strong>(vidoomy_login)</strong></p>
                     <ul>
@@ -78,14 +104,20 @@
                 </li>
                 <li>add to your hosts file: <span class="code">127.0.0.1 local.reports.vidoomy.com</span></li>
                 <li>
-                    <p>update your panels .env.local file with:</p>
+                    <p>update your panels <span class="code">.env.local</span> file with:</p>
                     <textarea class="code" style="resize: none; width: 100%; background-color: #dfdfdf; border: 1px solid #999;" disabled>
 ### Vidoomy reports server ###
 REPORTS_ENDPOINT='http://local.reports.vidoomy.com:8080/reports/repo.php'</textarea>
                 </li>
-                <li>browse: <span class="code">local.reports.vidoomy.com:8080</span></li>
+                <li>browse: <span class="code">local.reports.vidoomy.com:8080</span> you should see this installation instructions</li>
             </ol>
-            <p></p>
+            <span class="separator separator--blank"></span>
+            <h5>NOTES</h5>
+            <p><span class="code">report-server/reports_/libs/common.php</span> holds the dimensions SQL code for advertisers</p>
+            <p><span class="code">report-server/reports_/libs/common5.php</span> holds the dimensions SQL code for publishers</p>
+        </div>
+        <div>
+            <span class="separator separator--big"></span>
         </div>
     </div>
 

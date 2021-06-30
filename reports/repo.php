@@ -38,16 +38,23 @@
 		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 		*/
 		$dbuser2 = "root";
-		$dbpass2 = "123123123";
-		$dbhost2 = "reports-db";
-		$dbname2 = "vidoomy_login";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-		
+        $dbpass2 = "N6kdTJ66kFjNHByUU9tJW5V";
+        $dbhost2 = "vidoomy-integration.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
+        $dbname2 = "staging";
+
+        if ($_ENV["APP_ENV"] == 'local') {
+            $dbuser2 = $_ENV["PUBLISHER_LOCAL_USER"];
+            $dbpass2 = $_ENV["PUBLISHER_LOCAL_PASSWORD"];
+            $dbhost2 = $_ENV["PUBLISHER_LOCAL_HOST"];
+            $dbname2 = $_ENV["PUBLISHER_LOCAL_DB"];
+        }
+
+        $db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	}
 	
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
 
-	if ($_POST['env'] == 'prod') {
+	if ($_ENV["APP_ENV"] != 'local') {
         $sql   = "SELECT report_key.*, user.show_only_own_stats FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
         $query = $db2->query($sql);
         if ($db2->num_rows($query) > 0) {

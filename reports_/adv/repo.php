@@ -1,7 +1,13 @@
 <?php
 	@session_start();
 	define('CONST',1);
-	require('../../config_adv.php');
+
+    if (file_exists('/var/www/html/login/config.php')) {
+        require('/var/www/html/login/config.php');
+	} else {
+        require('../../config_local.php');
+    }
+
 	require('../../db.php');
 	require('../libs/common_adv.php');
 
@@ -10,11 +16,11 @@
 
 	if(!isset($_POST['uuid']) || !isset($_POST['env'])){
 		header('HTTP/1.0 403 Forbidden');
-		echo 'Access denied';
-    	exit(0);
+		echo 'Access denieddd';
+		exit(0);
 	}
 
-	if ($_POST['env'] == 'dev' || $_POST['env'] == 'local') {
+	if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
 		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
 
 		require('config.php');
@@ -53,7 +59,7 @@
 
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
 
-	if ($_POST['env'] == 'prod') {
+    if ($_ENV["APP_ENV"] != 'local') {
         $sql   = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
         $query = $db2->query($sql);
         if ($db2->num_rows($query) > 0) {
@@ -80,7 +86,7 @@
         }
     }
 
-    if ($_POST['env'] == 'dev' || $_POST['env'] == 'local') {
+    if ($_ENV["APP_ENV"] == 'local') {
         $RolesJSON = ['ROLE_ADMIN'];
     }
 
@@ -90,6 +96,7 @@
 	//$Roles = $db->getOne($sql);
 	
 	//$RolesJSON = json_decode($Roles);
+
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
 		//echo 'ADMIN';
@@ -400,7 +407,8 @@
 				$No++;
 			}
 		}
-		$SQLGroups .= ", idSSP";
+
+		$SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
 		//print_r($Dimensions);
 		//exit(0);
 		
@@ -482,6 +490,7 @@
 			}
 		}
 	
+
 		$SQLMetrics = "";
 		$Bases = array();
 		$SQLBases = "";
