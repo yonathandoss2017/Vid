@@ -84,10 +84,26 @@
             echo 'Access denied';
             exit(0);
         }
-    }
+    } else if ($_ENV["APP_ENV"] == 'local') {
+        $dbAdvPanelLocal = new SQL($advPanelLocal['host'], $advPanelLocal['db'], $advPanelLocal['user'], $advPanelLocal['pass']);
 
-    if ($_ENV["APP_ENV"] == 'local') {
-        $RolesJSON = ['ROLE_ADMIN'];
+        $sql   = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";
+        $query = $dbAdvPanelLocal->query($sql);
+        if ($dbAdvPanelLocal->num_rows($query) > 0) {
+            $Repo   = $dbAdvPanelLocal->fetch_array($query);
+            $RepId  = $Repo['id'];
+            $UserId = $Repo['user_id'];
+
+            $RolesJSON = json_decode($Repo['URoles']);
+
+            $sql      = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
+            $UserName = $db->getOne($sql);
+            $sql      = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+            $dbAdvPanelLocal->query($sql);
+        } else {
+            header('HTTP/1.0 403 Forbidden');
+            exit(0);
+        }
     }
 
 	//$UserId = 3;
