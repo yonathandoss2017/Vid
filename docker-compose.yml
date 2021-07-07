@@ -12,7 +12,8 @@ services:
         depends_on:
             - php
         networks:
-            - panel-network
+            panel-network:
+                ipv4_address: 172.25.0.14
     php:
         container_name: reports-php
         build:
@@ -29,7 +30,8 @@ services:
             - ~/.ssh:/root/.ssh:ro
             - ~/.composer:/root/.composer
         networks:
-            - panel-network
+            panel-network:
+                ipv4_address: 172.25.0.15
     db:
         image: mysql:latest
         container_name: reports-db
@@ -45,7 +47,11 @@ services:
         volumes:
             - ./docker/mysql/data:/var/lib/mysql
         networks:
-            - panel-network
+            panel-network:
+                ipv4_address: 172.25.0.16
 networks:
     panel-network:
         external: true
+        ipam:
+            config:
+                - subnet: 172.25.0.0/16
