@@ -114,6 +114,7 @@
 	//$RolesJSON = json_decode($Roles);
 
     $ReportingViewUsers = '';
+    $UserCountries = '';
 
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
@@ -226,6 +227,21 @@
                     $PubManFilter = $PubManFilter === " AND campaign.id = 0" ? "" : $PubManFilter;
                     $andOr = $PubManFilter !== "" ? " OR" : " AND";
                     $PubManFilter .= "$andOr agency.sales_manager_id IN ($ReportingViewUsers) ";
+                }
+            }
+            if ($postDimension === 'user_countries') {
+                $predictiveDataJson = json_decode($predictiveData);
+                foreach ($predictiveDataJson->user_countries as $index => $userCountry) {
+                    if ($index > 0) {
+                        $UserCountries .= ', ';
+                    }
+                    $UserCountries .= $userCountry->id;
+                }
+
+                if ($UserCountries !== '') {
+                    $PubManFilter = $PubManFilter === " AND campaign.id = 0" ? "" : $PubManFilter;
+                    $andOr = $PubManFilter !== "" ? " OR" : " AND";
+                    $PubManFilter .= "$andOr reports.idCountry IN ($UserCountries) ";
                 }
             }
         }
@@ -420,7 +436,13 @@
 			
 			foreach($Dimensions as $DimensionName){
 
-			    $computedDimension = $DimensionName === 'reporting_view_users' ? str_replace('{{ReportingViewUsers}}', $ReportingViewUsers, $DimensionsSQL[$DimensionName]['Name']) : $DimensionsSQL[$DimensionName]['Name'];
+			    $computedDimension = $DimensionsSQL[$DimensionName]['Name'];
+			    if ($DimensionName === 'reporting_view_users') {
+                    $computedDimension = str_replace('{{ReportingViewUsers}}', $ReportingViewUsers, $DimensionsSQL[$DimensionName]['Name']);
+                }
+                if ($DimensionName === 'user_countries') {
+                    $computedDimension = str_replace('{{UserCountries}}', $UserCountries, $DimensionsSQL[$DimensionName]['Name']);
+                }
 				$SQLDimensions .= $C . $computedDimension;
 				$SQLDimensionsOverall .= $C . 'R.' . $DimensionsSQL[$DimensionName]['GroupBy'] . " AS " . $DimensionsSQL[$DimensionName]['GroupBy'];
 				
