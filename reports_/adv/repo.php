@@ -75,9 +75,9 @@
                 }
             }*/
 
-            $sql      = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
+            $sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
             $UserName = $db->getOne($sql);
-            $sql      = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+            $sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
             $db2->query($sql);
         } else {
             header('HTTP/1.0 403 Forbidden');
@@ -137,7 +137,7 @@
 	}elseif(in_array('ROLE_CAMPAIGN_VIEWER', $RolesJSON)){
 		$sql = "SELECT * FROM campaign_viewer_campaigns WHERE user_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if($db2->num_rows($queryS) > 0){
+		if($queryS && $db2->num_rows($queryS) > 0){
 			$PubManFilter = " AND (";
 			$OrC = "";
 			while($U = $db2->fetch_array($queryS)){
@@ -149,7 +149,7 @@
 		}else{
 			$PubManFilter = " AND campaign.id = 0 ";
 		}
-	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)){
+	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON) || in_array('ROLE_ACCOUNT_MANAGER_EXECUTIVE', $RolesJSON)){
 		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
 		$queryS = $db2->query($sql);
 		if($queryS && $db2->num_rows($queryS) > 0){
@@ -164,24 +164,24 @@
 		}else{
 			$PubManFilter = " AND campaign.id = 0";
 		}
-	} elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
+	} elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON) || in_array('ROLE_COUNTRY_SALES_MANAGER', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-		$sql = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$UserId' OR manager.manager_id = '$UserId'";
+		$sql = "SELECT user.id FROM user INNER JOIN user_managers AS um ON um.user_id = user.id LEFT JOIN user AS manager ON um.manager_id = manager.id LEFT JOIN user_managers AS mm ON mm.user_id = manager.id WHERE um.manager_id = '$UserId' OR mm.manager_id = '$UserId'";
 		$queryS = $db2->query($sql);
 		if ($queryS && $db2->num_rows($queryS) > 0) {
 			while($U = $db2->fetch_array($queryS)) {
 				$idS = $U['id'];
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 			}
-            $PubManFilter .= ")";
 		} else {
 			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
 		}
+        $PubManFilter .= ")";
 	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-		$sql = "SELECT user.id FROM user LEFT JOIN user AS managerHead ON user.manager_id = managerHead.id LEFT JOIN user AS countryManager ON managerHead.manager_id = countryManager.id WHERE user.manager_id = '$UserId' OR managerHead.manager_id = '$UserId' OR countryManager.manager_id = '$UserId'";
+		$sql = "SELECT user.id FROM user LEFT JOIN user_managers AS um ON um.user_id = user.id LEFT JOIN user AS managerHead ON um.manager_id = managerHead.id LEFT JOIN user_managers AS mh ON mh.user_id = managerHead.id LEFT JOIN user AS countryManager ON mh.manager_id = countryManager.id LEFT JOIN user_managers AS cm ON cm.user_id = countryManager.id WHERE um.manager_id = '$UserId' OR mh.manager_id = '$UserId' OR cm.manager_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if ($db2->num_rows($queryS) > 0) {
+		if ($queryS && $db2->num_rows($queryS) > 0) {
 			while($U = $db2->fetch_array($queryS)) {
 				$idS = $U['id'];
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
@@ -194,9 +194,9 @@
 		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
 			//echo 'HEAD';
 			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-			$sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
+			$sql = "SELECT id FROM user INNER JOIN user_managers AS um ON um.user_id = user.id WHERE um.manager_id = '$UserId'";
 			$queryS = $db2->query($sql);
-			if($db2->num_rows($queryS) > 0){
+			if($queryS && $db2->num_rows($queryS) > 0){
 				while($U = $db2->fetch_array($queryS)){
 					$idS = $U['id'];
 					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
