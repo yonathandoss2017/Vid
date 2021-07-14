@@ -3,11 +3,8 @@
 	define('CONST',1);
 	require('/var/www/html/login/config.php');
 	require('../../db.php');
-	if($_SERVER['REMOTE_ADDR'] == '81.0.37.1044'){
-		require('../libs/common_adv_deals_druid.php');
-	}else{
-		require('../libs/common_adv_deals.php');
-	}
+	require('../libs/common_adv_deals.php');
+	
 	$mem_var = new Memcached('reps');
 	$mem_var->addServer("localhost", 11211);
 
@@ -37,6 +34,14 @@
 		exit(0);
 	}
 	
+	header('Access-Control-Allow-Origin: *');
+	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+	header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+	$method = $_SERVER['REQUEST_METHOD'];
+	if($method == "OPTIONS") {
+	    die();
+	}
 	
 	mysqli_set_charset($db->link,'utf8');
 	mysqli_set_charset($db2->link,'utf8');
@@ -89,23 +94,6 @@
 	if($method == "OPTIONS") {
 	    die();
 	}
-	
-	if($_SERVER['REMOTE_ADDR'] == '81.0.37.1044'){
-		
-		
-		
-		
-		
-		
-		/*
-		  "recordsTotal": <?php echo $CntTotal; ?>,
-		  "recordsFiltered": <?php echo $CntTotal; ?>,
-		  "data": <?php echo safe_json_encode($Data); ?>,
-		  "dataT": <?php echo json_encode($DataT); ?>,
-		  "SQL": "<?php echo $SQLQuery; ?>"
-		*/
-		
-	}else{
 	
 	$Data = array();
 	$DatesOK = false;
@@ -762,8 +750,6 @@
 			
 			exit(0);
 		}
-	}
-	
 	}
 ?>{
   "draw": <?php if(isset($_POST['draw'])){ echo intval($_POST['draw']); } else { echo "0"; } ?>,

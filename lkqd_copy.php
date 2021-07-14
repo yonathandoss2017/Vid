@@ -20,7 +20,7 @@
 	$ArrayCurrency = array();
 
 	//exit(0);
-	//$Date = '2020-04-06';
+	// $Date = '2020-07-08';
 	/*
 	$dbuser2 = "root";
 	$dbpass2 = "ViDo0-PROD_2020";
