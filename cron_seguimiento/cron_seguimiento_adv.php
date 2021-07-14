@@ -261,7 +261,11 @@ function checkActiveSales($idAccM){
 					$AccomplishPorc = '100';
 				}
 				
-				$indexCurrentRevenue = round($CurrentRevenue * 1000) . $idUser;
+				$indexCurrentRevenue = round($CurrentRevenue * 100000);
+				
+				if($indexCurrentRevenue == 0){
+					$indexCurrentRevenue = $idUser;
+				}
 
 				$ArrayRowsSalesManagersRevenue[$indexCurrentRevenue] .= '<tr style="background-color: #BGC#;">
 				    <td style="font-family: sans-serif; color:black;">' . $AccMNick . '</td>
@@ -290,6 +294,10 @@ function checkActiveSales($idAccM){
 	
 	$Nc = 0 ;
 	krsort($ArrayRowsSalesManagersRevenue);
+	
+	//print_r($ArrayRowsSalesManagersRevenue);
+	//exit(0);
+	
 	foreach($ArrayRowsSalesManagersRevenue as $TdSales){
 		if($Nc % 2 == 0){
 		    $BGColor = $BGColor1;
@@ -441,7 +449,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 					
 					$ArrayRowsADVVariationsIn[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:green;">' . $Row['SalesManager'] . '</td>
@@ -475,7 +484,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 				
 					$ArrayRowsADVVariationsDe[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:red;">' . $Row['SalesManager'] . '</td>
@@ -584,7 +594,7 @@ function checkActiveSales($idAccM){
 	$UserName = 'Antonio Simarro';
 	//$UserEmail = 'marcos.cuesta@vidoomy.com';
 	$UserEmail = 'antonio.simarro@vidoomy.com';
-	//$UserEmail = 'federico.izuel@vidoomy.com';
+	//$UserEmail = 'sara.snaddon@vidoomy.com';
 	
 	$mail->addAddress($UserEmail, $UserName);
 	$mail->AddBCC('federico.izuel@vidoomy.com');

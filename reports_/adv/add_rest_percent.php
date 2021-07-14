@@ -9,7 +9,7 @@
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
 	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	exit(0);
+//	exit(0);
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 	
@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-06-19';
-	$idCampaing = 3026;
+	$Date = '2021-07-12';
+	$idCampaing = 3171;
 	
 	
 	//exit(0);
@@ -129,8 +129,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 0.85;
-			$PercCh2 = 0.85;
+			$PercCh = 0.50;
+			$PercCh2 = 0.50;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
 			$Bids = intval($Row['Bids'] * $PercCh);
@@ -190,14 +190,14 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//$Rebate = $Row['Rebate'] * $PercCh;
 			$Rebate = $RebatePer * $Revenue / 100;
 			
-			/*
+			
 			$sql = "UPDATE reports SET 
 				Clicks = '$Clicks',
 				Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions',
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
 				WHERE id = $idRow LIMIT 1";
-			*/
-			$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
+			
+			//$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
 			
 			//$sql = "UPDATE reports SET Rebate = '$Rebate' WHERE id = $idRow LIMIT 1";
 				
