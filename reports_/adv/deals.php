@@ -75,10 +75,15 @@ if (
 $deals = json_decode($_POST["deals"], true);
 
 $processedDeals = [];
+$currentDate = new DateTime("now");
 
 foreach ($deals as $deal) {
-    $dealData = getDealData($deal["dealId"], $deal["campaignName"], $deal["startDate"], $deal["endDate"]);
-    $todayDealData = getDealData($deal["dealId"], $deal["campaignName"], $deal["endDate"], $deal["endDate"]);
+    $dealEndDate = new DateTime($deal["endDate"]);
+    
+    $endDate = $dealEndDate > $currentDate ? $currentDate->format("Y-m-d") : $dealEndDate->format("Y-m-d");
+
+    $dealData = getDealData($deal["dealId"], $deal["campaignName"], $deal["startDate"], $endDate);
+    $todayDealData = getDealData($deal["dealId"], $deal["campaignName"], $deal["endDate"], $endDate);
 
     if ($dealData) {
         $data = json_decode($dealData, true);

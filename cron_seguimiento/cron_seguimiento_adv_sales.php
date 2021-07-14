@@ -260,7 +260,11 @@ function checkActiveSales($idAccM){
 					$AccomplishPorc = '100';
 				}
 				
-				$indexCurrentRevenue = round($CurrentRevenue * 1000) . $idUser;
+				$indexCurrentRevenue = round($CurrentRevenue * 100000);
+				
+				if($indexCurrentRevenue == 0){
+					$indexCurrentRevenue = $idUser;
+				}
 				
 				if(!array_key_exists($indexCurrentRevenue, $ArrayRowsSalesManagersRevenue)){
 					$ArrayRowsSalesManagersRevenue[$indexCurrentRevenue] = '';
@@ -444,7 +448,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 					
 					$ArrayRowsADVVariationsIn[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:green;">' . $Row['SalesManager'] . '</td>
@@ -478,7 +483,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 				
 					$ArrayRowsADVVariationsDe[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:red;">' . $Row['SalesManager'] . '</td>

@@ -19,7 +19,7 @@
 		
 		for($A = 1; $A <= $Alim; $A++){
 			
-			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 1";
+			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 0";
 			$Cnt = $db->getOne($sql);
 			
 			echo "Respuesta $A: $Cnt \n";
