@@ -28,8 +28,10 @@
 
 //	echo $Yesterday . ' - ' . $ThreeDaysBefore;
 
-function sendActivationNotice($Type, $idCampaing){
-	
+function sendActivationNotice($Type, $idCampaing, $Today){
+	global $db;
+	if($idCampaing != 3521){
+		
 	$dbuser3 = "root";
 	$dbpass3 = "pthFTa8Lp25xs7Frkqgkz5HRebmwVGPY";
 	//$dbhost3 = "aa4mgb1tsk2y6v.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
@@ -95,74 +97,81 @@ function sendActivationNotice($Type, $idCampaing){
 		$EmailText = str_replace('#RE#', '', $EmailText);
 	}
 	
-	$mail = new PHPMailer;
-	$mail->isSMTP();
-	$mail->SMTPDebug = 0;
-	$mail->Debugoutput = 'html';
-	
-	$mail->Host = 'smtp.gmail.com';
-	$mail->Port = 465;
-	$mail->SMTPSecure = 'ssl';
-	$mail->SMTPAuth = true;
-	$mail->Username = "notifysystem@vidoomy.net";
-	$mail->Password = "NoTyFUCK05-1";
-	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
-	
-	//$EmailSalesManager = 'federicoizuel@gmail.com';
-	$mail->addAddress($EmailSalesManager, $NameSalesManager);
-	
-	$mail->AddBCC('federico.izuel@vidoomy.com');
-	$mail->AddBCC('marcos.cuesta@vidoomy.com');
-	$mail->AddBCC('eric.raventos@vidoomy.com');
-	$mail->AddBCC('finance@vidoomy.com');
-	
-	foreach($managers as $managerEmail) {
-		$mail->AddBCC($managerEmail);
-	}
-	
-	if(intval($HeadId) > 0){
-		$sql = "SELECT email FROM user WHERE id = $HeadId LIMIT 1";
-		$EmailHead = $db3->getOne($sql);
+	if($DealName != '' && strlen($DealId) > 2){
+		$sql = "INSERT INTO sent_activation (idCampaing, Date, Type) VALUES ($idCampaing, '$Today', '$Type')";
+		$db->query($sql);
 		
-		$sql = "SELECT CONCAT(name, ' ', last_name) FROM user WHERE id = $HeadId LIMIT 1";
-		$NameHead = $db3->getOne($sql);
+		$mail = new PHPMailer;
+		$mail->isSMTP();
+		$mail->SMTPDebug = 0;
+		$mail->Debugoutput = 'html';
 		
-		//echo "Head Name: $NameHead \n";
-		//echo "Head Email: $EmailHead \n";
-		$mail->AddCC($EmailHead);
+		$mail->Host = 'smtp.gmail.com';
+		$mail->Port = 465;
+		$mail->SMTPSecure = 'ssl';
+		$mail->SMTPAuth = true;
+		$mail->Username = "notifysystem@vidoomy.net";
+		$mail->Password = "NoTyFUCK05-1";
+		$mail->CharSet = 'UTF-8';
+		$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
+		$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+		
+		//$EmailSalesManager = 'federicoizuel@gmail.com';
+		$mail->addAddress($EmailSalesManager, $NameSalesManager);
+		
+		$mail->AddBCC('federico.izuel@vidoomy.com');
+		$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
+		$mail->AddBCC('marcos.cuesta@vidoomy.com');
+		$mail->AddBCC('eric.raventos@vidoomy.com');
+		$mail->AddBCC('finance@vidoomy.com');
+		
+		foreach($managers as $managerEmail) {
+			$mail->AddBCC($managerEmail);
+		}
+		
+		if(intval($HeadId) > 0){
+			$sql = "SELECT email FROM user WHERE id = $HeadId LIMIT 1";
+			$EmailHead = $db3->getOne($sql);
+			
+			$sql = "SELECT CONCAT(name, ' ', last_name) FROM user WHERE id = $HeadId LIMIT 1";
+			$NameHead = $db3->getOne($sql);
+			
+			//echo "Head Name: $NameHead \n";
+			//echo "Head Email: $EmailHead \n";
+			$mail->AddCC($EmailHead);
+		}
+		
+		$mail->Subject = $EmailTitle;// . " (Fe de erratas)"
+		$mail->msgHTML($EmailText);
+		$mail->send();
+		
+		$mail = new PHPMailer;
+		$mail->isSMTP();
+		$mail->SMTPDebug = 0;
+		$mail->Debugoutput = 'html';
+		
+		$mail->Host = 'smtp.gmail.com';
+		$mail->Port = 465;
+		$mail->SMTPSecure = 'ssl';
+		$mail->SMTPAuth = true;
+		$mail->Username = "notifysystem@vidoomy.net";
+		$mail->Password = "NoTyFUCK05-1";
+		$mail->CharSet = 'UTF-8';
+		$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
+		$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+		
+		$mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
+	
+		if (AAL_DEAL_ID == $DealId) {
+			$mail->AddBCC('patricia.palmero@vidoomy.com', 'Patricia Palmero');
+			$mail->AddBCC('ernesto.gonzalez@vidoomy.com', 'Ernesto Gonzalez');
+		}
+		
+		$mail->Subject = $EmailTitle;
+		$mail->msgHTML(str_replace($NameSalesManager , 'Tony', $EmailText));
+		$mail->send();
+		}
 	}
-	
-	$mail->Subject = $EmailTitle;// . " (Fe de erratas)"
-	$mail->msgHTML($EmailText);
-	$mail->send();
-	
-	$mail = new PHPMailer;
-	$mail->isSMTP();
-	$mail->SMTPDebug = 0;
-	$mail->Debugoutput = 'html';
-	
-	$mail->Host = 'smtp.gmail.com';
-	$mail->Port = 465;
-	$mail->SMTPSecure = 'ssl';
-	$mail->SMTPAuth = true;
-	$mail->Username = "notifysystem@vidoomy.net";
-	$mail->Password = "NoTyFUCK05-1";
-	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
-	
-	$mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
-
-	if (AAL_DEAL_ID == $DealId) {
-		$mail->AddBCC('patricia.palmero@vidoomy.com', 'Patricia Palmero');
-		$mail->AddBCC('ernesto.gonzalez@vidoomy.com', 'Ernesto Gonzalez');
-	}
-	
-	$mail->Subject = $EmailTitle;
-	$mail->msgHTML(str_replace($NameSalesManager , 'Tony', $EmailText));
-	$mail->send();
 }
 
 	
@@ -180,10 +189,7 @@ function sendActivationNotice($Type, $idCampaing){
 			if(intval($db->getOne($sql)) == 0){
 				$sql = "SELECT COUNT(*) FROM reports WHERE Date < '$Today' AND Impressions > 0 AND idCampaing = $idCampaing";
 				if($db->getOne($sql) == 0){
-					$sql = "INSERT INTO sent_activation (idCampaing, Date, Type) VALUES ($idCampaing, '$Today', 0)";
-					$db->query($sql);
-					
-					sendActivationNotice(0, $idCampaing);
+					sendActivationNotice(0, $idCampaing, $Today);
 					//echo "sendActivationNotice(0, $idCampaing) \n";
 				}
 			}
@@ -192,10 +198,7 @@ function sendActivationNotice($Type, $idCampaing){
 			if(intval($db->getOne($sql)) == 0){
 				$sql = "SELECT COUNT(*) FROM reports WHERE Date BETWEEN '$ThreeDaysBefore' AND '$Yesterday' AND Impressions > 0 AND idCampaing = $idCampaing";
 				if($db->getOne($sql) == 0){
-					$sql = "INSERT INTO sent_activation (idCampaing, Date, Type) VALUES ($idCampaing, '$Today', 1)";
-					$db->query($sql);
-					
-					sendActivationNotice(1, $idCampaing);
+					sendActivationNotice(1, $idCampaing, $Today);
 					//echo "sendActivationNotice(1, $idCampaing) \n";
 				}
 			}

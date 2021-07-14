@@ -6,6 +6,7 @@
 	require('/var/www/html/login/config.php');
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+	$dbStaging = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
 	
 	require('/var/www/html/login/reports_/adv/config.php');
 	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
@@ -230,5 +231,14 @@
 	$result = mysqli_query($db2->link, "SELECT * FROM campaign_country");
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 		$sql = "INSERT INTO campaign_country (".implode(", ",array_keys($row)).") VALUES ('".implode("', '",array_values($row))."')";
+	    mysqli_query($db->link, $sql);
+	}
+
+	$sql = "TRUNCATE user_managers";
+	$db->query($sql);
+	
+	$result = mysqli_query($dbStaging->link, "SELECT * FROM user_managers");
+	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+		$sql = "INSERT INTO user_managers (".implode(", ",array_keys($row)).") VALUES ('".implode("', '",array_values($row))."')";
 	    mysqli_query($db->link, $sql);
 	}

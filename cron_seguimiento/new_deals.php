@@ -10,7 +10,7 @@
 	require('/var/www/html/login/constantes.php');
 	require('/var/www/html/login/db.php');
 	require('/var/www/html/login/common.lib.php');
-	
+	exit(0);
 	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 		
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);

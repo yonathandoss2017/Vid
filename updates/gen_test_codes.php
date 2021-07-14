@@ -10,7 +10,7 @@
 	require('/var/www/html/login/common.lib.php');
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 
-	$Start = 1;
+	$Start = 201;
 	$Cnt = 200;
 
 function generateRandomString($length = 10) {

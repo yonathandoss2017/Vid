@@ -61,7 +61,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2591";// 
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2646 AND id != 3457";// 
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){

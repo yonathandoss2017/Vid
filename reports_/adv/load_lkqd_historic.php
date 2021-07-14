@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 }
 
 	//$Date = date('Y-m-d', time() - (3600 * 4));
-	$Date = '2021-06-05';
+	$Date = '2021-07-13';
 	//$Hour = date('H');
 	$Hour = 23;
 	
@@ -60,7 +60,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE id = 2925"; //ssp_id = 4 AND status = 1
+	$sql = "SELECT * FROM campaign WHERE id = 2591"; //ssp_id = 4 AND status = 1
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){
@@ -257,7 +257,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 							(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
 							VALUES (4, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
 							$db->query($sql);
-							//echo $sql . "\n";
+							echo $sql . "\n";
 							
 						}else{
 							if($Type == 2){
@@ -337,7 +337,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 								WHERE id = '$idStat' LIMIT 1";
 									
 									$db->query($sql);
-									//echo $sql . "\n";
+									echo $sql . "\n";
 								}else{
 									//echo "No New I CPM $CPM \n";
 								}
@@ -358,7 +358,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 							WHERE id = '$idStat' LIMIT 1";
 								
 								$db->query($sql);
-								//echo $sql . "\n";
+								echo $sql . "\n";
 							}
 						}
 					//}
