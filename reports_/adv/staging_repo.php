@@ -1,10 +1,16 @@
 <?php	
 	@session_start();
 	define('CONST',1);
-	require('/var/www/html/login/config.php');
-	require('../../db.php');
-	require('../libs/staging_common_adv.php');
-	
+
+    if (file_exists('/var/www/html/login/config.php')) {
+        require('/var/www/html/login/config.php');
+    } else {
+        require('../../config_local.php');
+    }
+
+    require('../../db.php');
+    require('../libs/staging_common_adv.php');
+
 	$mem_var = new Memcached('reps');
 	$mem_var->addServer("localhost", 11211);
 
@@ -13,8 +19,8 @@
 		echo 'Access denieddd';
 		exit(0);
 	}
-	
-	if ($_POST['env'] == 'dev') {
+
+    if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
 		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
 
 		require('config.php');
@@ -52,38 +58,61 @@
 	mysqli_set_charset($db2->link,'utf8');
 
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-	
-	$sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
-	$query = $db2->query($sql);
-	if($db2->num_rows($query) > 0){
-		$Repo = $db2->fetch_array($query);
-		$RepId = $Repo['id'];
-		$UserId = $Repo['user_id'];
-		//$SOOS = $Repo['show_only_own_stats'];
-		$RolesJSON = json_decode($Repo['URoles']);
-		
-		/*if(is_array($Roles)){
-			if(in_array('ROLE_ADVERTISER', $Roles)){
-				$AdvRepo = true;
-			}
-		}*/
-		
-		$sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
-		$UserName = $db->getOne($sql);
-		$sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
-		$db2->query($sql);
-	}else{
-		header('HTTP/1.0 403 Forbidden');
-		echo 'Access denied';
-		exit(0);
-	}
-	//$UserId = 3;
-	
-	//$sql = "SELECT roles FROM user WHERE id = $UserId LIMIT 1";
-	//$Roles = $db->getOne($sql);
-	
-	//$RolesJSON = json_decode($Roles);
-	
+
+    if ($_ENV["APP_ENV"] != 'local') {
+        $sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
+        $query = $db2->query($sql);
+        if($db2->num_rows($query) > 0){
+            $Repo = $db2->fetch_array($query);
+            $RepId = $Repo['id'];
+            $UserId = $Repo['user_id'];
+            //$SOOS = $Repo['show_only_own_stats'];
+            $RolesJSON = json_decode($Repo['URoles']);
+
+            /*if(is_array($Roles)){
+                if(in_array('ROLE_ADVERTISER', $Roles)){
+                    $AdvRepo = true;
+                }
+            }*/
+
+            $sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
+            $UserName = $db->getOne($sql);
+            $sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+            $db2->query($sql);
+        }else{
+            header('HTTP/1.0 403 Forbidden');
+            echo 'Access denied';
+            exit(0);
+        }
+    } else if ($_ENV["APP_ENV"] == 'local') {
+        $dbAdvPanelLocal = new SQL($advPanelLocal['host'], $advPanelLocal['db'], $advPanelLocal['user'], $advPanelLocal['pass']);
+
+        $sql   = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";
+        $query = $dbAdvPanelLocal->query($sql);
+        if ($dbAdvPanelLocal->num_rows($query) > 0) {
+            $Repo   = $dbAdvPanelLocal->fetch_array($query);
+            $RepId  = $Repo['id'];
+            $UserId = $Repo['user_id'];
+
+            $RolesJSON = json_decode($Repo['URoles']);
+
+            $sql      = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
+            $UserName = $db->getOne($sql);
+            $sql      = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+            $dbAdvPanelLocal->query($sql);
+        } else {
+            header('HTTP/1.0 403 Forbidden');
+            exit(0);
+        }
+    }
+
+    //$UserId = 3;
+
+    //$sql = "SELECT roles FROM user WHERE id = $UserId LIMIT 1";
+    //$Roles = $db->getOne($sql);
+
+    //$RolesJSON = json_decode($Roles);
+
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
 		//echo 'ADMIN';
@@ -106,7 +135,7 @@
 	}elseif(in_array('ROLE_CAMPAIGN_VIEWER', $RolesJSON)){
 		$sql = "SELECT * FROM campaign_viewer_campaigns WHERE user_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if($db2->num_rows($queryS) > 0){
+		if($queryS && $db2->num_rows($queryS) > 0){
 			$PubManFilter = " AND (";
 			$OrC = "";
 			while($U = $db2->fetch_array($queryS)){
@@ -121,7 +150,7 @@
 	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON) || in_array('ROLE_ACCOUNT_MANAGER_EXECUTIVE', $RolesJSON)){
 		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if($db2->num_rows($queryS) > 0){
+		if($queryS && $db2->num_rows($queryS) > 0){
 			$PubManFilter = " AND (";
 			$OrC = "";
 			while($U = $db2->fetch_array($queryS)){
@@ -137,7 +166,7 @@
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 		$sql = "SELECT user.id FROM user INNER JOIN user_managers AS um ON um.user_id = user.id LEFT JOIN user AS manager ON um.manager_id = manager.id LEFT JOIN user_managers AS mm ON mm.user_id = manager.id WHERE um.manager_id = '$UserId' OR mm.manager_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if ($db2->num_rows($queryS) > 0) {
+		if ($queryS && $db2->num_rows($queryS) > 0) {
 			while($U = $db2->fetch_array($queryS)) {
 				$idS = $U['id'];
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
@@ -145,12 +174,12 @@
 		} else {
 			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
 		}
-		$PubManFilter .= ")";
-	} elseif (in_array('ROLE_SALES_VP', $RolesJSON) || in_array('ROLE_SALES_GROWTH_LEAD', $RolesJSON)) {
+        $PubManFilter .= ")";
+	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 		$sql = "SELECT user.id FROM user LEFT JOIN user_managers AS um ON um.user_id = user.id LEFT JOIN user AS managerHead ON um.manager_id = managerHead.id LEFT JOIN user_managers AS mh ON mh.user_id = managerHead.id LEFT JOIN user AS countryManager ON mh.manager_id = countryManager.id LEFT JOIN user_managers AS cm ON cm.user_id = countryManager.id WHERE um.manager_id = '$UserId' OR mh.manager_id = '$UserId' OR cm.manager_id = '$UserId'";
 		$queryS = $db2->query($sql);
-		if ($db2->num_rows($queryS) > 0) {
+		if ($queryS && $db2->num_rows($queryS) > 0) {
 			while($U = $db2->fetch_array($queryS)) {
 				$idS = $U['id'];
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
@@ -165,7 +194,7 @@
 			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 			$sql = "SELECT id FROM user INNER JOIN user_managers AS um ON um.user_id = user.id WHERE um.manager_id = '$UserId'";
 			$queryS = $db2->query($sql);
-			if($db2->num_rows($queryS) > 0){
+			if($queryS && $db2->num_rows($queryS) > 0){
 				while($U = $db2->fetch_array($queryS)){
 					$idS = $U['id'];
 					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
@@ -394,6 +423,8 @@
 				$No++;
 			}
 		}
+
+		$SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
 		//print_r($Dimensions);
 		//exit(0);
 		
@@ -650,7 +681,7 @@
 			
 			
 			$SuperQueryT = $db->query($SQLQueryT);
-			if($db->num_rows($SuperQueryT) > 0){
+			if($SuperQueryT && $db->num_rows($SuperQueryT) > 0){
 				while($Da = $db->fetch_array($SuperQueryT)){
 					if($AddDimensions){
 						foreach($Dimensions as $DimensionName){
@@ -743,7 +774,7 @@
 			$CntTotal = $db->getOne($sqlCount);
 			$TDim = 0;
 			error_log(2);
-			if($db->num_rows($SuperQuery) > 0){
+			if($SuperQuery && $db->num_rows($SuperQuery) > 0){
 				while($Da = $db->fetch_array($SuperQuery)){
 					if($IncludeTime){
 						$Data[$Nd][] = $Da[$TimeName];
