@@ -75,24 +75,9 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Country'
 		),
-		'sales_growth_lead' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(sales_growth_lead.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesGrowthLead",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(sales_growth_lead.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager'         => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head'    => "LEFT JOIN user_managers AS um ON um.user_id = manager.id LEFT JOIN user as manager_head ON manager_head.id = um.manager_id ",
-				'country_manager' => "LEFT JOIN user_managers AS mh ON mh.user_id = manager_head.id LEFT JOIN user as country_manager ON country_manager.id = mh.manager_id ",
-				'sales_growth_lead' => "LEFT JOIN user_managers AS cm ON cm.user_id = country_manager.id LEFT JOIN user as sales_growth_lead ON sales_growth_lead.id = cm.manager_id ",
-			),
-			'GroupBy'		=>	"SalesGrowthLead",
-			'OrderVal'		=>	"SalesGrowthLead",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Growth Lead'
-		),
 		'sales_vp' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'manager'         => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
@@ -106,12 +91,12 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'VP'
 		),
 		'sales_country_manager' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager_head.roles like '%ROLE_SAVES_VP%' or manager_head.roles like '%ROLE_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.id when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.id else if (manager_head.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager_head.roles like '%ROLE_SAVES_VP%' or manager_head.roles like '%ROLE_ADMIN%', manager_head.id, country_manager.id) end",
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.id when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.id else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.id, country_manager.id) end",
 			'InnerJoin'		=> 	array(
 				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "LEFT JOIN user_managers AS um ON um.user_id = manager.id LEFT JOIN user as manager_head ON manager_head.id = um.manager_id ",
-				'country_manager' 	=> "LEFT JOIN user_managers AS mh ON mh.user_id = manager_head.id LEFT JOIN user as country_manager ON country_manager.id = mh.manager_id ",
+				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'country_manager' 	=> "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
 			),
 			'GroupBy'		=>	"SalesCountryManager",
 			'OrderVal'		=>	"SalesCountryManager",
@@ -119,31 +104,18 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Sales Country Manager'
 		),
 		'sales_manager_head' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_GROWTH_LEAD%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_SALES_MANAGER%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.id else manager_head.id end",
+			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
+			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.id else manager_head.id end",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "LEFT JOIN user_managers AS um ON um.user_id = manager.id LEFT JOIN user as manager_head ON manager_head.id = um.manager_id ",
+				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
 			'GroupBy'		=>	"SalesManagerHead",
 			'OrderVal'		=>	"SalesManagerHead",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Sales Manager Head'
-		),
-		'sales_manager_executive' => array(
-			'Name'	=>	"user.nick AS SalesManagerExecutive",
-			'SearchName'	=>	"user.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
-				//'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
-			),
-			'GroupBy'		=>	"SalesManagerExecutive",
-			'OrderVal'		=>	"SalesManagerExecutive",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Manager Executive'
 		),
 		'sales_manager' => array(
 			'Name'	=>	"user.nick AS SalesManager",
