@@ -424,7 +424,6 @@
 			}
 		}
 
-		$SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
 		//print_r($Dimensions);
 		//exit(0);
 		
