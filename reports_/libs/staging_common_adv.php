@@ -193,6 +193,15 @@ function utf8ize($mixed) {
             'InvalInner'	=> '',
             'HeadName'		=> 'Reporting View User'
         ),
+        'user_countries' => array(
+            'Name'	=>	"(case when (country.id IN({{UserCountries}})) then country.nice_name else 'N/A' end) AS UserCountry",
+            'SearchName'	=>	"country.id",
+            'InnerJoin'		=> 	array('country' => "INNER JOIN country ON country.id = reports.idCountry "),
+            'GroupBy'		=>	"UserCountry",
+            'OrderVal'		=>	"UserCountry",
+            'InvalInner'	=> '',
+            'HeadName'		=> 'User Country'
+        ),
 	);
 
 	$TimesSQL = array(
