@@ -21,3 +21,8 @@ updates/PhpSpreadsheet-master
 worldcitiespop.txt
 
 .env
+.env.local
+
+vendor
+.idea
+docker/mysql

@@ -1,10 +1,10 @@
-<?php	
+<?php
 	@session_start();
 	define('CONST',1);
 	require('/var/www/html/login/config.php');
 	require('../../db.php');
 	require('../libs/common_adv.php');
-	
+
 	$mem_var = new Memcached('reps');
 	$mem_var->addServer("localhost", 11211);
 
@@ -13,7 +13,7 @@
 		echo 'Access denieddd';
 		exit(0);
 	}
-	
+
 	if ($_POST['env'] == 'dev') {
 		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
 
@@ -52,7 +52,7 @@
 	mysqli_set_charset($db2->link,'utf8');
 
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-	
+
 	$sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
 	$query = $db2->query($sql);
 	if($db2->num_rows($query) > 0){
@@ -61,13 +61,13 @@
 		$UserId = $Repo['user_id'];
 		//$SOOS = $Repo['show_only_own_stats'];
 		$RolesJSON = json_decode($Repo['URoles']);
-		
+
 		/*if(is_array($Roles)){
 			if(in_array('ROLE_ADVERTISER', $Roles)){
 				$AdvRepo = true;
 			}
 		}*/
-		
+
 		$sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
 		$UserName = $db->getOne($sql);
 		$sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
@@ -83,7 +83,7 @@
 	//$Roles = $db->getOne($sql);
 	
 	//$RolesJSON = json_decode($Roles);
-	
+
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
 		//echo 'ADMIN';
@@ -228,7 +228,7 @@
 		$Dimensions = array();
 	}
 	$DimensionsOK = true;
-	
+
 	if(isset($_POST['reportType'])){
 		$TypeOK = true;
 		$RepType = $_POST['reportType'];
@@ -475,7 +475,7 @@
 			}
 		}
 	
-		
+
 		$SQLMetrics = "";
 		$Bases = array();
 		$SQLBases = "";

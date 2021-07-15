@@ -1,10 +1,15 @@
 <?php
 	@require_once("secure.php");
-	require_once("/var/www/html/vendor/autoload.php");
+
+    if (file_exists("/var/www/html/vendor/autoload.php")) {
+        require_once("/var/www/html/vendor/autoload.php");
+    } else {
+        require_once("../vendor/autoload.php");
+    }
 
 	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 	$dotenv->load();
-	
+
 	$dbuser = $_ENV["LOCAL_USER"];
 	$dbpass = $_ENV["LOCAL_PASSWORD"];
 	$dbhost = $_ENV["LOCAL_HOST"];
