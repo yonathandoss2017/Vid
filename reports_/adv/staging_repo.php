@@ -113,6 +113,8 @@
 
     //$RolesJSON = json_decode($Roles);
 
+    $ReportingViewUsers = '';
+
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
 		//echo 'ADMIN';
@@ -206,7 +208,29 @@
 			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
 		}
 	}
-			
+
+    if(isset($_POST['Dimensions'])){
+        $postDimensions = $_POST['Dimensions'];
+        $predictiveData = $_POST['predictiveData'];
+        foreach ($postDimensions as $postDimension) {
+            if ($postDimension === 'reporting_view_users') {
+                $predictiveDataJson = json_decode($predictiveData);
+                foreach ($predictiveDataJson->reporting_view_users as $index => $reportingViewUser) {
+                    if ($index > 0) {
+                        $ReportingViewUsers .= ', ';
+                    }
+                    $ReportingViewUsers .= $reportingViewUser->id;
+                }
+
+                if ($ReportingViewUsers !== '') {
+                    $PubManFilter = $PubManFilter === " AND campaign.id = 0" ? "" : $PubManFilter;
+                    $andOr = $PubManFilter !== "" ? " OR" : " AND";
+                    $PubManFilter .= "$andOr agency.sales_manager_id IN ($ReportingViewUsers) ";
+                }
+            }
+        }
+    }
+
 	header('Access-Control-Allow-Origin: *');
 	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -396,8 +420,9 @@
 			
 			foreach($Dimensions as $DimensionName){
 
-				$SQLDimensions .= $C . $DimensionsSQL[$DimensionName]['Name'];
-				$SQLDimensionsOverall .= $C . 'R.' . $DimensionsSQL[$DimensionName]['GroupBy'] . " AS " . $DimensionsSQL[$DimensionName]['GroupBy'];
+                $computedDimension = $DimensionName === 'reporting_view_users' ? str_replace('{{ReportingViewUsers}}', $ReportingViewUsers, $DimensionsSQL[$DimensionName]['Name']) : $DimensionsSQL[$DimensionName]['Name'];
+                $SQLDimensions .= $C . $computedDimension;
+                $SQLDimensionsOverall .= $C . 'R.' . $DimensionsSQL[$DimensionName]['GroupBy'] . " AS " . $DimensionsSQL[$DimensionName]['GroupBy'];
 				
 				if(count($DimensionsSQL[$DimensionName]['InnerJoin']) > 0){
 					foreach($DimensionsSQL[$DimensionName]['InnerJoin'] as $JoinTable => $JoinSQL){
@@ -424,7 +449,9 @@
 			}
 		}
 
-		$SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
+        if ($ReportingViewUsers === "") {
+            $SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
+        }
 		//print_r($Dimensions);
 		//exit(0);
 		
@@ -724,7 +751,8 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics , reports.SSP AS idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+        $idSSP = $ReportingViewUsers === "" ? ", reports.SSP AS idSSP" : "";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
