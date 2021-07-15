@@ -39,15 +39,6 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Deal ID'
 		),
-		'type' => array(
-			'Name'	=>	"REPLACE(REPLACE(campaign.type, '1', 'Deal'), '2', 'Campaing') AS Type",
-			'SearchName'	=>	"campaign.type",
-			'InnerJoin'		=> 	array(),
-			'GroupBy'		=>	"Type",
-			'OrderVal'		=>	"Type",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Type'
-		),
 		'agency' => array(
 			'Name'	=>	"agency.name AS Agency",
 			'SearchName'	=>	"agency.name",
@@ -76,40 +67,26 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Country'
 		),
 		'sales_vp' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
+			'Name'	=>	"vp.nick AS SalesVP",
+			'SearchName'	=>	"vp.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager'         => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head'    => "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				'country_manager' => "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
-				'vp' 	          => "LEFT JOIN user as vp ON vp.id = country_manager.manager_id ",
+				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
 			),
 			'GroupBy'		=>	"SalesVP",
 			'OrderVal'		=>	"SalesVP",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'VP'
 		),
-		'sales_country_manager' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.id when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.id else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.id, country_manager.id) end",
-			'InnerJoin'		=> 	array(
-				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				'country_manager' 	=> "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
-			),
-			'GroupBy'		=>	"SalesCountryManager",
-			'OrderVal'		=>	"SalesCountryManager",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Country Manager'
-		),
 		'sales_manager_head' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
-			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.id else manager_head.id end",
+			'Name'	=>	"manager_head.nick AS SalesManagerHead",
+			'SearchName'	=>	"manager_head.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
 			'GroupBy'		=>	"SalesManagerHead",
@@ -130,15 +107,6 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Sales Manager'
 		),
-		'ssp' => array(
-			'Name'	=> 	"ssp.name AS SSP",
-			'SearchName'	=> 	"$ReportsTable.SSP",
-			'InnerJoin'		=> 	array('ssp' => "INNER JOIN ssp ON ssp.id = $ReportsTable.SSP "),
-			'GroupBy'		=>	"SSP",
-			'OrderVal'		=>	"SSP",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'SSP'
-		),
 		'dsp' => array(
 			'Name'	=>	"dsp.name AS DSP",
 			'SearchName'	=> 	"dsp.id",
@@ -148,41 +116,23 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'DSP'
 		),
-		'purchaseOrder' => array(
-			'Name'	=>	"purchase_order.name AS PurchaseOrder",
-			'SearchName'	=>	"purchase_order.name",
-			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
-			'GroupBy'		=>	"PurchaseOrder",
-			'OrderVal'		=>	"PurchaseOrder",
+		'domain' => array(
+			'Name'	=>	"{ReportsTable}.Domain AS Domain",
+			'SearchName'	=> 	"{ReportsTable}.Domain",
+			'InnerJoin'		=> 	array(),
+			'GroupBy'		=>	"Domain",
+			'OrderVal'		=>	"Domain",
 			'InvalInner'	=> '',
-			'HeadName'		=> 'Purchase Order'
+			'HeadName'		=> 'Domain'
 		),
-		'purchaseOrder_id' => array(
-			'Name'	=>	"purchase_order.id AS PurchaseOrderId",
-			'SearchName'	=>	"purchase_order.id",
-			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
-			'GroupBy'		=>	"PurchaseOrderId",
-			'OrderVal'		=>	"PurchaseOrderId",
+		'device' => array(
+			'Name'	=>	"{ReportsTable}.Device AS Device",
+			'SearchName'	=> 	"{ReportsTable}.Device",
+			'InnerJoin'		=> 	array(),
+			'GroupBy'		=>	"Device",
+			'OrderVal'		=>	"Device",
 			'InvalInner'	=> '',
-			'HeadName'		=> 'Purchase Order ID'
-		),
-		'creativity' => array(
-			'Name'	=>	"creativity.name AS Creativity",
-			'SearchName'	=>	"creativity.name",
-			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
-			'GroupBy'		=>	"Creativity",
-			'OrderVal'		=>	"Creativity",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Creativity'
-		),
-		'creativity_id' => array(
-			'Name'	=>	"creativity.id AS Creativity",
-			'SearchName'	=>	"creativity.id",
-			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
-			'GroupBy'		=>	"Creativity",
-			'OrderVal'		=>	"Creativity",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Creativity ID'
+			'HeadName'		=> 'Device'
 		),
 	);
 
@@ -330,33 +280,6 @@ function utf8ize($mixed) {
 			'NumberF'	=>	false,
 			'HeadName'		=> 'CPM'
 		),
-		'cpv'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.CompleteV)),2) AS CPV ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.CompleteV)), 2, '$Locale') ) AS CPV ",
-			'Name'		=>	"CPV",
-			'OrderVal' 	=>	"CPV",
-			'Base' 		=>	["Revenue","CompleteV"],
-			'NumberF'	=>	false,
-			'HeadName'		=> 'CPV'
-		],
-		'cpc'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.Clicks)),2) AS CPC ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.Clicks)), 2, '$Locale') ) AS CPC ",
-			'Name'		=>	"CPC",
-			'OrderVal' 	=>	"CPC",
-			'Base' 		=>	["Revenue","Clicks"],
-			'NumberF'	=>	false,
-			'HeadName'		=> 'CPC'
-		],
-		'vcpm'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.VImpressions) * 1000),2) AS vCPM ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.VImpressions) * 1000), 2, '$Locale') ) AS vCPM ",
-			'Name'		=>	"vCPM",
-			'OrderVal' 	=>	"vCPM",
-			'Base' 		=>	["Revenue","VImpressions"],
-			'NumberF'	=>	false,
-			'HeadName'		=> 'vCPM'
-		],
 		'viewability_percent'	=> array(
 			'SQL' 		=>	", round( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2) AS ViewabilityPercent ",
 			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale') , '%') AS ViewabilityPercent ",
@@ -444,44 +367,6 @@ function utf8ize($mixed) {
 		),
 	);
 
-function isLocked($Table){
-	global $db;
-	$sql = "SELECT Status FROM lock_tables WHERE TableName = '$Table' LIMIT 1";
-	if($db->getOne($sql) == 1){
-		return true;
-	}else{
-		return false;
-	}
-}
-
-function waitUnlock($Table){
-	$Locked = isLocked($Table);
-	if($Locked){
-		while($Locked === true){
-			sleep(1);
-			$Locked = isLocked($Table);
-		}
-	}
-	return;
-}
-
-function getLiveData($Date){
-	global $db;
-
-	waitUnlock('reports');
-
-	$sql = "SELECT
-		round(SUM(Revenue), 2) AS Revenue,
-		SUM(Impressions) AS Impressions,
-		SUM(formatLoads) AS formatLoads,
-		round((SUM(Revenue) - SUM(Coste) - SUM(Extraprima)),2) AS Profit,
-		round( (SUM(Impressions) / SUM(formatLoads) * 100), 2) AS formatLoadFill
-		FROM `reports_resume201909` WHERE Date = '$Date'";
-	$query = $db->query($sql);
-	$Data = $db->fetch_array($query);
-
-	return $Data;
-}
 function checkTableExists($TableName){
 	global $db;
 
