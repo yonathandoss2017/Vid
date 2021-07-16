@@ -146,9 +146,8 @@
 				$PubManFilter .= $OrC . "campaign.id = '$idC'";
 				$OrC = " OR ";
 			}
-			$PubManFilter .= ")";
 		}else{
-			$PubManFilter = " AND campaign.id = 0 ";
+			$PubManFilter = " AND (campaign.id = 0 ";
 		}
 	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)){
 		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
@@ -161,9 +160,8 @@
 				$PubManFilter .= $OrC . "campaign.id = '$idC'";
 				$OrC = " OR ";
 			}
-			$PubManFilter .= ")";
 		}else{
-			$PubManFilter = " AND campaign.id = 0";
+			$PubManFilter = " AND (campaign.id = 0";
 		}
 	} elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
@@ -175,9 +173,8 @@
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 			}
 		} else {
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
-		$PubManFilter .= ")";
 	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 		$sql = "SELECT user.id FROM user LEFT JOIN user AS managerHead ON user.manager_id = managerHead.id LEFT JOIN user AS countryManager ON managerHead.manager_id = countryManager.id WHERE user.manager_id = '$UserId' OR managerHead.manager_id = '$UserId' OR countryManager.manager_id = '$UserId'";
@@ -188,9 +185,8 @@
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 			}
 		} else {
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
-		$PubManFilter .= ")";
 	}else{
 		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
 			//echo 'HEAD';
@@ -203,10 +199,9 @@
 					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 				}
 			}
-			$PubManFilter .= ")";
 		}else{
 			//echo 'SALES';
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
 	}
 
@@ -224,9 +219,8 @@
                 }
 
                 if ($ReportingViewUsers !== '') {
-                    $PubManFilter = $PubManFilter === " AND campaign.id = 0" ? "" : $PubManFilter;
-                    $andOr = $PubManFilter !== "" ? " OR" : " AND";
-                    $PubManFilter .= "$andOr agency.sales_manager_id IN ($ReportingViewUsers) ";
+                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
                 }
             }
             if ($postDimension === 'country_viewer') {
@@ -239,13 +233,14 @@
                 }
 
                 if ($CountryViewer !== '') {
-                    $PubManFilter = $PubManFilter === " AND campaign.id = 0" ? "" : $PubManFilter;
-                    $andOr = $PubManFilter !== "" ? " OR" : " AND";
-                    $PubManFilter .= "$andOr reports.idCountry IN ($CountryViewer) ";
+                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
                 }
             }
         }
     }
+
+    $PubManFilter .= ")";
 
 	header('Access-Control-Allow-Origin: *');
 	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -770,7 +765,11 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-        $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
+        $idSSP = "";
+        if ($ReportingViewUsers === "" && $CountryViewer === "") {
+            $idSSP = ", reports.SSP AS idSSP";
+            $SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
+        }
 		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
