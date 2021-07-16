@@ -219,7 +219,13 @@
                 }
 
                 if ($ReportingViewUsers !== '') {
-                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
                     $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
                 }
             }
@@ -233,7 +239,13 @@
                 }
 
                 if ($CountryViewer !== '') {
-                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
                     $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
                 }
             }
