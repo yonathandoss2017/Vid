@@ -765,11 +765,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-        $idSSP = "";
-        if ($ReportingViewUsers === "" && $CountryViewer === "") {
-            $idSSP = ", reports.SSP AS idSSP";
-            $SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
-        }
+        $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
 		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
