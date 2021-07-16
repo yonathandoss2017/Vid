@@ -219,7 +219,13 @@
                 }
 
                 if ($ReportingViewUsers !== '') {
-                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
                     $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
                 }
             }
@@ -233,7 +239,13 @@
                 }
 
                 if ($CountryViewer !== '') {
-                    $PubManFilter = $PubManFilter === " AND (campaign.id = 0" ? "AND (" : $PubManFilter . "OR ";
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
                     $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
                 }
             }
@@ -765,11 +777,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-        $idSSP = "";
-        if ($ReportingViewUsers === "" && $CountryViewer === "") {
-            $idSSP = ", reports.SSP AS idSSP";
-            $SQLGroups .= $SQLGroups === "GROUP BY " ? "idSSP" : ", idSSP";
-        }
+        $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
 		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
