@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	$Date = date('Y-m-d', time() - (3600 * 1));
-	$Date = '2021-05-20';
+	$Date = '2021-07-17';
 	$Hour = date('H', time() - (3600 * 1));
 	//$Hour = '6';
 	//$Hour = 23;
@@ -74,7 +74,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		id = 2035 OR id = 2251 OR id = 2208 OR id = 2510 OR id = 2511 OR id = 2594 OR id >= 2596 
 	)";*/
 	
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2813 ";
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND id = 2092 ";
 
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){

@@ -70,7 +70,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		id = 2089 OR id = 2130 OR id = 2071 OR id = 2348 OR id = 2431 OR id = 2188 OR id = 2206 OR id = 2197 OR id = 2056 OR id = 2179 OR id = 2177 OR id = 2195 OR id = 2287 OR id = 2565 OR id = 2196 OR 
 		id = 2035 OR id = 2251 OR id = 2208 OR id = 2510 OR id = 2511 OR id = 2594 OR id = 2033 OR id = 2198 OR id = 2252 OR id = 2362 OR id = 2224 OR id = 2091 
 		
-		OR id = 2050 OR id = 2048 OR id = 2084 OR id = 2083 OR id = 2047 OR id = 2049 OR id = 2346 OR id = 2157 
+		OR id = 2050 OR id = 2048 OR id = 2084 OR id = 2083 OR id = 2047 OR id = 2049 OR id = 2346 OR id = 2157 OR id = 2092 
 		
 		
 		OR id >= 2596 

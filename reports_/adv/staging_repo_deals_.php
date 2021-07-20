@@ -1,16 +1,13 @@
 <?php	
 	@session_start();
 	define('CONST',1);
-
-    if (file_exists('/var/www/html/login/config.php')) {
-        require('/var/www/html/login/config.php');
-    } else {
-        require('../../config_local.php');
-    }
-
-    require('../../db.php');
-    require('../libs/common_adv.php');
-
+	require('/var/www/html/login/config.php');
+	require('../../db.php');
+	if($_SERVER['REMOTE_ADDR'] == '81.0.37.1044'){
+		require('../libs/staging_common_adv_deals_druid.php');
+	}else{
+		require('../libs/staging_common_adv_deals.php');
+	}
 	$mem_var = new Memcached('reps');
 	$mem_var->addServer("localhost", 11211);
 
@@ -19,13 +16,8 @@
 		echo 'Access denieddd';
 		exit(0);
 	}
-
-    if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
-		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
-
-		require('config.php');
-		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	} elseif ($_POST['env'] == 'pre') {
+	
+	if ($_POST['env'] == 'pre' || $_POST['env'] == 'dev') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
 		require('config_pre.php');
@@ -33,8 +25,8 @@
 	} elseif ($_POST['env'] == 'staging') {
 		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
 
-		require('config.php');
-		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	} elseif ($_POST['env'] == 'prod') {
 		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
@@ -45,6 +37,50 @@
 		exit(0);
 	}
 	
+	
+	mysqli_set_charset($db->link,'utf8');
+	mysqli_set_charset($db2->link,'utf8');
+
+	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
+	
+	$sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
+	$query = $db2->query($sql);
+	if($db2->num_rows($query) > 0){
+		$Repo = $db2->fetch_array($query);
+		$RepId = $Repo['id'];
+		$UserId = $Repo['user_id'];
+		//$SOOS = $Repo['show_only_own_stats'];
+		$RolesJSON = json_decode($Repo['URoles']);
+		
+		/*if(is_array($Roles)){
+			if(in_array('ROLE_ADVERTISER', $Roles)){
+				$AdvRepo = true;
+			}
+		}*/
+		
+		$sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
+		$UserName = $db->getOne($sql);
+		$sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
+		$db2->query($sql);
+	}else{
+		header('HTTP/1.0 403 Forbidden');
+		echo 'Access denied';
+		exit(0);
+	}
+	//$UserId = 3;
+	
+	//$sql = "SELECT roles FROM user WHERE id = $UserId LIMIT 1";
+	//$Roles = $db->getOne($sql);
+	
+	//$RolesJSON = json_decode($Roles);
+	
+	$AdvRep = false;
+	if(in_array('ROLE_ADMIN', $RolesJSON) || in_array('ROLE_REPORTS_DEALS', $RolesJSON)){
+
+	}else{
+		exit(0);
+	}
+			
 	header('Access-Control-Allow-Origin: *');
 	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -54,216 +90,22 @@
 	    die();
 	}
 	
-	mysqli_set_charset($db->link,'utf8');
-	mysqli_set_charset($db2->link,'utf8');
-
-	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-
-    if ($_ENV["APP_ENV"] != 'local') {
-        $sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
-        $query = $db2->query($sql);
-        if($db2->num_rows($query) > 0){
-            $Repo = $db2->fetch_array($query);
-            $RepId = $Repo['id'];
-            $UserId = $Repo['user_id'];
-            //$SOOS = $Repo['show_only_own_stats'];
-            $RolesJSON = json_decode($Repo['URoles']);
-
-            /*if(is_array($Roles)){
-                if(in_array('ROLE_ADVERTISER', $Roles)){
-                    $AdvRepo = true;
-                }
-            }*/
-
-            $sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
-            $UserName = $db->getOne($sql);
-            $sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
-            $db2->query($sql);
-        }else{
-            header('HTTP/1.0 403 Forbidden');
-            echo 'Access denied';
-            exit(0);
-        }
-    } else if ($_ENV["APP_ENV"] == 'local') {
-        $dbAdvPanelLocal = new SQL($advPanelLocal['host'], $advPanelLocal['db'], $advPanelLocal['user'], $advPanelLocal['pass']);
-
-        $sql   = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";
-        $query = $dbAdvPanelLocal->query($sql);
-        if ($dbAdvPanelLocal->num_rows($query) > 0) {
-            $Repo   = $dbAdvPanelLocal->fetch_array($query);
-            $RepId  = $Repo['id'];
-            $UserId = $Repo['user_id'];
-
-            $RolesJSON = json_decode($Repo['URoles']);
-
-            $sql      = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
-            $UserName = $db->getOne($sql);
-            $sql      = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
-            $dbAdvPanelLocal->query($sql);
-        } else {
-            header('HTTP/1.0 403 Forbidden');
-            exit(0);
-        }
-    }
-
-    //$UserId = 3;
-
-    //$sql = "SELECT roles FROM user WHERE id = $UserId LIMIT 1";
-    //$Roles = $db->getOne($sql);
-
-    //$RolesJSON = json_decode($Roles);
-
-    $ReportingViewUsers = '';
-    $CountryViewer = '';
-
-	$AdvRep = false;
-	if(in_array('ROLE_ADMIN', $RolesJSON)){
-		//echo 'ADMIN';
-		$PubManFilter = "";
-	}elseif(in_array('ROLE_ADVERTISER', $RolesJSON)){
-		$sql = "SELECT id FROM advertiser WHERE user_id = $UserId LIMIT 1";
-		$AdvID = $db2->getOne($sql);
-		$PubManFilter = " AND campaign.advertiser_id = $AdvID AND {ReportsTable}.Impressions > 0 ";
+	if($_SERVER['REMOTE_ADDR'] == '81.0.37.1044'){
 		
-		$AdvRep = true;
 		
-		if(isset($_POST['Dimensions'])){
-			$Dimensions = $_POST['Dimensions'];
-			if(is_array($Dimensions)){
-				foreach($_POST['Dimensions'] as $K => $D){
-					$_POST['Dimensions'][$K] = 'campaign_name';
-				}
-			}
-		}
-	}elseif(in_array('ROLE_CAMPAIGN_VIEWER', $RolesJSON)){
-		$sql = "SELECT * FROM campaign_viewer_campaigns WHERE user_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if($queryS && $db2->num_rows($queryS) > 0){
-			$PubManFilter = " AND (";
-			$OrC = "";
-			while($U = $db2->fetch_array($queryS)){
-				$idC = $U['campaign_id'];
-				$PubManFilter .= $OrC . "campaign.id = '$idC'";
-				$OrC = " OR ";
-			}
-		}else{
-			$PubManFilter = " AND (campaign.id = 0 ";
-		}
-	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)){
-		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if($queryS && $db2->num_rows($queryS) > 0){
-			$PubManFilter = " AND (";
-			$OrC = "";
-			while($U = $db2->fetch_array($queryS)){
-				$idC = $U['campaign_id'];
-				$PubManFilter .= $OrC . "campaign.id = '$idC'";
-				$OrC = " OR ";
-			}
-		}else{
-			$PubManFilter = " AND (campaign.id = 0";
-		}
-	} elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
-		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-		$sql = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$UserId' OR manager.manager_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if ($queryS && $db2->num_rows($queryS) > 0) {
-			while($U = $db2->fetch_array($queryS)) {
-				$idS = $U['id'];
-				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
-			}
-		} else {
-			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
-		}
-	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
-		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-		$sql = "SELECT user.id FROM user LEFT JOIN user AS managerHead ON user.manager_id = managerHead.id LEFT JOIN user AS countryManager ON managerHead.manager_id = countryManager.id WHERE user.manager_id = '$UserId' OR managerHead.manager_id = '$UserId' OR countryManager.manager_id = '$UserId'";
-		$queryS = $db2->query($sql);
-		if ($queryS && $db2->num_rows($queryS) > 0) {
-			while($U = $db2->fetch_array($queryS)) {
-				$idS = $U['id'];
-				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
-			}
-		} else {
-			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
-		}
+		
+		
+		
+		
+		/*
+		  "recordsTotal": <?php echo $CntTotal; ?>,
+		  "recordsFiltered": <?php echo $CntTotal; ?>,
+		  "data": <?php echo safe_json_encode($Data); ?>,
+		  "dataT": <?php echo json_encode($DataT); ?>,
+		  "SQL": "<?php echo $SQLQuery; ?>"
+		*/
+		
 	}else{
-		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
-			//echo 'HEAD';
-			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
-			$sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
-			$queryS = $db2->query($sql);
-			if($queryS && $db2->num_rows($queryS) > 0){
-				while($U = $db2->fetch_array($queryS)){
-					$idS = $U['id'];
-					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
-				}
-			}
-		}else{
-			//echo 'SALES';
-			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
-		}
-	}
-
-    if(isset($_POST['Dimensions'])){
-        $postDimensions = $_POST['Dimensions'];
-        $predictiveData = $_POST['predictiveData'];
-        foreach ($postDimensions as $postDimension) {
-            if ($postDimension === 'reporting_view_users') {
-                $predictiveDataJson = json_decode($predictiveData);
-                foreach ($predictiveDataJson->reporting_view_users as $index => $reportingViewUser) {
-                    if ($index > 0) {
-                        $ReportingViewUsers .= ', ';
-                    }
-                    $ReportingViewUsers .= $reportingViewUser->id;
-                }
-
-                if ($ReportingViewUsers !== '') {
-                    if ($PubManFilter === "") {
-                        $PubManFilter = $PubManFilter . "AND (";
-                    } else if ($PubManFilter === " AND (campaign.id = 0") {
-                        $PubManFilter = "AND (";
-                    } else {
-                        $PubManFilter = $PubManFilter." OR ";
-                    }
-                    $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
-                }
-            }
-            if ($postDimension === 'country_viewer') {
-                $predictiveDataJson = json_decode($predictiveData);
-                foreach ($predictiveDataJson->country_viewer as $index => $countryViewer) {
-                    if ($index > 0) {
-                        $CountryViewer .= ', ';
-                    }
-                    $CountryViewer .= $countryViewer->id;
-                }
-
-                if ($CountryViewer !== '') {
-                    if ($PubManFilter === "") {
-                        $PubManFilter = $PubManFilter . "AND (";
-                    } else if ($PubManFilter === " AND (campaign.id = 0") {
-                        $PubManFilter = "AND (";
-                    } else {
-                        $PubManFilter = $PubManFilter." OR ";
-                    }
-                    $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
-                }
-            }
-        }
-    }
-
-	if (!in_array('ROLE_ADVERTISER', $RolesJSON)) {
-    	$PubManFilter .= $PubManFilter === "" ? $PubManFilter : ")";
-	}
-
-	header('Access-Control-Allow-Origin: *');
-	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-	header("Allow: GET, POST, OPTIONS, PUT, DELETE");
-	$method = $_SERVER['REQUEST_METHOD'];
-	if($method == "OPTIONS") {
-	    die();
-	}
 	
 	$Data = array();
 	$DatesOK = false;
@@ -306,27 +148,23 @@
 		$Dimensions = array();
 	}
 	$DimensionsOK = true;
-
+	
 	if(isset($_POST['reportType'])){
 		$TypeOK = true;
 		$RepType = $_POST['reportType'];
 		//$RepType = 'overall';
 		
-		if($RepType != 'hourly'){
-			$BaseTable = 'reports_resume';
-		}else{
-			$BaseTable = 'reports';
-		}
+		$BaseTable = 'reports_deals';
+		
 		if($RepType != 'overall' || count($Dimensions) == 0){
 			$IncludeTime = true;
 		}
 		if($RepType == 'overall'){
 			$Overall = true;
-		}
-		
+		}		
 		
 		//$NewTable = $BaseTable . $StartMonth;
-		$NewTable = 'reports';
+		$NewTable = 'reports_deals';
 		if(checkTableExists($NewTable)){
 			$UnionTables[] = $NewTable;
 		}
@@ -358,8 +196,6 @@
 		}
 	}
 	
-	//print_r($UnionTables);
-	//exit(0);
 	if($DatesOK && $TypeOK){
 		if(isset($_POST['Metrics'])){
 			$Metrics = $_POST['Metrics'];
@@ -371,7 +207,6 @@
 		}
 	}
 	
-	//print_r($_POST);
 	if($DimensionsOK){
 		if(isset($_POST['Filters'])){
 			if(is_array($_POST['Filters'])){
@@ -445,14 +280,7 @@
 			
 			foreach($Dimensions as $DimensionName){
 
-			    $computedDimension = $DimensionsSQL[$DimensionName]['Name'];
-			    if ($DimensionName === 'reporting_view_users') {
-                    $computedDimension = str_replace('{{ReportingViewUsers}}', $ReportingViewUsers, $DimensionsSQL[$DimensionName]['Name']);
-                }
-                if ($DimensionName === 'country_viewer') {
-                    $computedDimension = str_replace('{{CountryViewer}}', $CountryViewer, $DimensionsSQL[$DimensionName]['Name']);
-                }
-				$SQLDimensions .= $C . $computedDimension;
+				$SQLDimensions .= $C . $DimensionsSQL[$DimensionName]['Name'];
 				$SQLDimensionsOverall .= $C . 'R.' . $DimensionsSQL[$DimensionName]['GroupBy'] . " AS " . $DimensionsSQL[$DimensionName]['GroupBy'];
 				
 				if(count($DimensionsSQL[$DimensionName]['InnerJoin']) > 0){
@@ -479,7 +307,6 @@
 				$No++;
 			}
 		}
-
 		//print_r($Dimensions);
 		//exit(0);
 		
@@ -561,7 +388,7 @@
 			}
 		}
 	
-
+		
 		$SQLMetrics = "";
 		$Bases = array();
 		$SQLBases = "";
@@ -697,7 +524,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
 		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter ";
 		
 		/*
@@ -736,7 +563,7 @@
 			
 			
 			$SuperQueryT = $db->query($SQLQueryT);
-			if($SuperQueryT && $db->num_rows($SuperQueryT) > 0){
+			if($db->num_rows($SuperQueryT) > 0){
 				while($Da = $db->fetch_array($SuperQueryT)){
 					if($AddDimensions){
 						foreach($Dimensions as $DimensionName){
@@ -779,8 +606,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-        $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
@@ -823,14 +649,14 @@
 		
 		if($CachedReport === false || 1==1){
 			$Cached = 0;
-			error_log(0);
+			//error_log(0);
 			$SuperQuery = $db->query($SQLQuery);
-			error_log(1);
+		//	error_log(1);
 			$sqlCount = 'SELECT FOUND_ROWS();';
 			$CntTotal = $db->getOne($sqlCount);
 			$TDim = 0;
-			error_log(2);
-			if($SuperQuery && $db->num_rows($SuperQuery) > 0){
+		//	error_log(2);
+			if($db->num_rows($SuperQuery) > 0){
 				while($Da = $db->fetch_array($SuperQuery)){
 					if($IncludeTime){
 						$Data[$Nd][] = $Da[$TimeName];
@@ -867,13 +693,13 @@
 							//$Data[$Nd][] = number_format($Da[$MetricSName], 0, '', ',');
 							$Data[$Nd][] = $Da[$MetricSName];
 						}else{
-							if (($MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'Complete25' || $MetricSName == 'Complete50' || $MetricSName == 'Complete75') && $Da[$MetricSName] === NULL){
+							if(($MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'Complete25' || $MetricSName == 'Complete50' || $MetricSName == 'Complete75') && $Da[$MetricSName] === NULL){
 								$Data[$Nd][] = "-";
-							} elseif (($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
+							}elseif(($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 								$Data[$Nd][] = '0.00%';
-							} elseif (in_array($MetricSName, ['CPM', 'CPV', 'CPC', 'vCPM', 'Rebate', 'Revenue', 'NetRevenue']) && floatval(str_replace('$','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
+							}elseif(($MetricSName == 'CPM' || $MetricSName == 'Rebate' || $MetricSName == 'Revenue' || $MetricSName == 'NetRevenue') && floatval(str_replace('$','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 								$Data[$Nd][] = '$0.00';
-							} else {
+							}else{
 								$Data[$Nd][] = $Da[$MetricSName];
 							}
 						}
@@ -936,6 +762,8 @@
 			
 			exit(0);
 		}
+	}
+	
 	}
 ?>{
   "draw": <?php if(isset($_POST['draw'])){ echo intval($_POST['draw']); } else { echo "0"; } ?>,

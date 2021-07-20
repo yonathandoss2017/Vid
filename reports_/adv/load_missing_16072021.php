@@ -55,22 +55,27 @@ function csvToJson($fname) {
 	
 	
 	$Date = date('Y-m-d', time() - (3600 * 1));
-	$Date = '2021-05-14';
+	$Date = '2021-07-16';
 	$Hour = date('H', time() - (3600 * 1));
 	//$Hour = '6';
 	$Hour = 23;
 	
-	$JsonReport = json_decode(csvToJson('Missin_deals_2021-05-14.csv'));
+	$JsonReport = json_decode(csvToJson('Missin_deals_2021-07-16.csv'));
 	
-	//var_dump($JsonReport);
+//	var_dump($JsonReport);
+
 	$RevenueRot = 0;
 	$addImpsTot = 0;
+	$addResponsesTot = 0;
+	$addReqTot = 0;
 	
 	foreach($JsonReport as $DealData){
 		
 		
 		if($DealData->Imps > 0){
 			$DealID = $DealData->{'Deal ID'};
+			$Responses = $DealData->{'Bid Responses'};
+			$Requests = $DealData->{'Bid Requests'};
 			
 			$sql = "SELECT id FROM campaign WHERE deal_id LIKE '$DealID%' LIMIT 1";
 			$idCamp = $db3->getOne($sql);
@@ -78,61 +83,109 @@ function csvToJson($fname) {
 			$sql = "SELECT SUM(Impressions) AS Imp FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
 			$currentImp = $db->getOne($sql);
 			
+			$sql = "SELECT SUM(Requests) AS Requests FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
+			$currentReq = $db->getOne($sql);
+			
+			$sql = "SELECT SUM(Bids) AS Bids FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
+			$currentBids = $db->getOne($sql);
+			
 			if($currentImp < $DealData->Imps){
+				$addRequests = $Requests - $currentReq;
+				$addResponses = $Responses - $currentBids;
 				$addImps = $DealData->Imps - $currentImp;
 				
-				$sql = "SELECT cpm FROM campaign WHERE id = $idCamp LIMIT 1";
-				$CPM = floatval($db3->getOne($sql));
+				if($addImps > 3){
 				
-				$sql = "SELECT rebate FROM campaign WHERE id = $idCamp LIMIT 1";
-				$RebatePercent = $db3->getOne($sql);
-				
-				$sql = "SELECT (SUM(CompleteV) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp ";
-				$VTR = $db->getOne($sql);
-				$Completes = intval($addImps * $VTR);
-				
-				$sql = "SELECT (SUM(VImpressions) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp ";
-				$View = $db->getOne($sql);
-				$VImp = intval($addImps * $View);
-				
-				$sql = "SELECT (SUM(Clicks) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp ";
-				$CTR = $db->getOne($sql);
-				$Clicks = intval($addImps * $CTR);
-				
-				$idCountry = 999;
-				$sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCamp' ";
-				if($db3->getOne($sql) == 1){
-					$sql = "SELECT country_id FROM campaign_country WHERE campaign_id = '$idCamp' ";
-					$idCountry = $db3->getOne($sql);
+					if($addResponses < $addImps){
+						$addResponses = $addImps * 2;
+					}
+					
+					if($addRequests < $addResponses){
+						$addRequests = $addResponses * 2;
+					}
+					
+					echo "$DealID - Requests: $addRequests  - Responses: $addResponses  - Imp: $addImps \n";
+					//exit(0);
+					
+					
+					$sql = "SELECT cpm FROM campaign WHERE id = $idCamp LIMIT 1";
+					$CPM = floatval($db3->getOne($sql));
+					
+					$sql = "SELECT rebate FROM campaign WHERE id = $idCamp LIMIT 1";
+					$RebatePercent = $db3->getOne($sql);
+					
+					$sql = "SELECT (SUM(CompleteV) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
+					$VTR = $db->getOne($sql);
+					if($VTR > 0.4){
+					
+						$sql = "SELECT (SUM(VImpressions) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
+						$View = $db->getOne($sql);
+						
+						$sql = "SELECT (SUM(Clicks) / SUM(Impressions) ) FROM reports WHERE idCampaing = $idCamp AND Date = '$Date'";
+						$CTR = $db->getOne($sql);
+						
+						$idCountry = 999;
+						$sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCamp' ";
+						if($db3->getOne($sql) == 1){
+							$sql = "SELECT country_id FROM campaign_country WHERE campaign_id = '$idCamp' ";
+							$idCountry = $db3->getOne($sql);
+						}
+						
+						//$VTR = $CompletesNow / $currentImp * 100;
+						
+						for($I = 15; $I <= 18; $I++){
+							
+							if(rand(1,2)==1){
+								$Requests = ceil($addRequests / 4);
+								$Responses = ceil($addResponses / 4);
+								$addImpsD4 = ceil($addImps / 4);
+							}else{
+								$Requests = floor($addRequests / 4);
+								$Responses = floor($addResponses / 4);
+								$addImpsD4 = floor($addImps / 4); 
+							}
+							
+							$Completes = ceil($addImpsD4 * $VTR);
+							//echo "$addImpsD4 > $Completes \n";
+							$VImp = ceil($addImpsD4 * $View);
+							$Clicks = ceil($addImpsD4 * $CTR);
+							
+							$Revenue = $CPM * $addImpsD4 / 1000;
+							$Rebate = $RebatePercent * $Revenue / 100;
+							
+							$Complete25 = calcPercents(25 , $addImpsD4, $Completes);
+							$Complete50 = calcPercents(50 , $addImpsD4, $Completes);
+							$Complete75 = calcPercents(75 , $addImpsD4, $Completes);
+							
+							$sql = "INSERT INTO reports
+							(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
+							VALUES (7, $idCamp, $idCountry, '$Requests', '$Responses', '$addImpsD4', '$Revenue', '$VImp', '$Clicks', '$Completes', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$I')";
+							//echo $sql . "\n";
+							$db->query($sql);
+							
+							
+							$addReqTot += $Requests;
+							$addResponsesTot += $Responses;
+							$addImpsTot += $addImpsD4;
+							//$RevenueRot += $Revenue;
+							
+							
+							//echo "$DealID $addImps $VTR $View \n";
+							
+							//print_r($DealData);
+						}
+					}else{
+						
+						echo "NO DATA\n";
+						
+					}
+					
+					//exit(0);
+					
 				}
-				
-				//$VTR = $CompletesNow / $currentImp * 100;
-				
-				$Complete25 = calcPercents(25 , $addImps, $Completes);
-				$Complete50 = calcPercents(50 , $addImps, $Completes);
-				$Complete75 = calcPercents(75 , $addImps, $Completes);
-				
-				$Requests = 0;
-				$Bids = 0;
-				$Revenue = $CPM * $addImps / 1000;
-				$Rebate = $RebatePercent * $Revenue / 100;
-				
-				$sql = "INSERT INTO reports
-				(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
-				VALUES (7, $idCamp, $idCountry, '$Requests', '$Bids', '$addImps', '$Revenue', '$VImp', '$Clicks', '$Completes', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$Hour')";
-				echo $sql . "\n";
-				//$db->query($sql);
-				
-				$addImpsTot += $addImps;
-				$RevenueRot += $Revenue;
-				
-				
-				//echo "$DealID $addImps $VTR $View \n";
-				
-				//print_r($DealData);
-				
-				
-				
+					
+			}else{
+				echo "$DealID - NO \n";
 			}
 			
 		}
@@ -140,7 +193,7 @@ function csvToJson($fname) {
 		
 		
 	}
-	echo $addImpsTot . '-' . $RevenueRot;
+	echo "Totales: Requests: $addReqTot  - Responses: $addResponsesTot  - Imps: $addImpsTot \n";
 	
 	exit(0);
 	
