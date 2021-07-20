@@ -525,7 +525,7 @@
 				}else{
 					if(($MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'Complete25' || $MetricSName == 'Complete50' || $MetricSName == 'Complete75') && $Da[$MetricSName] === NULL){
 						$Data[$Nd][] = "-";
-					}elseif(($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
+					}elseif(($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent' || $MetricSName == 'MesuredPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 						$Data[$Nd][] = '0.00%';
 					}elseif(($MetricSName == 'CPM' || $MetricSName == 'Rebate' || $MetricSName == 'Revenue' || $MetricSName == 'NetRevenue') && floatval(str_replace('$','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 						$Data[$Nd][] = '$0.00';
