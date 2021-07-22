@@ -42,13 +42,27 @@ function calcPercents($Perc , $Impressions, $Complete){
 }
 
 	$Date = date('Y-m-d', time() - (3600 * 4));
-	//$Date = '2021-02-09';
+	//$Date = '2021-07-21';
 	//$Hour = date('H');
 	$Hour = 23;
 	
 	$TotalRev = 0;
 	$TotalImp = 0;
 	$TotalImpX = 0;
+	
+	$Multipliers = array(
+		'1056632' => 20,
+		'1056635' => 20,
+		'1056631' => 20,
+		'1056636' => 20,
+		'1056634' => 20,
+		'1056633' => 20,
+		'1056630' => 20,
+		'1056427' => 500,
+		'1056629' => 100,
+		'1056905' => 20,
+		'1056824' => 500,
+	);
 	
 	/* 
 	$date2 = new DateTime($Date1);
@@ -113,7 +127,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$CampaingData[$idCamp]['CVTR'] = false;
 			}
 				
-			if($Camp['ctr_from'] > 0 && $Camp['ctr_to'] > 0){
+			if($Camp['ctr_to'] > 0){//$Camp['ctr_from'] > 0 && 
 				$CampaingData[$idCamp]['CTRFrom'] = $Camp['ctr_from'];
 				$CampaingData[$idCamp]['CTRTo'] = $Camp['ctr_to'];
 				$CampaingData[$idCamp]['CCTR'] = true;
@@ -214,6 +228,23 @@ function calcPercents($Perc , $Impressions, $Complete){
 						$Rebate = $Revenue * $RebatePercent / 100;
 					}else{
 						$Rebate = 0;
+					}
+					
+					$Multi = 1;
+					if(array_key_exists($TagId, $Multipliers)){
+						$Multi = $Multipliers[$TagId];
+						
+						//echo "$TagId * $Multi \n";
+						
+						$Requests = $Requests * $Multi;
+						$Impressions = $Impressions * $Multi;
+						$VImpressions = $VImpressions * $Multi;
+						$CompleteV = $CompleteV * $Multi;
+						$Clicks = $Clicks * $Multi;
+						$Revenue = $Revenue * $Multi;
+						$Complete25 = $Complete25 * $Multi;
+						$Complete50 = $Complete50 * $Multi;
+						$Complete75 = $Complete75 * $Multi;
 					}
 					
 					//print_r($CampaingData[$idCampaing]);
@@ -371,9 +402,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 									$AddRebate = 0;
 								}
 								
-								if($idStat != 2713638 && $idStat != 2713640){
-									$Revenue = "Revenue + $AddRevenue";
-									$sql = "UPDATE reports SET 
+								$Revenue = "Revenue + $AddRevenue";
+								
+								$sql = "UPDATE reports SET 
 									Requests = $Requests, 
 									Bids = $Bids, 
 									Impressions = $Impressions, 
@@ -386,32 +417,32 @@ function calcPercents($Perc , $Impressions, $Complete){
 									Complete75 = $Complete75,
 									CompleteVPer = $CompleteVPerc,
 									Rebate = Rebate + $AddRebate
-									
 								WHERE id = '$idStat' LIMIT 1";
-									
-									$db->query($sql);
-								}
+								
+								$db->query($sql);
+								
 								//echo $sql . "\n";
 							}else{
 								//echo "No New I CPM $CPM \n";
 							}
 						}else{
 							$sql = "UPDATE reports SET 
-							Requests = $Requests, 
-							Bids = $Bids, 
-							Impressions = $Impressions, 
-							Revenue = $Revenue, 
-							VImpressions = $VImpressions,
-							Clicks = $Clicks,
-							CompleteV = $CompleteV,
-							Complete25 = $Complete25,
-							Complete50 = $Complete50,
-							Complete75 = $Complete75,
-							CompleteVPer = $CompleteVPerc,
-							Rebate = $Rebate
-						WHERE id = '$idStat' LIMIT 1";
+								Requests = $Requests, 
+								Bids = $Bids, 
+								Impressions = $Impressions, 
+								Revenue = $Revenue, 
+								VImpressions = $VImpressions,
+								Clicks = $Clicks,
+								CompleteV = $CompleteV,
+								Complete25 = $Complete25,
+								Complete50 = $Complete50,
+								Complete75 = $Complete75,
+								CompleteVPer = $CompleteVPerc,
+								Rebate = $Rebate
+							WHERE id = '$idStat' LIMIT 1";
 							
 							$db->query($sql);
+							
 							//echo $sql . "\n";
 						}
 					}
