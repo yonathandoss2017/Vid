@@ -113,6 +113,9 @@
 
     //$RolesJSON = json_decode($Roles);
 
+    $ReportingViewUsers = '';
+    $CountryViewer = '';
+
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
 		//echo 'ADMIN';
@@ -143,9 +146,8 @@
 				$PubManFilter .= $OrC . "campaign.id = '$idC'";
 				$OrC = " OR ";
 			}
-			$PubManFilter .= ")";
 		}else{
-			$PubManFilter = " AND campaign.id = 0 ";
+			$PubManFilter = " AND (campaign.id = 0 ";
 		}
 	}elseif(in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)){
 		$sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
@@ -158,9 +160,8 @@
 				$PubManFilter .= $OrC . "campaign.id = '$idC'";
 				$OrC = " OR ";
 			}
-			$PubManFilter .= ")";
 		}else{
-			$PubManFilter = " AND campaign.id = 0";
+			$PubManFilter = " AND (campaign.id = 0";
 		}
 	} elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
@@ -172,9 +173,8 @@
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 			}
 		} else {
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
-		$PubManFilter .= ")";
 	} elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
 		$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 		$sql = "SELECT user.id FROM user LEFT JOIN user AS managerHead ON user.manager_id = managerHead.id LEFT JOIN user AS countryManager ON managerHead.manager_id = countryManager.id WHERE user.manager_id = '$UserId' OR managerHead.manager_id = '$UserId' OR countryManager.manager_id = '$UserId'";
@@ -185,9 +185,8 @@
 				$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 			}
 		} else {
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
-		$PubManFilter .= ")";
 	}else{
 		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
 			//echo 'HEAD';
@@ -200,13 +199,63 @@
 					$PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
 				}
 			}
-			$PubManFilter .= ")";
 		}else{
 			//echo 'SALES';
-			$PubManFilter = " AND agency.sales_manager_id = '$UserId' ";
+			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
 	}
-			
+
+    if(isset($_POST['Dimensions'])){
+        $postDimensions = $_POST['Dimensions'];
+        $predictiveData = $_POST['predictiveData'];
+        foreach ($postDimensions as $postDimension) {
+            if ($postDimension === 'reporting_view_users') {
+                $predictiveDataJson = json_decode($predictiveData);
+                foreach ($predictiveDataJson->reporting_view_users as $index => $reportingViewUser) {
+                    if ($index > 0) {
+                        $ReportingViewUsers .= ', ';
+                    }
+                    $ReportingViewUsers .= $reportingViewUser->id;
+                }
+
+                if ($ReportingViewUsers !== '') {
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
+                    $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
+                }
+            }
+            if ($postDimension === 'country_viewer') {
+                $predictiveDataJson = json_decode($predictiveData);
+                foreach ($predictiveDataJson->country_viewer as $index => $countryViewer) {
+                    if ($index > 0) {
+                        $CountryViewer .= ', ';
+                    }
+                    $CountryViewer .= $countryViewer->id;
+                }
+
+                if ($CountryViewer !== '') {
+                    if ($PubManFilter === "") {
+                        $PubManFilter = $PubManFilter . "AND (";
+                    } else if ($PubManFilter === " AND (campaign.id = 0") {
+                        $PubManFilter = "AND (";
+                    } else {
+                        $PubManFilter = $PubManFilter." OR ";
+                    }
+                    $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
+                }
+            }
+        }
+    }
+
+    if (!in_array('ROLE_ADVERTISER', $RolesJSON)) {
+    	$PubManFilter .= $PubManFilter === "" ? $PubManFilter : ")";
+	}
+
 	header('Access-Control-Allow-Origin: *');
 	header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -257,7 +306,7 @@
 		$Dimensions = array();
 	}
 	$DimensionsOK = true;
-	
+
 	if(isset($_POST['reportType'])){
 		$TypeOK = true;
 		$RepType = $_POST['reportType'];
@@ -396,7 +445,14 @@
 			
 			foreach($Dimensions as $DimensionName){
 
-				$SQLDimensions .= $C . $DimensionsSQL[$DimensionName]['Name'];
+			    $computedDimension = $DimensionsSQL[$DimensionName]['Name'];
+			    if ($DimensionName === 'reporting_view_users') {
+                    $computedDimension = str_replace('{{ReportingViewUsers}}', $ReportingViewUsers, $DimensionsSQL[$DimensionName]['Name']);
+                }
+                if ($DimensionName === 'country_viewer') {
+                    $computedDimension = str_replace('{{CountryViewer}}', $CountryViewer, $DimensionsSQL[$DimensionName]['Name']);
+                }
+				$SQLDimensions .= $C . $computedDimension;
 				$SQLDimensionsOverall .= $C . 'R.' . $DimensionsSQL[$DimensionName]['GroupBy'] . " AS " . $DimensionsSQL[$DimensionName]['GroupBy'];
 				
 				if(count($DimensionsSQL[$DimensionName]['InnerJoin']) > 0){
@@ -505,7 +561,7 @@
 			}
 		}
 	
-		
+
 		$SQLMetrics = "";
 		$Bases = array();
 		$SQLBases = "";
@@ -723,7 +779,8 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics , reports.SSP AS idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+        $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";

@@ -5,8 +5,8 @@
 			'Name'	=>	"Deal AS CampaignName",
 			'SearchName'	=>	"Deal",
 			'GroupBy'		=>	"Deal",
-			'OrderVal'		=>	"Deal",
-			'HeadName'		=> 'Campaign'
+			'OrderVal'		=>	"CampaignName",
+			'HeadName'		=> 'Deal'
 		),
 		'deal_id' => array(
 			'Name'	=>	"Deal",
@@ -15,26 +15,14 @@
 			'OrderVal'		=>	"Deal",
 			'HeadName'		=> 'Deal ID'
 		),
-		/*
-		'agency' => array(
-			'Name'	=>	"agency.name AS Agency",
-			'SearchName'	=>	"agency.name",
-			'InnerJoin'		=> 	array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign.agency_id "),
-			'GroupBy'		=>	"Agency",
-			'OrderVal'		=>	"Agency",
+		'adomain' => array(
+			'Name'	=>	"Adomain",
+			'SearchName'	=>	"Adomain",
+			'GroupBy'		=>	"Adomain",
+			'OrderVal'		=>	"Adomain",
 			'InvalInner'	=> '',
-			'HeadName'		=> 'Agency'
+			'HeadName'		=> 'Advertiser Domain'
 		),
-		'advertiser' => array(
-			'Name'	=>	"advertiser.name AS Advertiser",
-			'SearchName'	=>	"advertiser.name",
-			'InnerJoin'		=> 	array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign.advertiser_id "),
-			'GroupBy'		=>	"Advertiser",
-			'OrderVal'		=>	"Advertiser",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Advertiser'
-		),
-		*/
 		'country' => array(
 			'Name'	=>	"Country",
 			'SearchName'	=>	"Country",
@@ -42,48 +30,7 @@
 			'OrderVal'		=>	"Country",
 			'HeadName'		=> 'Country'
 		),
-		'sales_vp' => array(
-			'Name'	=>	"vp.nick AS SalesVP",
-			'SearchName'	=>	"vp.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
-			),
-			'GroupBy'		=>	"SalesVP",
-			'OrderVal'		=>	"SalesVP",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'VP'
-		),
-		'sales_manager_head' => array(
-			'Name'	=>	"manager_head.nick AS SalesManagerHead",
-			'SearchName'	=>	"manager_head.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
-			),
-			'GroupBy'		=>	"SalesManagerHead",
-			'OrderVal'		=>	"SalesManagerHead",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Manager Head'
-		),
-		'sales_manager' => array(
-			'Name'	=>	"user.nick AS SalesManager",
-			'SearchName'	=>	"user.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
-				//'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
-			),
-			'GroupBy'		=>	"SalesManager",
-			'OrderVal'		=>	"SalesManager",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Manager'
-		),
-		'dsp' => array(
+		'dsp_rtb' => array(
 			'Name'	=>	"Dsp",
 			'SearchName'	=> 	"Dsp",
 			'GroupBy'		=>	"Dsp",
@@ -104,26 +51,33 @@
 			'OrderVal'		=>	"Device",
 			'HeadName'		=> 'Device'
 		),
+		'creativity' => array(
+			'Name'	=>	"Crid",
+			'SearchName'	=> 	"Crid",
+			'GroupBy'		=>	"Crid",
+			'OrderVal'		=>	"Crid",
+			'HeadName'		=> 'Creativity ID'
+		),
 	);
 
 	$TimesSQL = array(
 		'monthly' => array(
-			'Name'	=> 	"DATE_TRUNC('month', __time) AS \"Month\"",
+			'Name'	=> 	"TIME_FORMAT(__time, 'MMMM YYYY') AS \"Month\"",
 			'ShowName'		=> 	"Month",
-			'GroupBy'		=>	"DATE_TRUNC('month', __time)",
-			'OrderVal'		=>	"DATE_TRUNC('month', __time)"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'MMMM YYYY')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'MMMM YYYY')"
 		),
 		'daily' => array(
-			'Name'	=> 	"DATE_TRUNC('day', __time) AS \"Date\"",
+			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd') AS \"Date\"",
 			'ShowName'		=> 	"Date",
-			'GroupBy'		=>	"DATE_TRUNC('day', __time)",
-			'OrderVal'		=>	"DATE_TRUNC('day', __time)"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd')"
 		),
 		'hourly' => array(
-			'Name'	=> 	"__time",
+			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa') AS \"Hour\"",
 			'ShowName'		=> 	"Hour",
-			'GroupBy'		=>	"__time",
-			'OrderVal'		=>	"__time"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa')"
 		),
 		'overall' => array(
 			'Name'	=> 	"'Overall' AS Overall",
@@ -157,6 +111,14 @@
 			'OrderVal' 	=>	"VImpressions",
 			'NumberF'	=>	true,
 			'HeadName'		=> 'Viewable Impressions'
+		),
+		'mesurable_impressions' => array(
+			'SQL' 		=>	", SUM(sum_Uimpression) AS MImpressions ",
+			'SQLCSV' 	=>	", SUM(sum_Uimpression) AS MImpressions ",
+			'Name'		=>	"MImpressions",
+			'OrderVal' 	=>	"MImpressions",
+			'NumberF'	=>	true,
+			'HeadName'		=> 'Messurable Impressions'
 		),
 		'revenue'	=> array(
 			'SQL' 		=>	", SUM(sum_Money) as Revenue ",
@@ -231,12 +193,20 @@
 			'HeadName'		=> 'CPM'
 		),
 		'viewability_percent'	=> array(
-			'SQL' 		=>	", ROUND(SUM(sum_Vimpression) / (SUM(sum_Impressions) * 1.0) * 100, 2) AS ViewabilityPercent ",
-			'SQLCSV' 	=>	", ROUND(SUM(sum_Vimpression) / (SUM(sum_Impressions) * 1.0) * 100, 2) AS ViewabilityPercent ",
+			'SQL' 		=>	", ROUND(SUM(sum_Vimpression) / (SUM(sum_Uimpression) * 1.0) * 100, 2) AS ViewabilityPercent ",
+			'SQLCSV' 	=>	", ROUND(SUM(sum_Vimpression) / (SUM(sum_Uimpression) * 1.0) * 100, 2) AS ViewabilityPercent ",
 			'Name'		=>	"ViewabilityPercent",
 			'OrderVal' 	=>	"ViewabilityPercent",
 			'NumberF'	=>	false,
 			'HeadName'		=> 'Viewability Percent'
+		),
+		'mesurable_percent'	=> array(
+			'SQL' 		=>	", ROUND(SUM(sum_Uimpression) / (SUM(sum_Impressions) * 1.0) * 100, 2) AS MesuredPercent ",
+			'SQLCSV' 	=>	", ROUND(SUM(sum_Uimpression) / (SUM(sum_Impressions) * 1.0) * 100, 2) AS MesuredPercent ",
+			'Name'		=>	"MesuredPercent",
+			'OrderVal' 	=>	"MesuredPercent",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Imp View Mesured Percent'
 		),
 		'rebate_percent' => array(
 			'SQL' 		=>	"",
@@ -296,3 +266,45 @@
 			'HeadName'		=> '75%'
 		)
 	);
+
+
+function druidQuery($Query, $Limit = 30000){
+	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+		
+	$context = new \stdClass();
+	$context->sqlOuterLimit = $Limit;
+	
+	$payload = new \stdClass();
+	$payload->query = $Query;
+	$payload->resultFormat = 'array';
+	$payload->header = true;
+	$payload->context = $context;
+	
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload) );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+	$result = curl_exec($ch);
+	curl_close($ch);
+	$resultT = json_decode($result) ;
+	
+	return $resultT;
+}
+
+function safe_json_encode($value, $options = 0, $depth = 512) {
+    $encoded = json_encode($value, $options, $depth);
+    if ($encoded === false && $value && json_last_error() == JSON_ERROR_UTF8) {
+        $encoded = json_encode(utf8ize($value), $options, $depth);
+    }
+    return $encoded;
+}
+
+function utf8ize($mixed) {
+    if (is_array($mixed)) {
+        foreach ($mixed as $key => $value) {
+            $mixed[$key] = utf8ize($value);
+        }
+    } elseif (is_string($mixed)) {
+        return mb_convert_encoding($mixed, "UTF-8", "UTF-8");
+    }
+    return $mixed;
+}
