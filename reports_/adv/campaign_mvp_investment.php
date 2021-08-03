@@ -137,7 +137,7 @@ if(! function_exists('get_campaigns_sql')) {
         $sql = "SELECT id 
             FROM campaign 
             WHERE status = 1
-            AND from_vmp IS NULL";
+            AND from_vmp = 1;
 
         $where = [];
 
