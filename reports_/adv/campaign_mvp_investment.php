@@ -331,20 +331,10 @@ if($startDate !== null && $endDate !== null) {
 
 $campaignQuery = get_campaigns_sql($companyId, $advertisersId);
 
-$investment = [];
-$investmentByCountry = [];
-$lastInvestment = [];
-
 $investment = get_adv_investments($type, $campaignQuery, $countriesISO);
 $investmentByCountry = get_adv_investment_by_country($type, $campaignQuery, $countriesISO, $startDate, $endDate);
 $lastInvestment = get_adv_last_investment($campaignQuery, $countriesISO, $startDate, $endDate);
 
-$data = [
-    'investment' => $investment,
-    'investmentByCountry' => $investmentByCountry,
-    'lastInvestment' => $lastInvestment
-];
-
 header('HTTP/1.0 200 Success');
-echo json_encode($data); // response
+echo json_encode(compact('investment', 'investmentByCountry', 'lastInvestment')); // response
 
