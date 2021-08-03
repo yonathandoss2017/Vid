@@ -63,6 +63,15 @@ Class SQL {
 		$row = $this->fetchRow($result);
 		return $row[0];
 	}
+	function getAll($sql) {
+		$result = $this->query($sql);
+		$results = [];
+		while ($data = mysqli_fetch_assoc($result)) {
+			$results[] = $data;
+		}
+
+		return $results;
+	}
 	function fetchRow($result, $row = NULL) {
 		return mysqli_fetch_row($result);
 	}	
