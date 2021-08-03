@@ -7,6 +7,7 @@
 if(! function_exists('build_date')) {
     function build_date($date) {
         try {
+
             return new DateTime($date);
         } catch (\Throwable $th) {
             header('HTTP/1.0 400 Bad Request');
@@ -218,7 +219,6 @@ if(! function_exists('get_adv_investment_by_country')) {
             $investments[] = array_merge(compact('percentage'), $result);
         }
 
-
         return $investments;
     }
 }
@@ -314,17 +314,18 @@ $startDate = isset($params['start_date']) ? build_date($params['start_date']) : 
 $endDate = isset($params['end_date']) ? build_date($params['end_date']) : null;
 $advertisersId = $params['advertiser_id'] ?? null;
 $type = $params['type'] ?? 'investment';
+$allowedTypes = ['impressions', 'investment'];
 
-if($type !== 'impressions' && $type !== 'investment') {
+if( ! in_array($type, $allowedTypes)) {
     header('HTTP/1.0 400 Bad Request');
-    echo sprintf('"Invalid type value. Allowed values: investment, impressions"');
+    echo sprintf('"Invalid type value. Allowed values: %s"', join(', ', $allowedTypes));
     exit(0);
 }
 
 if($startDate !== null && $endDate !== null) {
     if($endDate < $startDate) {
         header('HTTP/1.0 400 Bad Request');
-        echo sprintf('"Invalid dates range"');
+        echo '"Invalid dates range"';
         exit(0);
     }
 }
