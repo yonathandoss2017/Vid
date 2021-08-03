@@ -321,8 +321,6 @@ if($type !== 'impressions' && $type !== 'investment') {
     exit(0);
 }
 
-$campaignQuery = get_campaigns_sql($companyId, $advertisersId);
-
 if($startDate !== null && $endDate !== null) {
     if($endDate < $startDate) {
         header('HTTP/1.0 400 Bad Request');
@@ -330,6 +328,8 @@ if($startDate !== null && $endDate !== null) {
         exit(0);
     }
 }
+
+$campaignQuery = get_campaigns_sql($companyId, $advertisersId);
 
 $investment = [];
 $investmentByCountry = [];
