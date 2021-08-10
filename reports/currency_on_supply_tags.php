@@ -22,7 +22,7 @@
 	$dbname2 = "vidoomy";
 	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	
-	$sql = "SELECT * FROM supplytag WHERE id <= 21911 ORDER BY id DESC";
+	$sql = "SELECT * FROM supplytag WHERE id >= 22375 ORDER BY id DESC";
 	$query = $db->query($sql);
 	while($Da = $db->fetch_array($query)){
 		

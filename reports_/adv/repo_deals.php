@@ -281,26 +281,39 @@
 				$Or = "";
 				if($KInclude == 'exclude'){
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'device'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
 							}
 							
 							if($KFilter == 'campaign_name'){
-								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal' LIMIT 1";
-								$FVal = $db2->getOne($sql);
+								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
+								$query = $db2->query($sql);
+								if($db2->num_rows($query) > 0){
+									while($Camp = $db2->fetch_array($query)){
+										$FVal = mysqli_real_escape_string($db2->link, $Camp['deal_id']);
+										$SQLWhere .= $Or . $KeySearch . " NOT LIKE '$FVal'";
+										$And = " AND "; 
+									}
+								}
+							}else{
+								$FVal = mysqli_real_escape_string($db->link, $FVal);
+								$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 							}
-							
-							$FVal = mysqli_real_escape_string($db->link, $FVal);
-							
-							$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 						}else{
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
 								}else{
 									$FVal = 2;
+								}
+							}
+							if($KFilter == 'device'){
+								if($FVal == 'Desktop'){
+									$FVal = 'DT';
+								}elseif($FVal == 'Mobile'){
+									$FVal = 'MW';
 								}
 							}
 							if($KFilter == 'country'){
@@ -313,7 +326,7 @@
 					}
 				}else{
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'device'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
@@ -324,18 +337,32 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
-								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal' LIMIT 1";
-								$FVal = $db2->getOne($sql);
+								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
+								$query = $db2->query($sql);
+								if($db2->num_rows($query) > 0){
+									while($Camp = $db2->fetch_array($query)){
+										$FVal = mysqli_real_escape_string($db2->link, $Camp['deal_id']);
+										$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
+										$Or = " OR "; 
+									}
+								}
+							}else{
+								$FVal = mysqli_real_escape_string($db->link, $FVal);
+								$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 							}
-							
-							$FVal = mysqli_real_escape_string($db->link, $FVal);
-							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 						}else{
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
 								}else{
 									$FVal = 2;
+								}
+							}
+							if($KFilter == 'device'){
+								if($FVal == 'Desktop'){
+									$FVal = 'DT';
+								}elseif($FVal == 'Mobile'){
+									$FVal = 'MW';
 								}
 							}
 							if($KFilter == 'country'){
@@ -504,6 +531,14 @@
 						}elseif($DimensionName == 'country'){
 							if(array_key_exists($DimensionValue, $arrayCountries)){
 								$Data[$Nd][] = $arrayCountries[$DimensionValue];
+							}else{
+								$Data[$Nd][] = $DimensionValue;
+							}
+						}elseif($DimensionName == 'device'){
+							if($DimensionValue == 'DT'){
+								$Data[$Nd][] = 'Desktop';
+							}elseif($DimensionValue == 'MW'){
+								$Data[$Nd][] = 'Mobile';
 							}else{
 								$Data[$Nd][] = $DimensionValue;
 							}

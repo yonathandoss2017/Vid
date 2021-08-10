@@ -49,10 +49,37 @@ function calcPercents($Perc , $Impressions, $Complete){
 		return $Impressions;
 	}
 }
+
 	$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
 	$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
+
+	$arraySpecialFill = array(
+		'BE' => 'Belgium', 
+		'NL' => 'Netherlands',
+		'IT' => 'Italy',
+		'PT' => 'Portugal', 
+		'DE' => 'Germany',
+		'TR' => 'Turkey',
+		'ZA' => 'South Africa',
+		'GB' => 'United Kingdom',
+		'TT' => 'Trinidad and Tobago',
+		'JM' => 'Jamaica',
+		'LT' => 'Lithuania',
+		'LV' => 'Latvia',
+		'EE' => 'Estonia',
+		'FR' => 'France'
+	);
 	
-	foreach($arraySpecialFill AS $Cntry){
+	$SpecialFill25 = array(
+		'TR' => 'Turkey', 
+		'TT' => 'Trinidad and Tobago', 
+		'JM' => 'Jamaica', 
+		'LT' => 'Lithuania',
+		'LV' => 'Latvia',
+		'EE' => 'Estonia'
+	);
+	
+	foreach($arraySpecialFill AS $ISO => $Cntry){
 		$CntryFile = str_replace(' ', '', $Cntry);
 		//$FileCSV = '/var/www/html/login/admin/lkqdimport/cpm_blacklist'.$new.'/'.$CntryFile.'.csv';
 		$FileCSV = '/var/www/html/login/admin/lkqdimport/cpm_blacklist/'.$CntryFile.'.csv';
@@ -60,10 +87,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 		if(file_exists($FileCSV)){
 			$Csv = array_map('str_getcsv', file($FileCSV));
 			foreach($Csv as $Co){
-				$BLDomains[$Cntry][] = $Co[0];
+				$BLDomains[$ISO][] = $Co[0];
 			}
 		}else{
-			$BLDomains[$Cntry][] = 'none';
+			$BLDomains[$ISO][] = 'none';
 		}
 	}
 	
@@ -77,7 +104,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$DateDruid = new DateTime();
 	$DateDruid->setTimezone(new DateTimeZone('UTC'));
-	$DateDruid->modify("-4 hour");
+	$DateDruid->modify("-1 hour");
+	$Day = intval($DateDruid->format('d'));
+	$Month = intval($DateDruid->format('m'));
 	echo $DateD1 = $DateDruid->format('Y-m-d H:00:00');
 	$DateD2 = $DateDruid->format('Y-m-d H:59:59');
 	$DateEST = $DateDruid;
@@ -86,7 +115,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
 	$Query = "SELECT __time, Country, Domain, Zone, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone ORDER BY 5 DESC";
-	//echo $Query . "\n\n";
+	$Query . "\n\n";
+	//exit(0);
 	
 	$context = new \stdClass();
 	$context->sqlOuterLimit = 50000;//;
@@ -113,7 +143,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$DateEST->setTimezone(new DateTimeZone('America/New_York'));
 	$HourEST = intval($DateEST->format('H'));
-	echo $sql = "DELETE FROM $TablaName WHERE Date = '$Date' AND Hour BETWEEN '$HourEST' AND '$HourEST' AND Manual = 0 AND Player = 2";
+	$DateESTs = $DateEST->format('Y-m-d');
+	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs' AND Hour BETWEEN '$HourEST' AND '$HourEST' AND Manual = 0 AND Player = 2";
 	///exit(0);
 	$db->query($sql);
 	
@@ -269,8 +300,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 			
 			$formatLoads = ceil($OriginalformatLoads * 94.5 / 100);
-						
-			if(in_array($Country, $arraySpecialFill)){
+			
+			//if(in_array($Country, $arraySpecialFill)){
+			if(array_key_exists($Country, $arraySpecialFill)){
 				//echo "Is Country $Country - ";
 				if(!in_array($Domain, $BLDomains[$Country])){
 					//echo "$Domain Not in BL - ";
@@ -278,10 +310,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 						
 						// && ($Hour > 10 || $Date != '2021-04-15'
 						 
-						if(in_array($Country, $SpecialFill25)){
+						if(array_key_exists($Country, $SpecialFill25)){
 							//echo "$Country $Date $Hour \n";
 							
-							if(intval($TagId) % 2 == 0){
+							if(intval($idTag) % 2 == 0){
 								if($Hour >= 10){
 									$HourI = $Hour / 2; 
 									if($HourI >= 10){
@@ -315,7 +347,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 						}else{
 						
 							//echo "$formatLoads >= 2 - ";
-							if(intval($TagId) % 2 == 0){
+							if(intval($idTag) % 2 == 0){
 								if($Hour >= 10){
 									$HourI = $Hour / 2; 
 									if($HourI >= 10){
@@ -423,6 +455,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$sql = "INSERT INTO $TablaName (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, RevenueEur, Coste, CosteEur, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, timeAdded, lastUpdate, Date, Hour) VALUES $Values ;";
 				
 				$db->query($sql);
+				
+				//echo $sql;
+				//exit(0);
+				
 				$Coma = "";
 				$Nins = 0;
 				$Values = "";
@@ -436,7 +472,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 	
 	if($Nins > 1){
-		$sql = "INSERT INTO $TablaName (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, Coste, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, timeAdded, lastUpdate, Date, Hour) VALUES $Values ;";			
+		$sql = "INSERT INTO $TablaName (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, RevenueEur, Coste, CosteEur, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, timeAdded, lastUpdate, Date, Hour) VALUES $Values ;";			
 		$db->query($sql);
 	}
 	

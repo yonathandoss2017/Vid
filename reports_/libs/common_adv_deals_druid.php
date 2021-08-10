@@ -58,6 +58,76 @@
 			'OrderVal'		=>	"Crid",
 			'HeadName'		=> 'Creativity ID'
 		),
+		'category' => array(
+			'Name'	=>	"Category",
+			'SearchName'	=> 	"Category",
+			'GroupBy'		=>	"Category",
+			'OrderVal'		=>	"Category",
+			'HeadName'		=> 'Category'
+		),
+		'adsize' => array(
+			'Name'	=>	"AdSize",
+			'SearchName'	=> 	"AdSize",
+			'GroupBy'		=>	"AdSize",
+			'OrderVal'		=>	"AdSize",
+			'HeadName'		=> 'Ad Size'
+		),
+		'bidfilteredreason' => array(
+			'Name'	=>	"BidFilteredReason",
+			'SearchName'	=> 	"BidFilteredReason",
+			'GroupBy'		=>	"BidFilteredReason",
+			'OrderVal'		=>	"BidFilteredReason",
+			'HeadName'		=> 'Bid Filted Reason'
+		),
+		'blockedreason' => array(
+			'Name'	=>	"BlockedReason",
+			'SearchName'	=> 	"BlockedReason",
+			'GroupBy'		=>	"BlockedReason",
+			'OrderVal'		=>	"BlockedReason",
+			'HeadName'		=> 'Blocked Reason'
+		),
+		'gdpr' => array(
+			'Name'	=>	"Gdpr",
+			'SearchName'	=> 	"Gdpr",
+			'GroupBy'		=>	"Gdpr",
+			'OrderVal'		=>	"Gdpr",
+			'HeadName'		=> 'GDPR'
+		),
+		'gdprcs' => array(
+			'Name'	=>	"Gdprcs",
+			'SearchName'	=> 	"Gdprcs",
+			'GroupBy'		=>	"Gdprcs",
+			'OrderVal'		=>	"Gdprcs",
+			'HeadName'		=> 'GDPR Consent String'
+		),
+		'os' => array(
+			'Name'	=>	"Os",
+			'SearchName'	=> 	"Os",
+			'GroupBy'		=>	"Os",
+			'OrderVal'		=>	"Os",
+			'HeadName'		=> 'OS'
+		),
+		'publisherid' => array(
+			'Name'	=>	"PublisherId",
+			'SearchName'	=> 	"PublisherId",
+			'GroupBy'		=>	"PublisherId",
+			'OrderVal'		=>	"PublisherId",
+			'HeadName'		=> 'Publisher ID'
+		),
+		'sync' => array(
+			'Name'	=>	"Sync",
+			'SearchName'	=> 	"Sync",
+			'GroupBy'		=>	"Sync",
+			'OrderVal'		=>	"Sync",
+			'HeadName'		=> 'Synced User'
+		),
+		'wseat' => array(
+			'Name'	=>	"Wseat",
+			'SearchName'	=> 	"Wseat",
+			'GroupBy'		=>	"Wseat",
+			'OrderVal'		=>	"Wseat",
+			'HeadName'		=> 'WSeat'
+		),
 	);
 
 	$TimesSQL = array(
@@ -264,6 +334,70 @@
 			'OrderVal' 	=>	"THIRD",
 			'NumberF'	=>	false,
 			'HeadName'		=> '75%'
+		),
+		'bids_cpm'	=> array(
+			'SQL' 		=>	", SUM(sum_PMoney) / SUM(sum_BidResponses) AS BidResponseCPM ",
+			'SQLCSV' 	=>	", SUM(sum_PMoney) / SUM(sum_BidResponses) AS BidResponseCPM ",
+			'Name'		=>	"BidResponseCPM",
+			'OrderVal' 	=>	"BidResponseCPM",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Bid Response CPM'
+		),
+		'bids_error'	=> array(
+			'SQL' 		=>	", SUM(sum_BidError) AS BidError ",
+			'SQLCSV' 	=>	", SUM(sum_BidError) AS BidError ",
+			'Name'		=>	"BidError",
+			'OrderVal' 	=>	"BidError",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Bid Error'
+		),
+		'bids_filtered'	=> array(
+			'SQL' 		=>	", SUM(sum_BidsFiltered) AS BidsFiltered ",
+			'SQLCSV' 	=>	", SUM(sum_BidsFiltered) AS BidsFiltered ",
+			'Name'		=>	"BidsFiltered",
+			'OrderVal' 	=>	"BidsFiltered",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Bids Filtered'
+		),
+		'bids_timeout'	=> array(
+			'SQL' 		=>	", SUM(sum_BidsTimedOut) AS BidsTimedOut ",
+			'SQLCSV' 	=>	", SUM(sum_BidsTimedOut) AS BidsTimedOut ",
+			'Name'		=>	"BidsTimedOut",
+			'OrderVal' 	=>	"BidsTimedOut",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Bids Timed Out'
+		),
+		'bids_unanswered'	=> array(
+			'SQL' 		=>	", SUM(sum_BidsUnanswered) AS BidsUnanswered ",
+			'SQLCSV' 	=>	", SUM(sum_BidsUnanswered) AS BidsUnanswered ",
+			'Name'		=>	"BidsUnanswered",
+			'OrderVal' 	=>	"BidsUnanswered",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Bids Unanswered'
+		),
+		'blocked'	=> array(
+			'SQL' 		=>	", SUM(sum_Blocked)  AS Blocked ",
+			'SQLCSV' 	=>	", SUM(sum_Blocked) AS Blocked ",
+			'Name'		=>	"Blocked",
+			'OrderVal' 	=>	"Blocked",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Blocked'
+		),
+		'close'	=> array(
+			'SQL' 		=>	", SUM(sum_Close) AS Closed ",
+			'SQLCSV' 	=>	", SUM(sum_Close) AS Closed ",
+			'Name'		=>	"Closed",
+			'OrderVal' 	=>	"Closed",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Closed'
+		),
+		'pause'	=> array(
+			'SQL' 		=>	", SUM(sum_Pause) AS Paused ",
+			'SQLCSV' 	=>	", SUM(sum_Pause) AS Paused ",
+			'Name'		=>	"Paused",
+			'OrderVal' 	=>	"Paused",
+			'NumberF'	=>	false,
+			'HeadName'		=> 'Paused'
 		)
 	);
 

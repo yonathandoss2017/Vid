@@ -141,7 +141,7 @@ function utf8ize($mixed) {
 		),
 		'player' => array(
 			'Name'	=>	"CASE Player WHEN 1 THEN 'LKQD' WHEN 2 THEN 'Vidoomy' END AS Player",
-			'SearchName'	=>	"",
+			'SearchName'	=>	"Player",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"Player",
 			'OrderVal'		=>	"Player",

@@ -324,7 +324,7 @@
 				$Or = "";
 				if($KInclude == 'exclude'){
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range'){
+						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range' && $KFilter != 'player'){
 							$arFv = explode(' ', $FVal);
 							$FVal = str_replace('*', '%', $arFv[0]);
 							$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
@@ -348,7 +348,7 @@
 					}
 				}else{
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range'){
+						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range' && $KFilter != 'player'){
 							$arFv = explode(' ', $FVal);
 							$FVal = str_replace('*', '%', $arFv[0]);
 							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";

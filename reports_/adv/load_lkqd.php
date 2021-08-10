@@ -51,17 +51,19 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$TotalImpX = 0;
 	
 	$Multipliers = array(
-		'1056632' => 20,
-		'1056635' => 20,
-		'1056631' => 20,
-		'1056636' => 20,
-		'1056634' => 20,
-		'1056633' => 20,
-		'1056630' => 20,
-		'1056427' => 500,
-		'1056629' => 100,
-		'1056905' => 20,
-		'1056824' => 500,
+		'1056632' => 2,//
+		'1056635' => 2,//
+		'1056631' => 2,//
+		'1056636' => 2,//
+		'1056634' => 2,//
+		'1056633' => 50,//
+		'1056630' => 30,//
+		'1056427' => 120,
+		'1056629' => 13,//
+//		'1056905' => 20,
+		'1056907' => 29,
+		'1056906' => 29,
+		'1056824' => 80,//
 	);
 	
 	/* 
@@ -233,6 +235,20 @@ function calcPercents($Perc , $Impressions, $Complete){
 					$Multi = 1;
 					if(array_key_exists($TagId, $Multipliers)){
 						$Multi = $Multipliers[$TagId];
+						
+						if($Multi > 100){
+							if(intval($Hour) % 2 == 0){
+								$Multi = $Multi - $Hour;
+							}else{
+								$Multi = $Multi + $Hour;
+							}
+						}else{
+							if(intval($Hour) % 2 == 0){
+								$Multi = $Multi - ceil($Hour / 5);
+							}else{
+								$Multi = $Multi + ceil($Hour / 5);
+							}
+						}
 						
 						//echo "$TagId * $Multi \n";
 						

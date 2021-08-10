@@ -239,6 +239,11 @@
 					$query = $db2->query($sql);
 					if($db2->num_rows($query) > 0){
 						while($Camp = $db2->fetch_array($query)){
+							if(strpos($Camp['deal_id'], '(')){
+								$arDid = explode('(', $Camp['deal_id']);
+								$Camp['deal_id'] = $arDid[0];
+							}
+							
 							$arrayCamps[$Camp['deal_id']] = $Camp['name'];
 						}
 					}
@@ -276,7 +281,7 @@
 				$Or = "";
 				if($KInclude == 'exclude'){
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'device'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
@@ -298,6 +303,13 @@
 									$FVal = 2;
 								}
 							}
+							if($KFilter == 'device'){
+								if($FVal == 'Desktop'){
+									$FVal = 'DT';
+								}elseif($FVal == 'Mobile'){
+									$FVal = 'MW';
+								}
+							}
 							if($KFilter == 'country'){
 								$sql = "SELECT iso FROM country WHERE id = $FVal LIMIT 1";
 								$FVal = $db2->getOne($sql);
@@ -308,7 +320,7 @@
 					}
 				}else{
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'device'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
@@ -319,18 +331,32 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
-								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal' LIMIT 1";
-								$FVal = $db2->getOne($sql);
+								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
+								$query = $db2->query($sql);
+								if($db2->num_rows($query) > 0){
+									while($Camp = $db2->fetch_array($query)){
+										$FVal = mysqli_real_escape_string($db2->link, $Camp['deal_id']);
+										$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
+										$Or = " OR "; 
+									}
+								}
+							}else{
+								$FVal = mysqli_real_escape_string($db->link, $FVal);
+								$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 							}
-							
-							$FVal = mysqli_real_escape_string($db->link, $FVal);
-							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 						}else{
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
 								}else{
 									$FVal = 2;
+								}
+							}
+							if($KFilter == 'device'){
+								if($FVal == 'Desktop'){
+									$FVal = 'DT';
+								}elseif($FVal == 'Mobile'){
+									$FVal = 'MW';
 								}
 							}
 							if($KFilter == 'country'){
@@ -418,6 +444,7 @@
 					
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom 00:00:00' AND TIMESTAMP '$DTo 23:59:59' $SQLWhere ";
+		//error_log($SQLSuperQueryT);
 		
 		if($IncludeTime){
 			$DataT[$Nd][] = "";
@@ -502,6 +529,20 @@
 							}else{
 								$Data[$Nd][] = $DimensionValue;
 							}
+						}elseif($DimensionName == 'device'){
+							if($DimensionValue == 'DT'){
+								$Data[$Nd][] = 'Desktop';
+							}elseif($DimensionValue == 'MW'){
+								$Data[$Nd][] = 'Mobile';
+							}else{
+								$Data[$Nd][] = $DimensionValue;
+							}
+						}elseif($DimensionName == 'sync' || $DimensionName == 'gdprcs' || $DimensionName == 'gdpr'){
+							if(intval($DimensionValue) == 1){
+								$Data[$Nd][] = 'Yes';
+							}else{
+								$Data[$Nd][] = 'No';
+							}
 						}else{
 							$Data[$Nd][] = $DimensionValue;
 						}
@@ -520,7 +561,7 @@
 				}else{
 					if(($MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'Complete25' || $MetricSName == 'Complete50' || $MetricSName == 'Complete75') && $Da[$MetricSName] === NULL){
 						$Data[$Nd][] = "-";
-					}elseif(($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
+					}elseif(($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent' || $MetricSName == 'MesuredPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 						$Data[$Nd][] = '0.00%';
 					}elseif(($MetricSName == 'CPM' || $MetricSName == 'Rebate' || $MetricSName == 'Revenue' || $MetricSName == 'NetRevenue') && floatval(str_replace('$','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 						$Data[$Nd][] = '$0.00';
@@ -580,5 +621,6 @@
   "recordsTotal": <?php echo $CntTotal; ?>,
   "recordsFiltered": <?php echo $CntTotal; ?>,
   "data": <?php echo safe_json_encode($Data); ?>,
-  "dataT": <?php echo json_encode($DataT); ?>
+  "dataT": <?php echo json_encode($DataT); ?>,
+  "D": "<?php echo $SQLSuperQueryT; ?>"
 }
