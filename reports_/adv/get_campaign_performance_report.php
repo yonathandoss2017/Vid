@@ -11,7 +11,7 @@ if (file_exists('/var/www/html/login/config.php')) {
 
 require('../../db.php');
 
-$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
+$db = new SQL($dbhost, $dbAdvName, $dbuser, $dbpass);
 
 $dt = new DateTime();
 $dt->setTimezone(new DateTimeZone('Europe/Berlin'));
