@@ -244,7 +244,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 					'Thechronicleherald-LL', //58220, //Thechronicleherald
 					'motorsportnetwork-IB', //58049, //motorsportnetwork-IB
 					'NPMedia-JC', //60966, //NPMedia
-					'CiaoPeopleIT-RC' //61380 //CiaoPeopleIT
+					'CiaoPeopleIT-RC', //61380 //CiaoPeopleIT
+					'semseoymasonlinemarketing', //59904 semseoymasonlinemarketing
 				);
 				
 				if($OriginalImpressions > 0){
