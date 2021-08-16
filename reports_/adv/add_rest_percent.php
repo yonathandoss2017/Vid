@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-08-01';
-	$idCampaing = 3557;
+	$Date = '2021-08-12';
+	$idCampaing = 3708;
 	
 	
 	//exit(0);
@@ -129,8 +129,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 1.10;
-			$PercCh2 = 1.10;
+			$PercCh = 1.00;
+			$PercCh2 = $PercCh;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
 			$Bids = intval($Row['Bids'] * $PercCh);
@@ -163,7 +163,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$Complete50 = intval($Row['Complete50'] * $PercCh);
 				$Complete75 = intval($Row['Complete75'] * $PercCh);
 			}
-			
+						
 			if($CView === true){
 				$ViewFrom = $CampaingData[$idCampaing]['ViewFrom'] * 100;
 				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
@@ -190,19 +190,24 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//$Rebate = $Row['Rebate'] * $PercCh;
 			$Rebate = $RebatePer * $Revenue / 100;
 			
-			
+			/*
 			$sql = "UPDATE reports SET 
 				Clicks = '$Clicks',
 				Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions',
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
 				WHERE id = $idRow LIMIT 1";
-			
+			*/
 			//$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
 			
 			//$sql = "UPDATE reports SET Rebate = '$Rebate' WHERE id = $idRow LIMIT 1";
 				
 			//echo $Impressions . ": " . $sql . "\n";
-			
+			/*
+			$sql = "UPDATE reports SET 
+				
+				Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75'
+				WHERE id = $idRow LIMIT 1";
+			*/
 			//
 			echo $sql . "\n";
 			
