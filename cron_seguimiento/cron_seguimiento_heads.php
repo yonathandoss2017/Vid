@@ -385,9 +385,9 @@ function getGlobal($Date1, $Date2, $idAccM){
 	}
 }	
 	
-	$Heads[6] = 'Ivan';
+	//$Heads[6] = 'Ivan';
 	$Heads[18] = 'Paula';
-	$Heads[23] = 'Victoria';
+	$Heads[28031] = 'Jose Macias';
 	
 	foreach($Heads as $idHead => $HeadName){
 		

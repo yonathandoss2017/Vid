@@ -39,11 +39,25 @@
 		"db" => $_ENV["ADVERTISERS_PRE_DB"],
 	];
 
-	$advDev = [
-		"user" => $_ENV["ADVERTISERS_DEV_USER"],
-		"pass" => $_ENV["ADVERTISERS_DEV_PASSWORD"],
-		"host" => $_ENV["ADVERTISERS_DEV_HOST"],
-		"db" => $_ENV["ADVERTISERS_DEV_DB"],
+	$advDev01 = [
+		"user" => $_ENV["ADVERTISERS_DEV_01_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_01_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_01_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_01_DB"],
+	];
+
+	$advDev02 = [
+		"user" => $_ENV["ADVERTISERS_DEV_02_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_02_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_02_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_02_DB"],
+	];
+
+	$advDev03 = [
+		"user" => $_ENV["ADVERTISERS_DEV_03_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_03_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_03_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_03_DB"],
 	];
 
 	$pubDev02 = [

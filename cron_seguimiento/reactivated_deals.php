@@ -13,6 +13,7 @@
 	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 		
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
+	$dbPanel = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
 	
 	$date1 = new DateTime();
 	$date1->add(DateInterval::createFromDateString('today'));
@@ -27,6 +28,28 @@
 	//$Today = '2020-05-04';
 
 //	echo $Yesterday . ' - ' . $ThreeDaysBefore;
+
+/**
+ * Function to set the campaign first impression date
+ */
+function setFistImpressionDate(int $idCampaing) {
+	global $dbPanel;
+
+	$date = (new DateTime())
+			->setTimeZone(new DateTimeZone('US/Eastern'))
+			->format('Y-m-d H:m:s');
+
+	$sql = <<<SQL
+UPDATE
+	campaign
+SET
+	first_impression = '{$date}'
+WHERE
+	id = {$idCampaing}
+SQL;
+
+	$dbPanel->query($sql);
+}
 
 function sendActivationNotice($Type, $idCampaing, $Today){
 	global $db;
@@ -190,6 +213,7 @@ function sendActivationNotice($Type, $idCampaing, $Today){
 				$sql = "SELECT COUNT(*) FROM reports WHERE Date < '$Today' AND Impressions > 0 AND idCampaing = $idCampaing";
 				if($db->getOne($sql) == 0){
 					sendActivationNotice(0, $idCampaing, $Today);
+					setFistImpressionDate($idCampaing);
 					//echo "sendActivationNotice(0, $idCampaing) \n";
 				}
 			}

@@ -72,7 +72,7 @@
    "_audienceCharacteristics":[
 
    ],
-   "partnerId":58553,
+   "partnerId":{SPartner},
    "siteName":"{NAME}",
    "environmentId":{ENV},
    "cpmFloorDemand":0.01,
