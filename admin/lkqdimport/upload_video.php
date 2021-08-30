@@ -77,6 +77,7 @@ function uniqidReal($lenght = 13) {
     }
     return substr(bin2hex($bytes), 0, $lenght);
 }
+
 function build_data_files($boundary, $fields, $files){
     $data = '';
     $eol = "\r\n";
@@ -110,13 +111,13 @@ function build_data_files($boundary, $fields, $files){
     return $data;
 }
 
-function newCreative($Name){
+function newCreative($Name, $DPartner){
 	global $sessionId, $cookie_file;
 	$uuid = gen_uuid();
 	$fileDownloadToken = rand(100000,999999);
 	
 	$post = array(
-		"demandPartnerId" => 39629,
+		"demandPartnerId" => $DPartner,
 		"mediaType" => 'video',
 		"name" => $Name,
 	);
@@ -133,7 +134,7 @@ function newCreative($Name){
 	$headers[] = 'content-type: application/json;charset=UTF-8';
 	$headers[] = 'origin: https://ui.lkqd.com';
 	$headers[] = 'pragma: no-cache';
-	$headers[] = 'referer: https://ui.lkqd.com/demand-partners/39629/new-creative';
+	$headers[] = 'referer: https://ui.lkqd.com/demand-partners/' . $DPartner . '/new-creative';
 	$headers[] = 'sec-fetch-dest: empty';
 	$headers[] = 'sec-fetch-mode: cors';
 	$headers[] = 'sec-fetch-site: same-site';
@@ -183,7 +184,7 @@ function newCreative($Name){
 	}
 }
 
-function uploadVideo($cId, $videoFile){
+function uploadVideo($cId, $videoFile, $DPartner){
 	global $sessionId, $cookie_file;
 	$uuid = gen_uuid();
 	$fileDownloadToken = rand(100000,999999);
@@ -207,7 +208,7 @@ function uploadVideo($cId, $videoFile){
 	$headers[5] = 'content-type: application/json;charset=UTF-8';
 	$headers[6] = 'origin: https://ui.lkqd.com';
 	$headers[7] = 'pragma: no-cache';
-	$headers[8] = 'referer: https://ui.lkqd.com/demand-partners/39629/creatives/' . $cId;
+	$headers[8] = 'referer: https://ui.lkqd.com/demand-partners/' . $DPartner . '/creatives/' . $cId;
 	$headers[9] = 'sec-fetch-dest: empty';
 	$headers[10] = 'sec-fetch-mode: cors';
 	$headers[11] = 'sec-fetch-site: same-site';
@@ -268,7 +269,7 @@ function uploadVideo($cId, $videoFile){
 }
 
 
-function newDemandTagForDemo($Name){
+function newDemandTagForDemo($Name, $DDeal){
 	global $cookie_file;
 		
 	$url = 'https://ui-api.lkqd.com/tags';
@@ -282,7 +283,7 @@ function newDemandTagForDemo($Name){
 	$headers[5] = 'content-type: application/json;charset=UTF-8';
 	$headers[6] = 'origin: https://ui.lkqd.com';
 	$headers[7] = 'pragma: no-cache';
-	$headers[8] = 'https://ui.lkqd.com/deals/989623';
+	$headers[8] = 'https://ui.lkqd.com/deals/' . $DDeal;
 	$headers[9] = 'sec-fetch-dest: empty';
 	$headers[10] = 'sec-fetch-mode: cors';
 	$headers[11] = 'sec-fetch-site: same-site';
@@ -309,9 +310,10 @@ function newDemandTagForDemo($Name){
 	
 	
 	$JsonDec = json_decode(
+		str_replace('{DDeal}', $DDeal,
 		str_replace('{CTURL}', 'null',
 		str_replace('{NAME}', $Name, file_get_contents('/var/www/html/login/admin/lkqdimport/new_tag.json')
-		))
+		)))
 	);
 	
 	//print_r($JsonDec);
@@ -328,7 +330,7 @@ function newDemandTagForDemo($Name){
 		'accept-language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6',
 		'content-type: application/json;charset=UTF-8',
 		'origin: https://ui.lkqd.com',
-		'referer: https://ui.lkqd.com/deals/989623',
+		'referer: https://ui.lkqd.com/deals' . $DDeal,
 		'lkqd-api-version: 88',
 		'sec-fetch-dest: empty',
 		'sec-fetch-mode: cors',
@@ -363,7 +365,7 @@ function newDemandTagForDemo($Name){
 	}
 }
 
-function activateDemandTag($Name, $TagId, $CURL = ''){
+function activateDemandTag($Name, $TagId, $DDeal, $CURL = ''){
 	global $cookie_file;
 		
 	$url = 'https://ui-api.lkqd.com/tags';
@@ -377,7 +379,7 @@ function activateDemandTag($Name, $TagId, $CURL = ''){
 	$headers[5] = 'content-type: application/json;charset=UTF-8';
 	$headers[6] = 'origin: https://ui.lkqd.com';
 	$headers[7] = 'pragma: no-cache';
-	$headers[8] = 'https://ui.lkqd.com/deals/989623';
+	$headers[8] = 'https://ui.lkqd.com/deals/' . $DDeal;
 	$headers[9] = 'sec-fetch-dest: empty';
 	$headers[10] = 'sec-fetch-mode: cors';
 	$headers[11] = 'sec-fetch-site: same-site';
@@ -409,10 +411,11 @@ function activateDemandTag($Name, $TagId, $CURL = ''){
 	}
 	
 	$JsonDec = json_decode(
+		str_replace('{DDeal}', $DDeal,
 		str_replace('{TAGID}', $TagId,
 		str_replace('{CTURL}', $CURL,
 		str_replace('{NAME}', $Name, file_get_contents('/var/www/html/login/admin/lkqdimport/new_tag_active.json')
-		)))
+		))))
 	);
 
 	$RequestPayloadJson = json_encode($JsonDec);
@@ -427,7 +430,7 @@ function activateDemandTag($Name, $TagId, $CURL = ''){
 		'accept-language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6',
 		'content-type: application/json;charset=UTF-8',
 		'origin: https://ui.lkqd.com',
-		'referer: https://ui.lkqd.com/deals/989623',
+		'referer: https://ui.lkqd.com/deals/' . $DDeal,
 		'lkqd-api-version: 88',
 		'sec-fetch-dest: empty',
 		'sec-fetch-mode: cors',
@@ -460,7 +463,7 @@ function activateDemandTag($Name, $TagId, $CURL = ''){
 	}
 }
 
-function updateDemandTag($Name, $SsDt, $SsMMw, $CURL){
+function updateDemandTag($Name, $SsDt, $SsMMw, $DDeal, $CURL){
 	global $cookie_file;
 		
 	$URL = "https://api.lkqd.com/supply-tags/find-by-id?siteId=$SsMMw";
@@ -511,7 +514,7 @@ function updateDemandTag($Name, $SsDt, $SsMMw, $CURL){
 	$headers[5] = 'content-type: application/json;charset=UTF-8';
 	$headers[6] = 'origin: https://ui.lkqd.com';
 	$headers[7] = 'pragma: no-cache';
-	$headers[8] = 'https://ui.lkqd.com/deals/989623';
+	$headers[8] = 'https://ui.lkqd.com/deals' . $DDeal;
 	$headers[9] = 'sec-fetch-dest: empty';
 	$headers[10] = 'sec-fetch-mode: cors';
 	$headers[11] = 'sec-fetch-site: same-site';
@@ -543,10 +546,11 @@ function updateDemandTag($Name, $SsDt, $SsMMw, $CURL){
 	}
 	
 	$JsonDec = json_decode(
+		str_replace('{DDeal}', $DDeal,
 		str_replace('{TAGID}', $TagId,
 		str_replace('{CTURL}', $CURL,
 		str_replace('{NAME}', $Name, file_get_contents('/var/www/html/login/admin/lkqdimport/new_tag_active.json')
-		)))
+		))))
 	);
 
 	$RequestPayloadJson = json_encode($JsonDec);
@@ -561,7 +565,7 @@ function updateDemandTag($Name, $SsDt, $SsMMw, $CURL){
 		'accept-language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6',
 		'content-type: application/json;charset=UTF-8',
 		'origin: https://ui.lkqd.com',
-		'referer: https://ui.lkqd.com/deals/989623',
+		'referer: https://ui.lkqd.com/deals' . $DDeal,
 		'lkqd-api-version: 88',
 		'sec-fetch-dest: empty',
 		'sec-fetch-mode: cors',
@@ -596,7 +600,7 @@ function updateDemandTag($Name, $SsDt, $SsMMw, $CURL){
 	}
 }
 
-function associateDemandTagCreative($DemandTagId, $creativeId){
+function associateDemandTagCreative($DemandTagId, $creativeId, $DDeal){
 	global $cookie_file;
 	
 	$URL = 'https://api.lkqd.com/demand/creatives/tag-associations';
@@ -625,7 +629,7 @@ function associateDemandTagCreative($DemandTagId, $creativeId){
 		'content-type: application/json;charset=UTF-8',
 		'origin: https://ui.lkqd.com',
 		'pragma: no-cache',
-		'referer: https://ui.lkqd.com/deals/989623',
+		'referer: https://ui.lkqd.com/deals' . $DDeal,
 		'sec-fetch-dest: empty',
 		'sec-fetch-mode: cors',
 		'sec-fetch-site: same-site',
@@ -648,7 +652,7 @@ function associateDemandTagCreative($DemandTagId, $creativeId){
 }
 
 
-function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debug = false){
+function newDemoSupplySource($Name, $TagId, $SPartner, $Env = 1, $Rev = 0, $Loop = 0, $debug = false){
 	global $cookie_file;
 	
 	if($Env == 1){
@@ -666,11 +670,12 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 	$LastU = date('Y-m-d\TH:i:s.') . rand(100,999) . 'Z';
 
 	$JsonDec = json_decode(
+		str_replace('{SPartner}', $SPartner, 
 		str_replace('{TAGID}', $TagId, 
 		str_replace('{ENV}', $environmentId, 
 		str_replace('{LUAT}', $LastU,  
 		str_replace('{LKQDMPID}', $LKQDMPID,  
-		str_replace('{NAME}', $Name, file_get_contents('/var/www/html/login/admin/lkqdimport/new_supply_source.json') )))))
+		str_replace('{NAME}', $Name, file_get_contents('/var/www/html/login/admin/lkqdimport/new_supply_source.json') ))))))
 	);
 	//print_r($JsonDec);
 	//exit();
@@ -712,6 +717,13 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 		}
 	}
 }
+
+	//$DPartner = 39629; //OLD
+	$DPartner = 40256; //NEW	
+	//$DDeal = 989623; //OLD
+	$DDeal = 998605; //NEW
+	//$SPartner = 58553; //OLD
+	$SPartner = 61860; //NEW
 	
 	
 	$sql = "SELECT * FROM demo WHERE (status = 0 OR status = 4) AND video != '' ORDER BY id ASC";
@@ -736,14 +748,14 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 			$Log = "|$When| New Video Upload - Name: $NewVideoName ID: $ID \n\n";
 			
 			//$newCreativeId = 25794;
-			$newCreativeData = newCreative($NewVideoName);
+			$newCreativeData = newCreative($NewVideoName, $DPartner);
 			$newCreativeId = $newCreativeData->creativeId;
 			
 			$Log .= "|$When| New Creative ID: " . $newCreativeId . " \n";
 			//print_r($newCreativeData);
 			
 			if($newCreativeId > 0){
-				uploadVideo($newCreativeId, $videoFile); //
+				uploadVideo($newCreativeId, $videoFile, $DPartner); //
 				$Log .= "|$When| Video Uploaded: $videoFile \n";
 			}else{
 				$Log .= "|$When| Fail Creative Creation \n";
@@ -753,11 +765,11 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 			}
 			
 			//$newDemandTagId = 1039466;
-			$newDemandTagId = newDemandTagForDemo($NewVideoName);
+			$newDemandTagId = newDemandTagForDemo($NewVideoName, $DDeal);
 			$Log .= "|$When| Demand Tag ID: $newDemandTagId \n";
 			
 			if($newDemandTagId > 0){
-				associateDemandTagCreative($newDemandTagId, $newCreativeId);
+				associateDemandTagCreative($newDemandTagId, $newCreativeId, $DDeal);
 				$Log .= "|$When| Association Done: $newDemandTagId => $newCreativeId \n";
 			}else{
 				$Log .= "|$When| Fail Demand Tag Creation \n";
@@ -767,7 +779,7 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 				exit();
 			}
 			
-			if(activateDemandTag($NewVideoName, $newDemandTagId, $CURL)){
+			if(activateDemandTag($NewVideoName, $newDemandTagId, $DDeal, $CURL)){
 			
 				for($I=1; $I <= 2; $I++){
 					$Env = $I;
@@ -778,7 +790,7 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 						$Log .= "|$When| New MW SS \n";
 					}
 				
-					$SupplySourceId = newDemoSupplySource($NewVideoName, $newDemandTagId, $Env);
+					$SupplySourceId = newDemoSupplySource($NewVideoName, $newDemandTagId, $SPartner, $Env);
 					if($SupplySourceId > 0){
 						if($Env == 1){
 							$SSDT = $SupplySourceId;
@@ -828,10 +840,10 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 			
 			$Log = "|$When| Update Video - Name: $NewVideoName - ID: $ID Creative: $CreativeId \n";
 			
-			uploadVideo($CreativeId, $videoFile);
+			uploadVideo($CreativeId, $videoFile, $DPartner);
 			$Log .= "|$When| Video Uploaded: $videoFile \n";
 			
-			if(updateDemandTag($NewVideoName, $SsDt, $SsMw, $CURL)){
+			if(updateDemandTag($NewVideoName, $SsDt, $SsMw, $DDeal, $CURL)){
 				$Log .= "|$When| Updated Demand Tag Uploaded: $videoFile \n";
 				file_put_contents('/var/www/html/login/admin/lkqdimport/demos_log/' . $ID . '.txt', $Log, FILE_APPEND);
 				changeDemoStatus($ID, 1);
@@ -859,17 +871,29 @@ function newDemoSupplySource($Name, $TagId, $Env = 1, $Rev = 0, $Loop = 0, $debu
 			$SsDt = $Demo['supply_source_desktop'];
 			$SsMw = $Demo['supply_source_mobile'];
 			
+			if($ID >= 2460){				
+				$DPartner = 40256; //NEW	
+				$DDeal = 998605; //NEW
+				$SPartner = 61860; //NEW
+				$OldNew = "NEW";
+			}else{
+				$DPartner = 39629; //OLD
+				$DDeal = 989623; //OLD
+				$SPartner = 58553; //OLD
+				$OldNew = "OLD";
+			}
+			
 			$When = date('Y-m-d H:m:s');
 			
 			$Log = "|$When| Update CURL - Name: $NewVideoName - ID: $ID Creative: $CreativeId \n";
 			
 			
-			if(updateDemandTag($NewVideoName, $SsDt, $SsMw, $CURL)){
-				$Log .= "|$When| Updated Demand Tag CURL: $CURL \n";
+			if(updateDemandTag($NewVideoName, $SsDt, $SsMw, $DDeal, $CURL)){
+				$Log .= "|$When| Updated Demand Tag CURL: $CURL - $OldNew \n";
 				file_put_contents('/var/www/html/login/admin/lkqdimport/demos_log/' . $ID . '.txt', $Log, FILE_APPEND);
 				changeDemoStatus($ID, 1);
 			}else{
-				$Log .= "|$When| $Env - Fail Demand Tag Activation for CURL Update: $CURL \n";
+				$Log .= "|$When| $Env - Fail Demand Tag Activation for CURL Update: $CURL - $OldNew \n";
 				notifyFailure($Log);
 				changeDemoStatus($ID, 4);
 				file_put_contents('/var/www/html/login/admin/lkqdimport/demos_log/' . $ID . '.txt', $Log, FILE_APPEND);

@@ -76,7 +76,7 @@ function logIn($Source = 'Unknown'){
 		//"userId" => "vidoomy_raquel",
 		//"password" => 'Z,D>zQdsb48'
 		"userId" => "Fede_Vidoomy",
-		"password" => 'Malboro2929-!'
+		"password" => 'QSAs_tRv*28'
 	);
 	
 	$json_encode = json_encode($post);
@@ -738,6 +738,48 @@ function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
 		
 		return $CSVArray;
 		
+	}
+}
+
+function getSourcesByDealId(string $dealId) {
+	global $sessionId, $cookie_file;
+	$uuid = gen_uuid();
+
+	$url = 'https://api.lkqd.com/supply-tags/find-by-id?tagId=' . $dealId;
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+	curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+
+	$headers = [];
+	$headers[] = 'Authority: ui-api.lkqd.com';
+	$headers[] = 'Pragma: no-cache';
+	$headers[] = 'Cache-Control: no-cache';
+	$headers[] = 'Upgrade-Insecure-Requests: 1';
+	$headers[] = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';
+	$headers[] = 'Sec-Fetch-Mode: nested-navigate';
+	$headers[] = 'Sec-Fetch-User: ?1';
+	$headers[] = 'Accept: application/json, text/plain, */*';
+	$headers[] = 'Sec-Fetch-Site: same-site';
+	$headers[] = 'Referer: https://ui.lkqd.com/';
+	$headers[] = 'Accept-Encoding: gzip, deflate, br';
+	$headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+	$result = curl_exec($ch);
+	if (curl_errno($ch)) {
+	    return false;
+	}
+	curl_close($ch);
+	return $result;
+	if(substr($result, 0, 4) == 'HTTP'){
+		return false;
+	} else {
+		return $result;
 	}
 }
 

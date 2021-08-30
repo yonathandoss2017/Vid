@@ -21,7 +21,7 @@
 	}
 
     if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
-		$db2 = new SQL($advDev['host'], $advDev['db'], $advDev['user'], $advDev['pass']);
+		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 
 		require('config.php');
 		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);

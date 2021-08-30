@@ -119,7 +119,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//exit(0);
 	
 	$context = new \stdClass();
-	$context->sqlOuterLimit = 50000;//;
+	$context->sqlOuterLimit = 500000;//;
 	
 	$payload = new \stdClass();
 	$payload->query = $Query;
