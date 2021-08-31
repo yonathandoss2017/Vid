@@ -16,8 +16,7 @@ $db = new SQL($dbhost, $dbAdvName, $dbuser, $dbpass);
 $dt = new DateTime();
 $dt->setTimezone(new DateTimeZone('UTC'));
 
-if ($dt->format('H') <= 9){
-
+if ($dt->format('H') <= 7){
     $dateTimeConsumedBudgetFrom = date("Y-m-d H:i:s", strtotime("yesterday -1 day 00:00:00"));
     $dateTimeConsumedBudgetTo = date("Y-m-d H:i:s", strtotime("yesterday -1 day 23:59:59"));
     $dateTimeFrom = date("Y-m-d H:i:s", strtotime("yesterday 00:00:00"));
@@ -54,7 +53,7 @@ if ($dt->format('H') <= 9){
 }
 else{
     $dateTimeFrom = date("Y-m-d H:i:s", strtotime("today 00:00:00"));
-    $dateTimeTo = date("Y-m-d H:i:s", strtotime("today 15:00:00"));
+    $dateTimeTo = date("Y-m-d H:i:s", strtotime("today 13:00:00"));
 
     $sql = "SELECT r.idCampaing AS id, SUM(r.Impressions) AS actual_impressions, SUM(r.VImpressions) AS actual_viewability, SUM(r.CompleteV) AS actual_completes , SUM(r.Clicks) AS actual_clicks
         FROM reports r
