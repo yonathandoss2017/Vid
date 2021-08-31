@@ -40,8 +40,7 @@ if ($dt->format('H') <= 7){
             GROUP BY r.idCampaing
             ORDER BY r.idCampaing ASC;
         ";
-    }
-    else {
+    }else {
         $sql = "SELECT r.idCampaing AS id, SUM(r.Impressions) AS actual_impressions, SUM(r.VImpressions) AS actual_viewability, SUM(r.CompleteV) AS actual_completes , SUM(r.Clicks) AS actual_clicks
             FROM reports r
             WHERE r.idCampaing
@@ -50,8 +49,7 @@ if ($dt->format('H') <= 7){
             ORDER BY r.idCampaing ASC;
         ";
     }
-}
-else{
+}else {
     $dateTimeFrom = date("Y-m-d H:i:s", strtotime("today 00:00:00"));
     $dateTimeTo = date("Y-m-d H:i:s", strtotime("today 13:00:00"));
 
