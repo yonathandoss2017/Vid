@@ -16,8 +16,8 @@
 
 	if(!isset($_POST['uuid']) || !isset($_POST['env'])){
 		header('HTTP/1.0 403 Forbidden');
-		//echo 'Access denieddd';
-		//exit(0);
+		echo 'Access denieddd';
+		exit(0);
 	}
 
     if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
