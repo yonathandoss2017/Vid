@@ -25,6 +25,7 @@ worldcitiespop.txt
 
 vendor
 .idea
+.history/
 docker/mysql
 
 deals/log/newdeal.txt
