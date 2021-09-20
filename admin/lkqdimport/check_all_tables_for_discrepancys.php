@@ -44,6 +44,7 @@ function calculateDifference($MainValue, $CompValue){
 }
 	
 	$Date = new DateTime('yesterday');
+	$Date->modify('-2 day');
 	$CheckDate = $Date->format('Y-m-d');
 
 	$TablaName = getTableName($CheckDate);
@@ -61,7 +62,8 @@ function calculateDifference($MainValue, $CompValue){
 	$MailContent = file_get_contents('/var/www/html/login/emailstpl/check_tables.html');
 	
 	//Tabla Princial Server
-	$sql = "SELECT SUM(Coste) FROM `$TablaName` WHERE `Date` = '$CheckDate'";
+	echo $sql = "SELECT SUM(Coste) FROM `$TablaName` WHERE `Date` = '$CheckDate'";
+	//exit(0);
 	$ReportsCoste = $db->getOne($sql);
 	$MailContent = str_replace('#CosteSP#', number_format($ReportsCoste, 2, '.', ','), $MailContent);
 	$sql = "SELECT SUM(Impressions) FROM `$TablaName` WHERE `Date` = '$CheckDate'";
@@ -150,7 +152,7 @@ function calculateDifference($MainValue, $CompValue){
 	$mail->msgHTML(str_replace('#Name#', 'Fede', $MailContent));
 	$mail->send();
 	
-	//exit(0);
+	exit(0);
 	$mail2 = new PHPMailer;
 								
 	$mail2->isSMTP();

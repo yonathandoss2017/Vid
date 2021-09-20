@@ -288,6 +288,7 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
+								$FVal = mysqli_real_escape_string($db2->link, $FVal);
 								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
 								$query = $db2->query($sql);
 								if($db2->num_rows($query) > 0){
@@ -337,6 +338,7 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
+								$FVal = mysqli_real_escape_string($db2->link, $FVal);
 								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
 								$query = $db2->query($sql);
 								if($db2->num_rows($query) > 0){
@@ -456,6 +458,7 @@
 		}
 		
 		$Row = druidQuery($SQLSuperQueryT);
+		error_log($SQLSuperQueryT);
 		$Keys = $Row[0];
 		array_shift($Row);
 						

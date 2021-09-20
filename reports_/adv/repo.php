@@ -941,7 +941,7 @@
   "draw": <?php if(isset($_POST['draw'])){ echo intval($_POST['draw']); } else { echo "0"; } ?>,
   "recordsTotal": <?php echo $CntTotal; ?>,
   "recordsFiltered": <?php echo $CntTotal; ?>,
-  "data": <?php echo safe_json_encode($Data); ?>,
+  "data": <?php echo json_encode($Data); ?>,
   "dataT": <?php echo json_encode($DataT); ?>,
   "SQL": "<?php echo $SQLQuery; ?>"
 }

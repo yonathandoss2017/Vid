@@ -12,7 +12,7 @@
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	$Date = date('Y-m-d', time() - (4800 * 1));
-	//$Date = '2021-06-28';
+	//echo $Date = '2021-08-30';
 	$MonthT = date('Ym', time() - (4800 * 1));
 	//$MonthT = '202006';
 	

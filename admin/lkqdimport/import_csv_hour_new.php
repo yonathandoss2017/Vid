@@ -67,8 +67,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$HTo = 23;
 	//sleep(rand(1,90));
 	
-	$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
-	$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
+	if($Date == '2021-08-31'){
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
+		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
+	}else{
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'France');
+		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica');
+	}
+	
+	//print_r($arraySpecialFill);
+	//exit(0);
 	
 	/*
 	$new = '';
