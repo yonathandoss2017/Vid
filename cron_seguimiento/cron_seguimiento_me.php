@@ -108,23 +108,23 @@
 			$dateLY->modify('-1 year');
 
 			if(intval($date1->format('d')) > 20){
-				$Date2 = $date1->format('Y-m-') . '16';
-				$Date2Nice = '16' . $date1->format('/m/Y');
+				$Date2 = $date1->format('Y-m-16');
+				$Date2Nice = $date1->format('16/m/Y');
 
 				$Date3 = $dateLY->format('Y-m-d');
 				$Date3Nice = $dateLY->format('t/m/Y');
 
-				$Date4 = $dateLY->format('Y-m-') . '16';
-				$Date4Nice = '16' . $dateLY->format('/m/Y');
+				$Date4 = $dateLY->format('Y-m-16');
+				$Date4Nice = $dateLY->format('16/m/Y');
 			}else{
-				$Date2 = $date1->format('Y-m-') . '01';
-				$Date2Nice = '01' . $date1->format('/m/Y');
+				$Date2 = $date1->format('Y-m-01');
+				$Date2Nice = $date1->format('01/m/Y');
 
 				$Date3 = $dateLY->format('Y-m-t');
 				$Date3Nice = $dateLY->format('t/m/Y');
 
-				$Date4 = $dateLY->format('Y-m-') . '01';
-				$Date4Nice = '01' . $dateLY->format('/m/Y');
+				$Date4 = $dateLY->format('Y-m-01');
+				$Date4Nice = $dateLY->format('01/m/Y');
 			}
 
 			$MonthNice1 = "Última Quincena";
