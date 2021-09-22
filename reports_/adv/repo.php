@@ -681,6 +681,7 @@
 					$Nd++;
 				}
 				
+				$CacheArrayT = [];
 				if(array_key_exists($Nd, $DataT)){
 					$CacheArrayT['DataNF'] = $DataT[$Nd];
 				}

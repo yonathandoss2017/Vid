@@ -102,6 +102,11 @@
 		"db" => $_ENV["PUBLISHER_PROD_DB"],
 	];
 
+	$lkqdCred = [
+		"userId" => $_ENV["LKQD_USER"],
+		"password" => $_ENV["LKQD_PASS"],
+	];
+
 	$mongoUrl = "mongodb://admin:NPJWtBzZPbZ7qWZv@34.222.80.6:27017";
 	
 	date_default_timezone_set('US/Eastern');

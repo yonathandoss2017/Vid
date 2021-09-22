@@ -12,7 +12,7 @@
 	$ExtraP[9] = 33;
 	
 function logIn($Source = 'Unknown'){
-	global $sessionId, $cookie_file;
+	global $sessionId, $cookie_file, $lkqdCred;
 	
 	$headers1 = array(
 		'Accept: application/json, text/plain, */*',
@@ -64,22 +64,7 @@ function logIn($Source = 'Unknown'){
 	
 	//echo $result;
 	
-	$post = array(
-		//"userId" => "Vidoomy_Eric",
-		//"password" => 'Vidoomy_Guau2020'
-		//"password" => 'pitonaS29'
-		//"password" => 'VidooPass_2021'
-		//"password" => 'VidoomyPassword_202$'
-		//"password" => 'jnsjJHs7ha_8jas$'
-		//"password" => 'LKQDVidoomy2021%'
-		
-		//"userId" => "vidoomy_raquel",
-		//"password" => 'Z,D>zQdsb48'
-		"userId" => "Fede_Vidoomy",
-		"password" => 'QSAs_tRv*28'
-	);
-	
-	$json_encode = json_encode($post);
+	$json_encode = json_encode($lkqdCred);
 	$length = strlen($json_encode);
 	
 	$headers3 = array(

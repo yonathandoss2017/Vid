@@ -11,8 +11,8 @@ define('PERCENTAGE_100', 100);
 define('IMPRESSIONS_LIMIT_VTR', 6667);
 define('IMPRESSIONS_LIMIT_CTR', 3334);
 
-require('/var/www/html/login/admin/lkqdimport/common.php');
 require('/var/www/html/login/config.php');
+require('/var/www/html/login/admin/lkqdimport/common.php');
 require('/var/www/html/login/db.php');
 
 $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie5.txt';
