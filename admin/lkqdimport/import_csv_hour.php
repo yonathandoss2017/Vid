@@ -367,7 +367,6 @@
 			    $ThirdQuartiles = $Da['ThirdQuartiles'];
 			    $CompletedViews = $Da['CompletedViews'];
 				
-				/*
 				if(array_key_exists($idC, $Countries){
 					$idCountry = $Countries[$idC];
 				}else{
@@ -376,7 +375,6 @@
 					
 					$Countries[$idC] = $idCountry;
 				}
-				*/
 				
 				$idCountry = $Da['Country'];
 				
