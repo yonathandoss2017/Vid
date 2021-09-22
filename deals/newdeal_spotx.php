@@ -5,25 +5,17 @@
 	ini_set('memory_limit', '-1');
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	define('CONST',1);
+	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/reports_/adv/config.php');
 	require('/var/www/html/login/db.php');
-	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	require('/var/www/html/login/deals/spotx_api.php');
 
-	
-	$dbuser3 = "root";
-	$dbpass3 = "pthFTa8Lp25xs7Frkqgkz5HRebmwVGPY";
-	$dbhost3 = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy-advertisers-panel";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 	
 	/*
 		PRE-PRODUCCION
-		$dbuser3 = "root";
-		$dbpass3 = "Kw6tbHnTtukP3tV2pDqBs7xP6TG2DhFe";
-		$dbhost3 = "aazw79txt1iy6x.cme5dsqa4tew.us-east-2.rds.amazonaws.com";
-		$dbname3 = "vidoomy-advertisers-panel";
-		$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+		$db3 = new SQL($advPre["host"], $advPre["db"], $advPre["user"], $advPre["pass"]);
 	*/
 
 	require('/var/www/html/login/reports_/adv/common.php');

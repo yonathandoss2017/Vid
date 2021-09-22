@@ -20,7 +20,7 @@
 		exit(0);
 	}
 
-    if ($_POST['env'] == 'dev' || $_ENV["APP_ENV"] == 'local') {
+    if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local')) {
 		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 
 		require('config.php');
@@ -59,7 +59,7 @@
 
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
 
-    if ($_ENV["APP_ENV"] != 'local') {
+    if (!array_key_exists("APP_ENV", $_ENV) || $_ENV["APP_ENV"] != 'local') {
         $sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
         $query = $db2->query($sql);
         if($db2->num_rows($query) > 0){
@@ -84,7 +84,7 @@
             echo 'Access denied';
             exit(0);
         }
-    } else if ($_ENV["APP_ENV"] == 'local') {
+    } else if (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local') {
         $dbAdvPanelLocal = new SQL($advPanelLocal['host'], $advPanelLocal['db'], $advPanelLocal['user'], $advPanelLocal['pass']);
 
         $sql   = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";
@@ -941,7 +941,7 @@
   "draw": <?php if(isset($_POST['draw'])){ echo intval($_POST['draw']); } else { echo "0"; } ?>,
   "recordsTotal": <?php echo $CntTotal; ?>,
   "recordsFiltered": <?php echo $CntTotal; ?>,
-  "data": <?php echo json_encode($Data); ?>,
+  "data": <?php echo safe_json_encode($Data); ?>,
   "dataT": <?php echo json_encode($DataT); ?>,
   "SQL": "<?php echo $SQLQuery; ?>"
 }

@@ -135,11 +135,7 @@
 	}
 	echo 'OK 1';
 
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	$Day = $Date;
 	
@@ -180,13 +176,7 @@
 	}
 	
 	echo ' OK 2';
-	
-	
-	$dbuser3 = "root";
-	$dbpass3 = "vidooDev-Pass_2020";
-	$dbhost3 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db3 = new SQL($pubDev01['host'], $pubDev01['db'], $pubDev01['user'], $pubDev01['pass']);
 	
 	$Day = $Date;
 	

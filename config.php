@@ -60,11 +60,25 @@
 		"db" => $_ENV["ADVERTISERS_DEV_03_DB"],
 	];
 
+	$pubDev01 = [
+		"user" => $_ENV["PUBLISHER_DEVELOPMENT_01_USER"],
+		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_01_PASSWORD"],
+		"host" => $_ENV["PUBLISHER_DEVELOPMENT_01_HOST"],
+		"db" => $_ENV["PUBLISHER_DEVELOPMENT_01_DB"],
+	];
+
 	$pubDev02 = [
 		"user" => $_ENV["PUBLISHER_DEVELOPMENT_02_USER"],
 		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_02_PASSWORD"],
 		"host" => $_ENV["PUBLISHER_DEVELOPMENT_02_HOST"],
 		"db" => $_ENV["PUBLISHER_DEVELOPMENT_02_DB"],
+	];
+
+	$pubDev03 = [
+		"user" => $_ENV["PUBLISHER_DEVELOPMENT_03_USER"],
+		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_03_PASSWORD"],
+		"host" => $_ENV["PUBLISHER_DEVELOPMENT_03_HOST"],
+		"db" => $_ENV["PUBLISHER_DEVELOPMENT_03_DB"],
 	];
 
 	$pubIntegration = [

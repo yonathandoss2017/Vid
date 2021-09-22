@@ -15,13 +15,8 @@
 	require('/var/www/html/login/admin/lkqdimport/common.php');
 	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	
-	$dbuser2 = "root";
-	$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-	$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	$db3 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
+	$db3 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	$sql = "SELECT user.id, user.username, publisher.account_manager_id FROM user 
 	INNER JOIN publisher ON user.id = publisher.user_id

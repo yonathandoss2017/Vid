@@ -9,12 +9,7 @@
 	require('/var/www/html/login/db.php');
 	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-
-	$dbuser2 = "root";
-	$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-	$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 		
 	$Datem10 = date('Y-m-d', time() - 10 * 24 * 3600);
 	$ArrayCurrency = array();
@@ -29,7 +24,7 @@
 	    SUM(Coste) AS Coste,
 	    SUM(CosteEur) AS CosteEur,
 	    Date 
-	    FROM reports_resume202106 WHERE idUser in (29473, 28303) AND Coste > 0 
+	    FROM reports_resume202109 WHERE idUser in (3921, 27988, 3920) AND Coste > 0 
     GROUP BY idUser, Country, Date"; // AND Date BETWEEN '2020-04-01' AND '2020-04-12'
 	//idUser = 4258 OR
 	$N = 0;

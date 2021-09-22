@@ -93,7 +93,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 			
 			$CheckV = false;
-			if($DealID == 'VDMY_419653868'){
+			if($DealID == 'VDMY_419653868' || $DealID == 'VDMY_426431488'){
 				$CheckV = true;
 			}	
 
@@ -261,7 +261,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 								WHERE id = $idStat LIMIT 1";
 							//exit(0);
 							$db->query($sql);
-							echo $sql . "\n";	
+							//echo $sql . "\n";	
 						}
 					}
 				}

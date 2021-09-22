@@ -14,13 +14,7 @@
 	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 		
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
-	
-	$dbuser3 = "root";
-	$dbpass3 = "pthFTa8Lp25xs7Frkqgkz5HRebmwVGPY";
-	//$dbhost3 = "aa4mgb1tsk2y6v.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbhost3 = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy-advertisers-panel";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 	
 	$date1 = new DateTime();
 	$date1->add(DateInterval::createFromDateString('today'));

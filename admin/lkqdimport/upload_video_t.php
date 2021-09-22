@@ -7,19 +7,8 @@
 	
 	$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 	
-	
-	$dbuser_adv_pre = "root";
-	$dbpass_adv_pre = "Kw6tbHnTtukP3tV2pDqBs7xP6TG2DhFe";
-	$dbhost_adv_pre = "aazw79txt1iy6x.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname_adv_pre = "vidoomy-advertisers-panel";
-//	$db = new SQL($dbhost_adv_pre, $dbname_adv_pre, $dbuser_adv_pre, $dbpass_adv_pre);
-
-		
-	$dbuser_adv_prod = "root";
-	$dbpass_adv_prod = "pthFTa8Lp25xs7Frkqgkz5HRebmwVGPY";
-	$dbhost_adv_prod = "aa14extn6ty9ilx.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname_adv_prod = "vidoomy-advertisers-panel";
-	$db = new SQL($dbhost_adv_prod, $dbname_adv_prod, $dbuser_adv_prod, $dbpass_adv_prod);
+//	SQL($advPre["host"], $advPre["db"], $advPre["user"], $advPre["pass"]);
+	$db = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 
 function notifyFailure($Log = ''){
 	$mail = new PHPMailer;

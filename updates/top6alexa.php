@@ -8,10 +8,7 @@
 	require('/var/www/html/login/constantes.php');
 	require('/var/www/html/login/db.php');
 
-	$dbuser3 = "root";
-	$dbpass3 = "vidooDev-Pass_2020";
-	$dbhost3 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";	$dbname3 = "vidoomy";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db3 = new SQL($pubDev01['host'], $pubDev01['db'], $pubDev01['user'], $pubDev01['pass']);
 	
 	$sql = "SELECT DISTINCT(alexa_domain_id) AS alexa_domain_id FROM vidoomy.alexa_traffic_data ";
 	$query = $db3->query($sql);

@@ -15,18 +15,10 @@
 		exit(0);
 	}
 	
-	if($_POST['env'] == 'prod'){
-		$dbuser2 = "root";
-		$dbpass2 = "ViDo0-PROD_2020";
-		$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	}else{
-		$dbuser2 = "root";
-		$dbpass2 = "vidooDev-Pass_2020";
-		$dbhost2 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	if ($_POST['env'] == 'prod') {
+		$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
+	} else {
+		$db2 = new SQL($pubDev01['host'], $pubDev01['db'], $pubDev01['user'], $pubDev01['pass']);
 	}
 	
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);

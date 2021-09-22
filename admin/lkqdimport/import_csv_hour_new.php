@@ -133,38 +133,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//print_r($ImportData);
 	//exit(0);
 	
-	
-	
-	/*
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	*/
-	
-	$dbuser2 = "root";
-	$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-	$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	
-	/*
-	$dbuser3 = "root";
-	$dbpass3 = "vidooDev-Pass_2020";
-	$dbhost3 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
-	
-	$dbuser3 = "root";
-	$dbpass3 = "N6kdTJ66kFjNHByUU9tJW5V";
-	$dbhost3 = "vidoomy-integration.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname3 = "staging";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
-	*/
-
-
-
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 
 	//4.5 Hoy, 3.5 Viernes, 3 2 semanas
 	//1.20, 1.29
