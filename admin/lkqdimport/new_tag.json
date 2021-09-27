@@ -2,7 +2,7 @@
    "tagId":null,
    "dealCpm":0.1,
    "dealCpmType":"fixed",
-   "dealId":989623,
+   "dealId":{DDeal},
    "dealTier":1,
    "dealStatus":"active",
    "name":"{NAME}",

@@ -16,37 +16,15 @@
 	}
 	
 	if($_POST['env'] == 'prod'){
-		/*
-		$dbuser2 = "root";
-		$dbpass2 = "ViDo0-PROD_2020";
-		$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-		*/
-		$dbuser2 = "root";
-		$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-		$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+		$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 		
-	}else{
-		/*
-		$dbuser2 = "root";
-		$dbpass2 = "vidooDev-Pass_2020";
-		$dbhost2 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-		$dbname2 = "vidoomy";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-		*/
-		$dbuser2 = "root";
-		$dbpass2 = "N6kdTJ66kFjNHByUU9tJW5V";
-		$dbhost2 = "vidoomy-integration.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-		$dbname2 = "staging";
-		$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-		
+	} else {
+		$db2 = new SQL($pubStaging['host'], $pubStaging['db'], $pubStaging['user'], $pubStaging['pass']);
+
 	}
 	
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-	
+
 	$sql = "SELECT report_key.*, user.show_only_own_stats FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
 	$query = $db2->query($sql);
 	if($db2->num_rows($query) > 0){
@@ -241,7 +219,7 @@
 		$SQLGroups = "";
 		
 		if($IncludeTime){
-			
+
 			$SQLDimensions .= $TimesSQL[$RepType]['Name'];
 			$SQLDimensionsOverall .= $TimesSQL[$RepType]['Name'];
 			if($TimesSQL[$RepType]['GroupBy'] !== false){
@@ -324,7 +302,7 @@
 				$Or = "";
 				if($KInclude == 'exclude'){
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range'){
+						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range' && $KFilter != 'player'){
 							$arFv = explode(' ', $FVal);
 							$FVal = str_replace('*', '%', $arFv[0]);
 							$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
@@ -348,7 +326,7 @@
 					}
 				}else{
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range'){
+						if($KFilter != 'publisher_manager' && $KFilter != 'publisher_manager_head' && $KFilter != 'country' && $KFilter != 'hour-range' && $KFilter != 'player'){
 							$arFv = explode(' ', $FVal);
 							$FVal = str_replace('*', '%', $arFv[0]);
 							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";

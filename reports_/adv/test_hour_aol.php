@@ -19,7 +19,7 @@
 	$curl = curl_init();
 	
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://id.b2b.oath.com/identity/oauth2/access_token",
+	  CURLOPT_URL => "https://id.b2b.verizonmedia.com/identity/oauth2/access_token",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_MAXREDIRS => 10,

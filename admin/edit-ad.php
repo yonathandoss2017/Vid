@@ -9,14 +9,10 @@
 	require('../db.php');
 	require('../common.lib.php');
 	//require('countries.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	require('libs/display.lib.php');
-	
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+
+	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);	
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	if(@$_SESSION['Admin'] >= 1){
 		

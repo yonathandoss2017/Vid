@@ -67,8 +67,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$HTo = 23;
 	//sleep(rand(1,90));
 	
-	$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
-	$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
+	if($Date == '2021-08-31'){
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
+		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
+	}else{
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'France');
+		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica');
+	}
+	
+	//print_r($arraySpecialFill);
+	//exit(0);
 	
 	/*
 	$new = '';
@@ -125,38 +133,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//print_r($ImportData);
 	//exit(0);
 	
-	
-	
-	/*
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	*/
-	
-	$dbuser2 = "root";
-	$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-	$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	
-	/*
-	$dbuser3 = "root";
-	$dbpass3 = "vidooDev-Pass_2020";
-	$dbhost3 = "publisher-panel-for-dev.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
-	
-	$dbuser3 = "root";
-	$dbpass3 = "N6kdTJ66kFjNHByUU9tJW5V";
-	$dbhost3 = "vidoomy-integration.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname3 = "staging";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
-	*/
-
-
-
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 
 	//4.5 Hoy, 3.5 Viernes, 3 2 semanas
 	//1.20, 1.29
@@ -244,7 +221,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 					'Thechronicleherald-LL', //58220, //Thechronicleherald
 					'motorsportnetwork-IB', //58049, //motorsportnetwork-IB
 					'NPMedia-JC', //60966, //NPMedia
-					'CiaoPeopleIT-RC' //61380 //CiaoPeopleIT
+					'CiaoPeopleIT-RC', //61380 //CiaoPeopleIT
+					'semseoymasonlinemarketing', //59904 semseoymasonlinemarketing
 				);
 				
 				if($OriginalImpressions > 0){
@@ -402,84 +380,87 @@ function calcPercents($Perc , $Impressions, $Complete){
 					if(in_array($Country, $arraySpecialFill)){
 						//echo "Is Country $Country - ";
 						if(!in_array($Domain, $BLDomains[$Country])){
-							//echo "$Domain Not in BL - ";
-							if($formatLoads >= 2){
-								
-								// && ($Hour > 10 || $Date != '2021-04-15'
-								 
-								if(in_array($Country, $SpecialFill25)){
-									//echo "$Country $Date $Hour \n";
+							
+							if(intval($idUser) != 28336){
+							
+								//echo "$Domain Not in BL - ";
+								if($formatLoads >= 2){
 									
-									if(intval($TagId) % 2 == 0){
-										if($Hour >= 10){
-											$HourI = $Hour / 2; 
-											if($HourI >= 10){
-												$HourI = $HourI / 2; 
+									// && ($Hour > 10 || $Date != '2021-04-15'
+									 
+									if(in_array($Country, $SpecialFill25)){
+										//echo "$Country $Date $Hour \n";
+										
+										if(intval($TagId) % 2 == 0){
+											if($Hour >= 10){
+												$HourI = $Hour / 2; 
+												if($HourI >= 10){
+													$HourI = $HourI / 2; 
+												}
+											}else{
+												$HourI = $Hour;
 											}
 										}else{
-											$HourI = $Hour;
+											if($Hour >= 6){
+												$HourI = $Hour / 3;
+											}else{
+												$HourI = $Hour;
+											}									
 										}
-									}else{
-										if($Hour >= 6){
-											$HourI = $Hour / 3;
+										
+										$Multiplier = (12.5 - $HourI) / 100;
+										$Impressions = intval($formatLoads * $Multiplier);
+										
+										$Revenue = $Impressions * 0.0030;
+										$Coste = $Revenue * 0.4;
+										
+										if ($idSite % 2 == 0){
+											$VTRValue = 720 - $Day + $Month + $Hour;
 										}else{
-											$HourI = $Hour;
-										}									
-									}
-									
-									$Multiplier = (12.5 - $HourI) / 100;
-									$Impressions = intval($formatLoads * $Multiplier);
-									
-									$Revenue = $Impressions * 0.0030;
-									$Coste = $Revenue * 0.4;
-									
-									if ($idSite % 2 == 0){
-										$VTRValue = 720 - $Day + $Month + $Hour;
+											$VTRValue = 720 + $Day - $Hour - $Month;
+										}
+										$VTRValue = $VTRValue / 1000;
+										$CompletedViews = intval($Impressions * $VTRValue);
+										
 									}else{
-										$VTRValue = 720 + $Day - $Hour - $Month;
-									}
-									$VTRValue = $VTRValue / 1000;
-									$CompletedViews = intval($Impressions * $VTRValue);
 									
-								}else{
-								
-									//echo "$formatLoads >= 2 - ";
-									if(intval($TagId) % 2 == 0){
-										if($Hour >= 10){
-											$HourI = $Hour / 2; 
-											if($HourI >= 10){
-												$HourI = $HourI / 2; 
+										//echo "$formatLoads >= 2 - ";
+										if(intval($TagId) % 2 == 0){
+											if($Hour >= 10){
+												$HourI = $Hour / 2; 
+												if($HourI >= 10){
+													$HourI = $HourI / 2; 
+												}
+											}else{
+												$HourI = $Hour;
 											}
 										}else{
-											$HourI = $Hour;
+											if($Hour >= 6){
+												$HourI = $Hour / 3;
+											}else{
+												$HourI = $Hour;
+											}									
 										}
-									}else{
-										if($Hour >= 6){
-											$HourI = $Hour / 3;
+										
+										$Multiplier = (25 - $HourI) / 100;
+										$Impressions = intval($formatLoads * $Multiplier);
+										
+										$Revenue = $Impressions * 0.0030;
+										$Coste = $Revenue * 0.4;
+										
+										if ($idSite % 2 == 0){
+											$VTRValue = 720 - $Day + $Month + $Hour;
 										}else{
-											$HourI = $Hour;
-										}									
+											$VTRValue = 720 + $Day - $Hour - $Month;
+										}
+										$VTRValue = $VTRValue / 1000;
+										$CompletedViews = intval($Impressions * $VTRValue);
+										
 									}
 									
-									$Multiplier = (25 - $HourI) / 100;
-									$Impressions = intval($formatLoads * $Multiplier);
-									
-									$Revenue = $Impressions * 0.0030;
-									$Coste = $Revenue * 0.4;
-									
-									if ($idSite % 2 == 0){
-										$VTRValue = 720 - $Day + $Month + $Hour;
-									}else{
-										$VTRValue = 720 + $Day - $Hour - $Month;
-									}
-									$VTRValue = $VTRValue / 1000;
-									$CompletedViews = intval($Impressions * $VTRValue);
-									
+									//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
 								}
-								
-								//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
 							}
-						
 						}
 						//echo "\n";
 					}

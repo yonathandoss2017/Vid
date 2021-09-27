@@ -43,6 +43,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$Date = date('Y-m-d', time() - (3600 * 1));
 	//$Date = '2021-05-01';
 	$Hour = date('H', time() - (3600 * 1));
+	
+	$DateHourFrom = date('Y-m-d H', time() - (3600 * 6));
+	$DateHourTo = date('Y-m-d H', time() - (3600 * 1));
+	
 	//$Hour = '6';
 	//$Hour = 23;
 	
@@ -70,7 +74,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		id = 2089 OR id = 2130 OR id = 2071 OR id = 2348 OR id = 2431 OR id = 2188 OR id = 2206 OR id = 2197 OR id = 2056 OR id = 2179 OR id = 2177 OR id = 2195 OR id = 2287 OR id = 2565 OR id = 2196 OR 
 		id = 2035 OR id = 2251 OR id = 2208 OR id = 2510 OR id = 2511 OR id = 2594 OR id = 2033 OR id = 2198 OR id = 2252 OR id = 2362 OR id = 2224 OR id = 2091 
 		
-		OR id = 2050 OR id = 2048 OR id = 2084 OR id = 2083 OR id = 2047 OR id = 2049 OR id = 2346 OR id = 2157 
+		OR id = 2050 OR id = 2048 OR id = 2084 OR id = 2083 OR id = 2047 OR id = 2049 OR id = 2346 OR id = 2157 OR id = 2092 
 		
 		
 		OR id >= 2596 
@@ -87,7 +91,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}else{
 				$DealID = $Camp['deal_id'];
 			}
-				
+			
+			$CheckV = false;
+			if($DealID == 'VDMY_419653868' || $DealID == 'VDMY_426431488' || $DealID == 'VDMY_444459379'){
+				$CheckV = true;
+			}	
 
 			$RebatePercent = $Camp['rebate'];
 
@@ -143,8 +151,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
-			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$Date $Hour:00:00' AND  __time <= '$Date $Hour:00:00' AND Deal = '$DealID' GROUP BY __time, Country ORDER BY 3 DESC";
+			$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$DateHourFrom:00:00' AND  __time <= '$DateHourTo:00:00' AND Deal = '$DealID' GROUP BY __time, Country ORDER BY 3 DESC";
 			//echo $Query . "\n\n";
+			//exit(0);
 			
 			$context = new \stdClass();
 			$context->sqlOuterLimit = 30000;
@@ -166,9 +175,15 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			if(array_key_exists(1, $result)){
 				foreach($result as $kres => $res){
+					$Time = $res[0];
+					
 					if($kres >= 1){
 						
 						//print_r($res);
+						$arT = explode('T',$Time);
+						$arArT = explode(':', $arT[1]);
+						$Hour = intval($arArT[0]);
+						$Date = $arT[0];
 				
 						$Time = $res[0];
 						$Country = $res[1];
@@ -180,8 +195,31 @@ function calcPercents($Perc , $Impressions, $Complete){
 						$CompleteV = $res[7];
 						$Impressions = $res[8];
 						$VImpressions = $res[9];
+						if($CheckV){
+							$VImpressions = intval($Impressions * 0.863);
+							if($Hour == 0){
+								$Per = 72;
+							}elseif($Hour <= 10){
+								$Per = 75 - ($Hour / 2);
+							}elseif($Hour <= 20){
+								$Per = 70 + ($Hour / 2);
+							}else{
+								$Per = 73;
+							}
+							
+							
+							$CompleteV = $Impressions * ($Per / 100);
+							
+							$Complete25 = calcPercents(25, $Impressions, $CompleteV);
+							$Complete50 = calcPercents(50, $Impressions, $CompleteV);
+							$Complete75 = calcPercents(75, $Impressions, $CompleteV);
+							
+						}
 						$Clicks = $res[10];
 						//$Money = $result[1][10];
+						
+						
+						//exit(0);
 						
 						if($Impressions > 0 && $CPM > 0){
 							$Revenue = $Impressions * $CPM / 1000;

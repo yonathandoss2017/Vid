@@ -12,12 +12,7 @@
 	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 	
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
-	
-	$dbuser3 = "root";
-	$dbpass3 = "pthFTa8Lp25xs7Frkqgkz5HRebmwVGPY";
-	$dbhost3 = "aa4mgb1tsk2y6v.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname3 = "vidoomy-advertisers-panel";
-	$db3 = new SQL($dbhost3, $dbname3, $dbuser3, $dbpass3);
+	$db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 	
 	//$argv[1] = $_GET['d'];
 	
@@ -260,7 +255,11 @@ function checkActiveSales($idAccM){
 					$AccomplishPorc = '100';
 				}
 				
-				$indexCurrentRevenue = round($CurrentRevenue * 1000) . $idUser;
+				$indexCurrentRevenue = round($CurrentRevenue * 100000);
+				
+				if($indexCurrentRevenue == 0){
+					$indexCurrentRevenue = $idUser;
+				}
 				
 				if(!array_key_exists($indexCurrentRevenue, $ArrayRowsSalesManagersRevenue)){
 					$ArrayRowsSalesManagersRevenue[$indexCurrentRevenue] = '';
@@ -444,7 +443,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 					
 					$ArrayRowsADVVariationsIn[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:green;">' . $Row['SalesManager'] . '</td>
@@ -478,7 +478,8 @@ function checkActiveSales($idAccM){
 						
 				if($Porc >= 15 && $Dif >= 4){
 					
-					$indexDif = round($Dif * 1000);
+					//$indexDif = round($Dif * 1000);
+					$indexDif = round($YesterdayRevenue * 100000);
 				
 					$ArrayRowsADVVariationsDe[$indexDif] = '<tr style="background-color: #BGC#;">
 					    <td style="font-family: sans-serif; color:red;">' . $Row['SalesManager'] . '</td>

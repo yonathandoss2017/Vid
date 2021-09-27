@@ -85,7 +85,6 @@
 				$Date4 = $dateLM->format('Y-m-') . '16';
 				$Date4Nice = '16' . $dateLM->format('/m/Y');
 			}
-		
 		}elseif($argv[1] == 'quincenal-anual'){
 			$TPL = 'seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal - Anual';

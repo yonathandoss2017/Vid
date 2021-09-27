@@ -1,10 +1,15 @@
 <?php
 	@require_once("secure.php");
-	require_once("/var/www/html/vendor/autoload.php");
+
+    if (file_exists("/var/www/html/vendor/autoload.php")) {
+        require_once("/var/www/html/vendor/autoload.php");
+    } else {
+        require_once("../vendor/autoload.php");
+    }
 
 	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 	$dotenv->load();
-	
+
 	$dbuser = $_ENV["LOCAL_USER"];
 	$dbpass = $_ENV["LOCAL_PASSWORD"];
 	$dbhost = $_ENV["LOCAL_HOST"];
@@ -34,11 +39,32 @@
 		"db" => $_ENV["ADVERTISERS_PRE_DB"],
 	];
 
-	$advDev = [
-		"user" => $_ENV["ADVERTISERS_DEV_USER"],
-		"pass" => $_ENV["ADVERTISERS_DEV_PASSWORD"],
-		"host" => $_ENV["ADVERTISERS_DEV_HOST"],
-		"db" => $_ENV["ADVERTISERS_DEV_DB"],
+	$advDev01 = [
+		"user" => $_ENV["ADVERTISERS_DEV_01_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_01_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_01_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_01_DB"],
+	];
+
+	$advDev02 = [
+		"user" => $_ENV["ADVERTISERS_DEV_02_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_02_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_02_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_02_DB"],
+	];
+
+	$advDev03 = [
+		"user" => $_ENV["ADVERTISERS_DEV_03_USER"],
+		"pass" => $_ENV["ADVERTISERS_DEV_03_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_DEV_03_HOST"],
+		"db" => $_ENV["ADVERTISERS_DEV_03_DB"],
+	];
+
+	$pubDev01 = [
+		"user" => $_ENV["PUBLISHER_DEVELOPMENT_01_USER"],
+		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_01_PASSWORD"],
+		"host" => $_ENV["PUBLISHER_DEVELOPMENT_01_HOST"],
+		"db" => $_ENV["PUBLISHER_DEVELOPMENT_01_DB"],
 	];
 
 	$pubDev02 = [
@@ -46,6 +72,13 @@
 		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_02_PASSWORD"],
 		"host" => $_ENV["PUBLISHER_DEVELOPMENT_02_HOST"],
 		"db" => $_ENV["PUBLISHER_DEVELOPMENT_02_DB"],
+	];
+
+	$pubDev03 = [
+		"user" => $_ENV["PUBLISHER_DEVELOPMENT_03_USER"],
+		"pass" => $_ENV["PUBLISHER_DEVELOPMENT_03_PASSWORD"],
+		"host" => $_ENV["PUBLISHER_DEVELOPMENT_03_HOST"],
+		"db" => $_ENV["PUBLISHER_DEVELOPMENT_03_DB"],
 	];
 
 	$pubIntegration = [
@@ -67,6 +100,11 @@
 		"pass" => $_ENV["PUBLISHER_PROD_PASSWORD"],
 		"host" => $_ENV["PUBLISHER_PROD_HOST"],
 		"db" => $_ENV["PUBLISHER_PROD_DB"],
+	];
+
+	$lkqdCred = [
+		"userId" => $_ENV["LKQD_USER"],
+		"password" => $_ENV["LKQD_PASS"],
 	];
 
 	$mongoUrl = "mongodb://admin:NPJWtBzZPbZ7qWZv@34.222.80.6:27017";

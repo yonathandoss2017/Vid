@@ -1,6 +1,8 @@
 reports_/adv/ODS-PHP-API-Client
 
 reports_/adv/cookie_xandr
+reports_/adv/auth
+reports_/adv/auth_spring
 reports_/adv/xandr.csv
 reports_/.history/
 
@@ -21,3 +23,10 @@ updates/PhpSpreadsheet-master
 worldcitiespop.txt
 
 .env
+.env.local
+
+vendor
+.idea
+docker/mysql
+
+deals/log/newdeal.txt

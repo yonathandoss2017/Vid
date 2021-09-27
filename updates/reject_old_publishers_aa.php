@@ -9,14 +9,10 @@
 	require('/var/www/html/login/db.php');
 	require('/var/www/html/login/common.lib.php');
 	//require('countries.php');
-	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	require('/var/www/html/login/admin/libs/display.lib.php');
-	
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+
+	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	$sql = "SELECT * FROM users WHERE AccM = 9999 AND id <= 26614";
 	$query = $db->query($sql);

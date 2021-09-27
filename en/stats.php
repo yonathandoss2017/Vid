@@ -49,12 +49,8 @@
 			
 			$sql = "UPDATE " . USERS . " SET lastlogin = '" . time() . "' WHERE id = '$logID' LIMIT 1";
 			$db->query($sql);
-			
-			$dbuser2 = "root";
-			$dbpass2 = "ViDo0-PROD_2020";
-			$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-			$dbname2 = "vidoomy";
-			$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+
+			$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 			
 			$TimeStamp = date('Y-m-d H:i:s');
 			$sql = "UPDATE user SET last_login = '$TimeStamp' WHERE id = '$logID' LIMIT 1";
@@ -104,12 +100,8 @@
 				
 				$sql = "UPDATE " . USERS . " SET lastlogin = '" . time() . "' WHERE id = '$logID' LIMIT 1";
 				$db->query($sql);
-				
-				$dbuser2 = "root";
-				$dbpass2 = "ViDo0-PROD_2020";
-				$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-				$dbname2 = "vidoomy";
-				$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+
+				$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 				
 				$TimeStamp = date('Y-m-d H:i:s');
 				$sql = "UPDATE user SET last_login = '$TimeStamp' WHERE id = '$logID' LIMIT 1";

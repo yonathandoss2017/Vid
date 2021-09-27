@@ -4,7 +4,7 @@ function getCountrySpotXID($CountryName, $Token){
 	
 	$curl2 = curl_init();
 	curl_setopt_array($curl2, array(
-	  CURLOPT_URL => 'https://publisher-api.spotxchange.com/1.1/geography/country?$search=' . $CountryName,
+	  CURLOPT_URL => 'https://publisher-api.spotxchange.com/1.1/geography/country?$search=' . urlencode($CountryName),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_TIMEOUT => 0,
@@ -19,6 +19,8 @@ function getCountrySpotXID($CountryName, $Token){
 	
 	$Json = curl_exec($curl2);
 	curl_close($curl2);
+	
+	//echo $Json;
 				
 	$CountriesData = json_decode($Json);
 	
