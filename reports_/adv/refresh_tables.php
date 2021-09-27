@@ -225,12 +225,12 @@
 		}
 	}
 	
-	$sql = "TRUNCATE campaign_country";
+	$sql = "TRUNCATE campaign_country_new";
 	$db->query($sql);
 	
 	$result = mysqli_query($db2->link, "SELECT * FROM campaign_country");
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-		$sql = "INSERT INTO campaign_country (".implode(", ",array_keys($row)).") VALUES ('".implode("', '",array_values($row))."')";
+		$sql = "INSERT INTO campaign_country_new (".implode(", ",array_keys($row)).") VALUES ('".implode("', '",array_values($row))."')";
 	    mysqli_query($db->link, $sql);
 	}
 

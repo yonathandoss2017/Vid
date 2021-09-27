@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-09-07';
-	$idCampaing = 4050;
+	$Date = '2021-09-24';
+	$idCampaing = 3377;
 	
 	
 	//exit(0);
@@ -112,19 +112,29 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 			
 			
-	$sql = "SELECT SUM(Impressions) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
-	$CurrentImpressionesOnCamp = $db->getOne($sql);
+	//$sql = "SELECT SUM(Impressions) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
+	//$CurrentImpressionesOnCamp = $db->getOne($sql);
 	//$sql = "SELECT SUM(CompleteV) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
 	//$CurrentCompleteVOnCamp = $db->getOne($sql);
-	$RestImpressions = 200;
+	$sql = "SELECT SUM(VImpressions) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
+	$CurrentVImpressionesOnCamp = $db->getOne($sql);
+	//$RestImpressions = 200;
 	//$SumCompleteV = 1500;
+	$SumVImpressions = 17000;
 	
-	$RestPercent = $RestImpressions / $CurrentImpressionesOnCamp * 100;
-	$PercCh = (100 - $RestPercent) / 100;
+	//$RestPercent = $RestImpressions / $CurrentImpressionesOnCamp * 100;
+	//$PercCh = (100 - $RestPercent) / 100;
 	//$SumPercent = $SumCompleteV / $CurrentCompleteVOnCamp;
 	//$PercCh = 1 + $SumPercent;
+	
+	$SumPercent = $SumVImpressions / $CurrentVImpressionesOnCamp;
+	echo $PercCh = 1 + $SumPercent;
+	echo "\n\n";
+	
+	
 	$TotImps = 0;
 	$TotCompleteV = 0;
+	$TotVImps = 0;
 	
 	//echo $PercCh;
 	//exit(0);
@@ -146,14 +156,18 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			//$Requests = intval($Row['Requests'] * $PercCh);
 			//$Bids = intval($Row['Bids'] * $PercCh);
-			$Impressions = round($Row['Impressions'] * $PercCh);
+			//$Impressions = round($Row['Impressions'] * $PercCh);
 			//$Impressions = $Row['Impressions'];
-			$CompleteV = round($Row['CompleteV'] * $PercCh);
+			//$CompleteV = round($Row['CompleteV'] * $PercCh);
 			$CompleteV = $Row['CompleteV'];
 			
+			$VImpressions = round($Row['VImpressions'] * $PercCh);
+			
+			/*
 			$Complete25 = calcPercents(25, $Impressions, $CompleteV);
 			$Complete50 = calcPercents(50, $Impressions, $CompleteV);
 			$Complete75 = calcPercents(75, $Impressions, $CompleteV);
+			*/
 			
 			if($CCTR === true){
 				$CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
@@ -180,7 +194,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$Complete50 = intval($Row['Complete50'] * $PercCh);
 				$Complete75 = intval($Row['Complete75'] * $PercCh);
 			}
-			*/		
+			*/	
+			/*
 			if($CView === true){
 				$ViewFrom = $CampaingData[$idCampaing]['ViewFrom'] * 100;
 				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
@@ -195,7 +210,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			if($VImpressions > $Impressions){
 				$VImpressions = $Impressions;
 			}
-			
+			*/
+			/*
 			if($Impressions > 0 && $CPM > 0){
 				$Revenue = $Impressions * $CPM / 1000;
 			}elseif($CompleteV > 0 && $CPV > 0){
@@ -203,9 +219,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}else{
 				$Revenue = $Row['Revenue'] * $PercCh;
 			}
-			
+			*/
 			//$Rebate = $Row['Rebate'] * $PercCh;
-			$Rebate = $RebatePer * $Revenue / 100;
+			//$Rebate = $RebatePer * $Revenue / 100;
 			
 			/*
 			$sql = "UPDATE reports SET 
@@ -214,7 +230,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
 				WHERE id = $idRow LIMIT 1";
 			*/
-			$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
+			//$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
+			$sql = "UPDATE reports SET VImpressions = '$VImpressions' WHERE id = $idRow LIMIT 1";
 			
 			//$sql = "UPDATE reports SET Rebate = '$Rebate' WHERE id = $idRow LIMIT 1";
 				
@@ -228,12 +245,14 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//
 			echo $sql . "\n";
 			
-			$TotImps += $Impressions;
+			//$TotImps += $Impressions;
 			//$TotCompleteV += $CompleteV;
+			$TotVImps += $VImpressions;
 			
 			$db->query($sql);
 		}
 	}
 	
-	echo $TotImps;
+	//echo $TotImps;
 	//echo $TotCompleteV;
+	echo $TotVImps;

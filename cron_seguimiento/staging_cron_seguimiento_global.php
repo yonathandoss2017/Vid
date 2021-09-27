@@ -4,6 +4,7 @@
 	ini_set('display_errors', 0);
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	define('CONST',1);
+	define('STATUS_INACTIVE', 8);
 	require('/var/www/html/login/config.php');
 	require('/var/www/html/login/constantes.php');
 	require('/var/www/html/login/db.php');
@@ -332,7 +333,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 	}
 }
 	
-	$sql = "SELECT * FROM acc_managers WHERE Follow = 1 AND Deleted = 0"; // AND id = 6
+	$sql = "SELECT * FROM acc_managers WHERE Follow = 1 AND Deleted = 0 AND Status != " . STATUS_INACTIVE; // AND id = 6
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($AccM = $db->fetch_array($query)){
@@ -463,6 +464,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 								
 				$mail->addAddress($UserEmail, $UserName);
 				$mail->AddBCC('federico.izuel@vidoomy.com');
+				$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 				
 				$Rows = "";
 				$BGColor1 = "#FCFCFC";
@@ -627,4 +629,3 @@ function getGlobal($Date1, $Date2, $idAccM){
 			//sleep(40);
 		}
 	}
-    

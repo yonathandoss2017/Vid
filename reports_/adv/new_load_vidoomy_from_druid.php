@@ -93,7 +93,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 			
 			$CheckV = false;
-			if($DealID == 'VDMY_419653868' || $DealID == 'VDMY_426431488'){
+			if($DealID == 'VDMY_419653868' || $DealID == 'VDMY_426431488' || $DealID == 'VDMY_444459379'){
 				$CheckV = true;
 			}	
 

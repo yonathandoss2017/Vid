@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	$Date = date('Y-m-d', time() - (3600 * 1));
-	$Date = '2021-09-17';
+	$Date = '2021-09-27';
 	$Hour = date('H', time() - (3600 * 1));
 	//$Hour = '6';
 	//$Hour = 23;
@@ -59,15 +59,13 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$date2 = new DateTime($Date1);
 	$date2->modify('-1 day');
 	$Date2 = $date2->format('Y-m-d');
-	*/
-	
-	$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
+	*/	
 
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
 	
-	
+	/*
 	$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND (id = 2355 OR id = 2488 OR id = 2489 OR id = 2170 OR id = 2534 OR id = 2178 OR id = 2135 OR id = 2430 OR id = 2136 OR id = 2352 OR 
 		id = 2351 OR id = 2350 OR id = 2360 OR id = 2016 OR id = 2342 OR id = 2256 OR id = 2153 OR id = 2255 OR id = 2343 OR id = 2533 OR id = 2054 OR id = 2345 OR id = 2133 OR id = 2200 OR id = 2018 OR 
 		id = 2101 OR id = 2102 OR id = 2134 OR id = 2166 OR id = 2132 OR id = 2199 OR id = 2210 OR id = 2209 OR id = 2314 OR id = 2308 OR id = 2354 OR id = 2160 OR id = 2554 OR id = 2131 OR id = 2493 OR 
@@ -79,8 +77,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 		
 		OR id >= 2596 
 	)";
-	
-	$sql = "SELECT * FROM campaign WHERE id = 4196";
+	*/
+	$sql = "SELECT * FROM campaign WHERE id = 4444";
 
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
@@ -96,7 +94,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 			
 			$CheckV = false;
-			if($DealID == 'VDMY_419653868'){
+			if($DealID == 'VDMY_419653868' || $DealID == 'VDMY_426431488' || $DealID == 'VDMY_444459379'){
 				$CheckV = true;
 			}
 

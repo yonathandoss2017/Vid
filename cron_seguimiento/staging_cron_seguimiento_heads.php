@@ -805,14 +805,14 @@ function getGlobal($Date1, $Date2, $idAccM){
 		
 		$UserEmail = $HeadData['Email'];
 		$Cname = $HeadData['Name'];
-		//$UserEmail = 'federico.izuel@vidoomy.com';
+		// $UserEmail = 'gadiel.reyesdelrosario@vidoomy.com';
 		$mail->addAddress($UserEmail, $Cname);
 		$mail->AddBCC('federico.izuel@vidoomy.com');
 		$mail->AddBCC('angel.burgos@vidoomy.com');
+		$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 		
 		$mail->Subject = "Reporte de variaciones $RepType";
 		$mail->msgHTML(str_replace('#MarcosEric#', $HeadName, $MailContent));
 		$mail->send();
 		
 	}
-    
