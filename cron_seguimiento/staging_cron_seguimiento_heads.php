@@ -12,20 +12,7 @@
 	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	
-	/*
-	$dbuser2 = "root";
-	$dbpass2 = "ViDo0-PROD_2020";
-	$dbhost2 = "aa12gqfb9qs8z09.cme5dsqa4tew.us-east-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	*/
-	
-	$dbuser2 = "root";
-	$dbpass2 = "Jz8eDbamcNx3TskWzrjzH7g";
-	$dbhost2 = "vidoomy-production.cpijmqdfbof9.eu-west-2.rds.amazonaws.com:3306";
-	$dbname2 = "vidoomy";
-	$db2 = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	//$argv[1] = $_GET['d'];
 	
@@ -76,7 +63,7 @@
 		}elseif($argv[1] == 'quincenal'){
 			$TPL = 'seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal';
-
+			
 			$date1 = new DateTime();
 			$date1->add(DateInterval::createFromDateString('yesterday'));
 			$Date1 = $date1->format('Y-m-d');
@@ -85,21 +72,21 @@
 			if(intval($date1->format('d')) > 20){
 				$Date2 = $date1->format('Y-m-') . '16';
 				$Date2Nice = '16' . $date1->format('/m/Y');
-
+				
 				$Date3 = $date1->format('Y-m-') . '15';
 				$Date3Nice = '15' . $date1->format('/m/Y');
-
+				
 				$Date4 = $date1->format('Y-m-') . '01';
 				$Date4Nice = '01' . $date1->format('/m/Y');
 			}else{
 				$Date2 = $date1->format('Y-m-') . '01';
 				$Date2Nice = '01' . $date1->format('/m/Y');
-
+				
 				$dateLM = new DateTime($Date1);
 				$dateLM->modify('-1 month');
 				$Date3 = $dateLM->format('Y-m-t');
 				$Date3Nice = $dateLM->format('t/m/Y');
-
+				
 				$Date4 = $dateLM->format('Y-m-') . '16';
 				$Date4Nice = '16' . $dateLM->format('/m/Y');
 			}
@@ -107,40 +94,40 @@
 			$MonthNice1 = "Última Quincena";
 			$MonthNice2 = "Quincena Anterior";
 		}elseif($argv[1] == 'quincenal-anual'){
-				$TPL = 'seguimiento_me_quincenal.html';
-				$RepType = 'Quincenal - Anual';
+			$TPL = 'seguimiento_me_quincenal.html';
+			$RepType = 'Quincenal - Anual';
 
-				$date1 = new DateTime();
-				$date1->add(DateInterval::createFromDateString('yesterday'));
-				$Date1 = $date1->format('Y-m-d');
-				$Date1Nice = $date1->format('d/m/Y');
+			$date1 = new DateTime();
+			$date1->add(DateInterval::createFromDateString('yesterday'));
+			$Date1 = $date1->format('Y-m-d');
+			$Date1Nice = $date1->format('d/m/Y');
 
-				$dateLY = new DateTime($Date1);
-				$dateLY->modify('-1 year');
+			$dateLY = new DateTime($Date1);
+			$dateLY->modify('-1 year');
 
-				if(intval($date1->format('d')) > 20){
-					$Date2 = $date1->format('Y-m-16');
-					$Date2Nice = $date1->format('16/m/Y');
+			if(intval($date1->format('d')) > 20){
+				$Date2 = $date1->format('Y-m-16');
+				$Date2Nice = $date1->format('16/m/Y');
 
-					$Date3 = $dateLY->format('Y-m-d');
-					$Date3Nice = $dateLY->format('t/m/Y');
+				$Date3 = $dateLY->format('Y-m-d');
+				$Date3Nice = $dateLY->format('t/m/Y');
 
-					$Date4 = $dateLY->format('Y-m-16');
-					$Date4Nice = $dateLY->format('16/m/Y');
-				}else{
-					$Date2 = $date1->format('Y-m-01');
-					$Date2Nice = $date1->format('01/m/Y');
+				$Date4 = $dateLY->format('Y-m-16');
+				$Date4Nice = $dateLY->format('16/m/Y');
+			}else{
+				$Date2 = $date1->format('Y-m-01');
+				$Date2Nice = $date1->format('01/m/Y');
 
-					$Date3 = $dateLY->format('Y-m-t');
-					$Date3Nice = $dateLY->format('t/m/Y');
+				$Date3 = $dateLY->format('Y-m-t');
+				$Date3Nice = $dateLY->format('t/m/Y');
 
-					$Date4 = $dateLY->format('Y-m-01');
-					$Date4Nice = $dateLY->format('01/m/Y');
-				}
+				$Date4 = $dateLY->format('Y-m-01');
+				$Date4Nice = $dateLY->format('01/m/Y');
+			}
 
-				$MonthNice1 = "Última Quincena";
-				$MonthNice2 = "Año Anterior";
-		}elseif($argv[1] == 'mensual'){
+			$MonthNice1 = "Última Quincena";
+			$MonthNice2 = "Año Anterior";
+	}elseif($argv[1] == 'mensual'){
 			$TPL = 'seguimiento_me_mensual.html';
 			$RepType = 'Mensual';
 			
@@ -419,9 +406,9 @@ function getGlobal($Date1, $Date2, $idAccM){
 	}
 }	
 	
-	$Heads[6] = 'Ivan';
+	//$Heads[6] = 'Ivan';
 	$Heads[18] = 'Paula';
-	$Heads[23] = 'Victoria';
+	$Heads[28031] = 'Jose Macias';
 	
 	foreach($Heads as $idHead => $HeadName){
 		
@@ -852,9 +839,11 @@ function getGlobal($Date1, $Date2, $idAccM){
 		
 		$UserEmail = $HeadData['Email'];
 		$Cname = $HeadData['Name'];
+		// $UserEmail = 'gadiel.reyesdelrosario@vidoomy.com';
 		$mail->addAddress($UserEmail, $Cname);
 		$mail->AddBCC('federico.izuel@vidoomy.com');
 		$mail->AddBCC('angel.burgos@vidoomy.com');
+		$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 		
 		$mail->Subject = "Reporte de variaciones $RepType";
 		$mail->msgHTML(str_replace('#MarcosEric#', $HeadName, $MailContent));
