@@ -52,7 +52,7 @@ SQL;
 }
 
 function sendActivationNotice($Type, $idCampaing, $Today){
-	global $db;
+	global $db, $advProd;
 	if($idCampaing != 3521 && $idCampaing != 3707 && $idCampaing != 3552){
 
 		$db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);

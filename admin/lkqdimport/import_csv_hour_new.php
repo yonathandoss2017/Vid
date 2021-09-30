@@ -39,7 +39,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 	
-	
+//	echo $Date = "2021-09-26";
 	echo $Date = date('Y-m-d', time() - 1200);
 	
 	//if($Date == "2021-06-02"){
@@ -64,7 +64,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$HFrom = date('G', time() - 1200);
 	$HTo = date('G', time() - 1200);
 	$HFrom = 0;
-	//$HTo = 23;
+	$HTo = 23;
 	//sleep(rand(1,90));
 	
 	if($Date == '2021-08-31'){

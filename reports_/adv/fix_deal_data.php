@@ -44,8 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-09-28';
-	$idCampaing = 4069;
+	$Date = '2021-09-14';
+	$idCampaing = 4264;
+	$ShouldBe = 24347;
 	
 	
 	//exit(0);
@@ -110,12 +111,37 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 		}
 	}
+			
+			
+	$sql = "SELECT SUM(Impressions) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
+	$CurrentImpressionesOnDeal = $db->getOne($sql);
+	//$sql = "SELECT SUM(CompleteV) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
+	//$CurrentCompleteVOnCamp = $db->getOne($sql);
+	//$sql = "SELECT SUM(VImpressions) FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;
+	//$CurrentVImpressionesOnCamp = $db->getOne($sql);
+	//$RestImpressions = 200;
+	//$SumCompleteV = 1500;
+	//$SumVImpressions = 17000;
 	
-	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;// 
-	//$sql = "SELECT reports.* FROM reports WHERE (reports.idCampaing = 923 OR reports.idCampaing = 924 OR reports.idCampaing = 925 OR reports.idCampaing = 926 OR reports.idCampaing = 927 OR reports.idCampaing = 928 OR reports.idCampaing = 929 OR reports.idCampaing = 930 OR reports.idCampaing = 931 OR reports.idCampaing = 932) AND reports.Date = '$Date'";
-	//echo "$sql\n\n";
+	
+	//$RestPercent = $RestImpressions / $CurrentImpressionesOnCamp * 100;
+	//$PercCh = (100 - $RestPercent) / 100;
+	//$SumPercent = $SumCompleteV / $CurrentCompleteVOnCamp;
+	//$PercCh = 1 + $SumPercent;
+	
+	$PercCh = $ShouldBe / $CurrentImpressionesOnDeal;
+	echo $PercCh;
+	echo "\n\n";
 	
 	
+	$TotImps = 0;
+	$TotCompleteV = 0;
+	$TotVImps = 0;
+	
+	//echo $PercCh;
+	//exit(0);
+	
+	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;// 	
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Row = $db->fetch_array($query)){
@@ -129,62 +155,24 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 0.65;
-			$PercCh2 = $PercCh;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
 			$Bids = intval($Row['Bids'] * $PercCh);
-			$Impressions = intval($Row['Impressions'] * $PercCh);
-			//$Impressions = intval($Row['Impressions']);
+			$Impressions = round($Row['Impressions'] * $PercCh);
+			//$Impressions = $Row['Impressions'];
+			$CompleteV = round($Row['CompleteV'] * $PercCh);
+			//$CompleteV = $Row['CompleteV'];
+			$Clicks = round($Row['Clicks'] * $PercCh);
 			
-			if($CCTR === true){
-				$CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
-				$CTRTo = $CampaingData[$idCampaing]['CTRTo'] * 100;
-				
-				$RandCTR = rand($CTRFrom, $CTRTo) / 10000;
-				$Clicks = intval($Impressions * $RandCTR);
-			}else{
-				$Clicks = intval($Row['Clicks'] * $PercCh);
-			}
+			$VImpressions = round($Row['VImpressions'] * $PercCh);
 			
 			
-			if($CVTR === true){
-				$VTRFrom = $CampaingData[$idCampaing]['VTRFrom'] * 100;
-				$VTRTo = $CampaingData[$idCampaing]['VTRTo'] * 100;
-				
-				$RandVTR = rand($VTRFrom, $VTRTo) / 10000;
-				$CompleteV = intval($Impressions * $RandVTR);
-				$CompleteVPerc = $RandVTR;
-	
+			$Complete25 = calcPercents(25, $Impressions, $CompleteV);
+			$Complete50 = calcPercents(50, $Impressions, $CompleteV);
+			$Complete75 = calcPercents(75, $Impressions, $CompleteV);
 			
-				//$CompleteV = intval($Row['CompleteV'] * $PercCh);//COMMENT
 			
-				$Complete25 = calcPercents(25, $Impressions, $CompleteV);
-				$Complete50 = calcPercents(50, $Impressions, $CompleteV);
-				$Complete75 = calcPercents(75, $Impressions, $CompleteV);
-
-			}else{
-				$CompleteV = intval($Row['CompleteV'] * $PercCh);
-				$Complete25 = intval($Row['Complete25'] * $PercCh);
-				$Complete50 = intval($Row['Complete50'] * $PercCh);
-				$Complete75 = intval($Row['Complete75'] * $PercCh);
-			}
-
-						
-			if($CView === true){
-				$ViewFrom = $CampaingData[$idCampaing]['ViewFrom'] * 100;
-				$ViewTo = $CampaingData[$idCampaing]['ViewTo'] * 100;
-				
-				$RandView = rand($ViewFrom, $ViewTo) / 10000;
-				$VImpressions = intval($Impressions * $RandView);
-			}else{
-				$VImpressions = intval($Row['VImpressions'] * $PercCh2);
-				//echo "VI $VImpressions \n";
-			}
-			
-			if($VImpressions > $Impressions){
-				$VImpressions = $Impressions;
-			}
+		
 			
 			if($Impressions > 0 && $CPM > 0){
 				$Revenue = $Impressions * $CPM / 1000;
@@ -205,6 +193,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				WHERE id = $idRow LIMIT 1";
 			
 			//$sql = "UPDATE reports SET Impressions = '$Impressions' WHERE id = $idRow LIMIT 1";
+			//$sql = "UPDATE reports SET VImpressions = '$VImpressions' WHERE id = $idRow LIMIT 1";
 			
 			//$sql = "UPDATE reports SET Rebate = '$Rebate' WHERE id = $idRow LIMIT 1";
 				
@@ -215,9 +204,18 @@ function calcPercents($Perc , $Impressions, $Complete){
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75'
 				WHERE id = $idRow LIMIT 1";
 			*/
-			
+			//
 			echo $sql . "\n";
+			
+			$TotImps += $Impressions;
+			$TotCompleteV += $CompleteV;
+			//$TotVImps += $VImpressions;
 			
 			$db->query($sql);
 		}
 	}
+	
+	echo $TotImps;
+	echo " - ";
+	echo $TotCompleteV;
+	//echo $TotVImps;

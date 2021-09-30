@@ -13,13 +13,15 @@
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
+	$Date = '2021-09-26';
+	
 	
 	$sql = "SELECT 
 			idTag, Date, 
 			SUM(Coste) AS Coste,
 			SUM(CosteEur) AS CosteEur
 		FROM stats 
-		WHERE stats.Date = '2021-07-07' AND idTag > 0 GROUP BY idTag, Date ORDER BY id ASC";// AND users.currency = 1
+		WHERE stats.Date = '2021-09-26' AND idTag > 0 GROUP BY idTag, Date ORDER BY id ASC";// AND users.currency = 1
 	 //INNER JOIN users ON users.id = stats.idUser
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
@@ -31,7 +33,7 @@
 			$Coste = $Row['Coste'];
 			$CosteEur = $Row['CosteEur'];
 			
-			$sql = "SELECT SUM(Coste) AS Coste FROM reports202107 WHERE Date = '$Date' AND idTag = '$idTag'";
+			$sql = "SELECT SUM(Coste) AS Coste FROM reports202109 WHERE Date = '$Date' AND idTag = '$idTag'";
 			$CosteRepo = round($db->getOne($sql), 6);
 			if($CosteRepo > $Coste){
 				$ReducePercent =  $Coste / $CosteRepo;
@@ -40,7 +42,7 @@
 				//$ReduceTotalEur = $CosteRepoEur - $CosteEur;
 				//echo $Coste . ' - ' .  $CosteRepo . ': ' . $ReduceTotal . "\n";
 				
-					$sql = "SELECT * FROM reports202107 WHERE Date = '$Date' AND idTag = '$idTag' AND Coste > 0 ORDER BY Coste DESC";
+					$sql = "SELECT * FROM reports202109 WHERE Date = '$Date' AND idTag = '$idTag' AND Coste > 0 ORDER BY Coste DESC";
 					$query2 = $db->query($sql);
 					$TotalReg = $db->num_rows($query2);
 					if($TotalReg > 0){
@@ -53,7 +55,7 @@
 							//echo $Row2['Coste'] . " = $CosteP - ";
 							//echo $Row2['CosteEur'] . " = $CostePEur - ";
 							
-							$sql = "UPDATE reports202107 SET Coste = $CosteP, CosteEur = $CostePEur WHERE id = $idRow LIMIT 1;";
+							$sql = "UPDATE reports202109 SET Coste = $CosteP, CosteEur = $CostePEur WHERE id = $idRow LIMIT 1;";
 							echo $sql . "\n";
 							$db->query($sql);
 								
@@ -77,8 +79,6 @@
 	
 	exit(0);
 	
-	//$Date = date('Y-m-d', time() - 1200);
-	$Date = '2020-03-30';	
 	$DateFrom = $Date;
 	$DateTo = $Date;
 	
@@ -92,7 +92,7 @@
 	$Values = "";
 	
 	$sql = "DELETE FROM $TablaNameResume WHERE Date = '$Date'";
-	//exit(0);
+	exit(0);
 	$db->query($sql);
 	
 	$sql = "SELECT 
