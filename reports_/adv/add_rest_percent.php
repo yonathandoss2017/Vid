@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2021-09-28';
-	$idCampaing = 4069;
+	$Date = '2021-09-29';
+	$idCampaing = 4474;
 	
 	
 	//exit(0);
@@ -129,7 +129,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 0.65;
+			$PercCh = 0.90;
 			$PercCh2 = $PercCh;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
