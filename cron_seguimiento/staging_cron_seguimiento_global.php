@@ -58,33 +58,36 @@
 		}elseif($argv[1] == 'quincenal'){
 			$TPL = 'seguimiento_quincenal.html';
 			$RepType = 'Quincenal';
-			
-			$date1 = new DateTime();
-			$date1->add(DateInterval::createFromDateString('yesterday'));
-			$Date1 = $date1->format('Y-m-d');
-			$Date1Nice = $date1->format('d/m/Y');
-			
-			if(intval($date1->format('d')) > 20){
-				$Date2 = $date1->format('Y-m-') . '16';
-				$Date2Nice = '16' . $date1->format('/m/Y');
-				
-				$Date3 = $date1->format('Y-m-') . '15';
-				$Date3Nice = '15' . $date1->format('/m/Y');
-				
-				$Date4 = $date1->format('Y-m-') . '01';
-				$Date4Nice = '01' . $date1->format('/m/Y');
-			}else{
-				$Date2 = $date1->format('Y-m-') . '01';
-				$Date2Nice = '01' . $date1->format('/m/Y');
-				
-				$dateLM = new DateTime($Date1);
-				$dateLM->modify('-1 month');
-				$Date3 = $dateLM->format('Y-m-t');
-				$Date3Nice = $dateLM->format('t/m/Y');
-				
-				$Date4 = $dateLM->format('Y-m-') . '16';
-				$Date4Nice = '16' . $dateLM->format('/m/Y');
-			}
+
+            $date1 = new DateTime();
+            $date1->add(DateInterval::createFromDateString('yesterday'));
+            $Date1 = $date1->format('Y-m-d');
+            $Date1Nice = $date1->format('d/m/Y');
+
+            $previousMonth = new DateTime($Date1);
+            $previousMonth->modify('-1 month');
+
+            $day1 = intval($date1->format('d'));
+
+            if($day1 > 20){
+                $Date2 = $date1->format('Y-m-') . '16';
+                $Date2Nice = '16' . $date1->format('/m/Y');
+
+                $Date3 = $previousMonth->format('Y-m-') . $day1;
+                $Date3Nice = $previousMonth->format('d/m/Y');
+
+                $Date4 = $previousMonth->format('Y-m-') . '16';
+                $Date4Nice = $previousMonth->format('d/m/Y');
+            }else{
+                $Date2 = $date1->format('Y-m-') . '01';
+                $Date2Nice = '01' . $date1->format('/m/Y');
+
+                $Date3 = $previousMonth->format('Y-m-') . '15';
+                $Date3Nice = $previousMonth->format('d/m/Y');
+
+                $Date4 = $previousMonth->format('Y-m-') . '01';
+                $Date4Nice = '01' . $previousMonth->format('/m/Y');
+            }
 		}elseif($argv[1] == 'quincenal-anual'){
 			$TPL = 'seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal - Anual';
