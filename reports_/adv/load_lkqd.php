@@ -77,11 +77,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	if($Date == '2021-09-08'){
-		$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2646 AND id != 3457 AND id != 4125";
-	}else{
-		$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2646 AND id != 3457";
-	}
+	
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2646 AND id != 3457 AND id != 3368 AND id != 3367 AND id != 3377 AND id != 3378 AND id != 3374 AND id != 3375 AND id != 3376";
+	
 	
 	//$sql = "SELECT * FROM campaign WHERE id = 4115 OR id = 4116";
 	
@@ -487,5 +485,5 @@ function calcPercents($Perc , $Impressions, $Complete){
 	echo " - IMPX: " . $TotalImpX;
 	
 	$Date = date('Y-m-d', time() - 3600);
-	//updateReportCards($db3, $Date);
+	updateReportCards($db3, $Date);
 	//updateReportCards($db2, $Date);

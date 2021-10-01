@@ -592,6 +592,7 @@ function checkActiveSales($idAccM){
 	
 	$mail->addAddress($UserEmail, $UserName);
 	$mail->AddBCC('federico.izuel@vidoomy.com');
+	$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 	
 	$mail->Subject = $Subject;
 	$mail->msgHTML(str_replace('#MarcosEric#','Tony',$MailContent));
@@ -676,6 +677,7 @@ function checkActiveSales($idAccM){
 		
 		$mail->addAddress($UserEmail, $UserName);
 		$mail->AddBCC('federico.izuel@vidoomy.com');
+		$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
 		
 		$mail->Subject = $Subject;
 		$mail->msgHTML($MailContentSales);

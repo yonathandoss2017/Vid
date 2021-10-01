@@ -392,5 +392,5 @@ function calcPercents($Perc , $Impressions, $Complete){
 	echo " - IMPX: " . $TotalImpX;
 	
 	$Date = date('Y-m-d', time() - 3600);
-	//updateReportCards($db3, $Date);
+	updateReportCards($db3, $Date);
 	//updateReportCards($db2, $Date);

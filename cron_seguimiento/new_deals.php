@@ -133,7 +133,7 @@
 					$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
 					
 					$mail->addAddress('federico.izuel@vidoomy.com', 'Antonio Simarro');
-					//$mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
+					$mail->addAddress('gadiel.reyesdelrosario@vidoomy.com', 'Gadiel Reyes');
 
 					if (AAL_DEAL_ID == $DealId) {
 						$mail->AddBCC('patricia.palmero@vidoomy.com', 'Patricia Palmero');
