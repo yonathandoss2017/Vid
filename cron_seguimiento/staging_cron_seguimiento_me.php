@@ -64,7 +64,7 @@
 			$MonthNice1 = "Última Semana";
 			$MonthNice2 = "Semana Anterior";
 		}elseif($argv[1] == 'quincenal'){
-			$TPL = 'seguimiento_me_quincenal.html';
+			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal';
 
             $date1 = new DateTime();
@@ -85,7 +85,7 @@
                 $Date3Nice = $previousMonth->format('d/m/Y');
 
                 $Date4 = $previousMonth->format('Y-m-') . '16';
-                $Date4Nice = $previousMonth->format('d/m/Y');
+                $Date4Nice = $previousMonth->format('16/m/Y');
             }else{
                 $Date2 = $date1->format('Y-m-') . '01';
                 $Date2Nice = '01' . $date1->format('/m/Y');
@@ -187,8 +187,8 @@ function getList($Date1, $Date2, $idAccM, $FlCheck = false){
 		    users.user AS Username,
 		    users.nick AS Nick,
 			SUM($Table1.formatLoads) AS FL,
-			SUM($Table1.Revenue) AS RevenueRaw,
-		    concat('$',FORMAT(SUM($Table1.Revenue),2)) AS Revenue
+			SUM($Table1.Coste) AS CosteRaw,
+		    concat('$',FORMAT(SUM($Table1.Coste),2)) AS Coste
 			
 		FROM `$Table1`
 		
@@ -213,8 +213,8 @@ function getList($Date1, $Date2, $idAccM, $FlCheck = false){
 			Username,
 			Nick,
 			SUM(FL) AS FL,
-			Revenue AS RevenueRaw,
-			concat('$',FORMAT(SUM(Revenue),2)) AS Revenue
+			Coste AS CosteRaw,
+			concat('$',FORMAT(SUM(Coste),2)) AS Coste
 		FROM
 		
 		((SELECT 
@@ -223,7 +223,7 @@ function getList($Date1, $Date2, $idAccM, $FlCheck = false){
 				    users.user AS Username,
 				    users.nick AS Nick,
 					SUM($Table2.formatLoads) AS FL,
-				   	SUM($Table2.Revenue) AS Revenue
+				   	SUM($Table2.Coste) AS Coste
 					
 				FROM $Table2
 				
@@ -249,7 +249,7 @@ function getList($Date1, $Date2, $idAccM, $FlCheck = false){
 				    users.user AS Username,
 				    users.nick AS Nick,
 					SUM($Table1.formatLoads) AS FL,
-				    SUM($Table1.Revenue) AS Revenue
+				    SUM($Table1.Coste) AS Coste
 					
 				FROM $Table1
 				
@@ -287,8 +287,8 @@ function getList($Date1, $Date2, $idAccM, $FlCheck = false){
 					'Domain'	=>	$List['Domain'],
 					'Partner'	=>	$Partner,
 					'Formats'	=>	intval($List['FL']),
-					'RevenueRaw'=>	$List['RevenueRaw'],
-					'Revenue'	=>	$List['Revenue']
+					'CosteRaw'=>	$List['CosteRaw'],
+					'Coste'	=>	$List['Coste']
 				);
 				
 				$Data[$List['DomainID']] = $D;
@@ -312,7 +312,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 	$Table2 = 'reports_resume' . $arD2[0] . $arD2[1];
 	
 	if($Table1 == $Table2){	
-		$sql = "SELECT concat('$',FORMAT(SUM($Table1.Revenue),2)) AS Revenue, SUM($Table1.Revenue) AS RevenueRaw, SUM($Table1.formatLoads) AS FL		
+		$sql = "SELECT concat('$',FORMAT(SUM($Table1.Coste),2)) AS Coste, SUM($Table1.Coste) AS CosteRaw, SUM($Table1.formatLoads) AS FL		
 		FROM `$Table1`
 		INNER JOIN users ON users.id = $Table1.idUser
 		INNER JOIN acc_managers ON acc_managers.id = users.AccM
@@ -324,11 +324,11 @@ function getGlobal($Date1, $Date2, $idAccM){
 	}else{
 		$sql = "SELECT
 			SUM(FL) AS FL,
-			SUM(Revenue) AS RevenueRaw,
-			concat('$',FORMAT(SUM(Revenue),2)) AS Revenue
+			SUM(Coste) AS CosteRaw,
+			concat('$',FORMAT(SUM(Coste),2)) AS Coste
 		FROM
 		
-		((SELECT SUM($Table2.Revenue) AS Revenue, SUM($Table2.formatLoads) AS FL		
+		((SELECT SUM($Table2.Coste) AS Coste, SUM($Table2.formatLoads) AS FL		
 				FROM $Table2
 				INNER JOIN users ON users.id = $Table2.idUser
 				INNER JOIN acc_managers ON acc_managers.id = users.AccM
@@ -341,7 +341,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 		
 		UNION ALL
 		
-		(SELECT SUM($Table1.Revenue) AS Revenue, SUM($Table1.formatLoads) AS FL		
+		(SELECT SUM($Table1.Coste) AS Coste, SUM($Table1.formatLoads) AS FL		
 				FROM $Table1
 				INNER JOIN users ON users.id = $Table1.idUser
 				INNER JOIN acc_managers ON acc_managers.id = users.AccM
@@ -362,8 +362,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 		if($DataQ['FL'] === NULL){
 			return false;
 		}else{
-			$Data['Revenue'] = $DataQ['Revenue'];
-			$Data['RevenueRaw'] = $DataQ['RevenueRaw'];
+			$Data['Coste'] = $DataQ['Coste'];
+			$Data['CosteRaw'] = $DataQ['CosteRaw'];
 			$Data['FL'] = $DataQ['FL'];
 			
 			
@@ -477,7 +477,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 					    
 					    if(array_key_exists($idDom, $List)){
 						    $DOMFL = $List[$idDom]['Formats'];
-						    $DOMREV = $List[$idDom]['Revenue'];
+						    $DOMREV = $List[$idDom]['Coste'];
 						}else{
 							$DOMFL = 0;
 							$DOMREV = '$0.00';
@@ -490,7 +490,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 					    $Row .= '<td style="font-family: sans-serif; color:red;">' . number_format($ListY[$idDom]['Formats'], 0, '', '.') . "</td>";
 					    $Row .= '<td style="font-family: sans-serif; color:red;">' . number_format($DOMFL, 0, '', '.') . "</td>";
 					    $Row .= '<td style="font-family: sans-serif; color:red;">' . "-$VarPorc%" . "</td>";
-					    $Row .= '<td style="font-family: sans-serif; color:red;" class="hidem">' . $ListY[$idDom]['Revenue'] . "</td>";
+					    $Row .= '<td style="font-family: sans-serif; color:red;" class="hidem">' . $ListY[$idDom]['Coste'] . "</td>";
 					    $Row .= '<td style="font-family: sans-serif; color:red;" class="hidem">' . $DOMREV . "</td>";
 					    
 					    $Row .= "</tr>";
@@ -509,8 +509,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 						    'FL1'		=> $ListY[$idDom]['Formats'],
 						    'FL2'		=> $DOMFL,
 						    'PM'		=> $AccMNick,
-						    'Revenue1'	=> $ListY[$idDom]['Revenue'],
-						    'Revenue2'	=> $DOMREV
+						    'Coste1'	=> $ListY[$idDom]['Coste'],
+						    'Coste2'	=> $DOMREV
 					    );
 					}
 				}
@@ -520,7 +520,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 					    $VarPorc = number_format($VarPorc, 2, ',', '');
 					    if(!array_key_exists($idDom, $ListY2)) {
 						    $ListY2[$idDom]['Formats'] = 0;
-						    $ListY2[$idDom]['Revenue'] = '$0,00';
+						    $ListY2[$idDom]['Coste'] = '$0,00';
 					    }
 					    
 					    if($Nc % 2 == 0){
@@ -536,8 +536,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 					    $Row .= '<td style="font-family: sans-serif; color:green;">' . number_format($ListY2[$idDom]['Formats'], 0, '', '.') . "</td>";
 					    $Row .= '<td style="font-family: sans-serif; color:green;">' . number_format($List2[$idDom]['Formats'], 0, '', '.') . "</td>";
 					    $Row .= '<td style="font-family: sans-serif; color:green;">' . "$VarPorc%" . "</td>";
-					    $Row .= '<td style="font-family: sans-serif; color:green;" class="hidem">' . $ListY2[$idDom]['Revenue'] . "</td>";
-					    $Row .= '<td style="font-family: sans-serif; color:green;" class="hidem">' . $List2[$idDom]['Revenue'] . "</td>";
+					    $Row .= '<td style="font-family: sans-serif; color:green;" class="hidem">' . $ListY2[$idDom]['Coste'] . "</td>";
+					    $Row .= '<td style="font-family: sans-serif; color:green;" class="hidem">' . $List2[$idDom]['Coste'] . "</td>";
 					    
 					    $Row .= "</tr>";
 					    
@@ -555,8 +555,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 						    'FL1'		=> $ListY2[$idDom]['Formats'],
 						    'FL2'		=> $List2[$idDom]['Formats'],
 						    'PM'		=> $AccMNick,
-						    'Revenue1'	=> $ListY2[$idDom]['Revenue'],
-						    'Revenue2'	=> $List2[$idDom]['Revenue']
+						    'Coste1'	=> $ListY2[$idDom]['Coste'],
+						    'Coste2'	=> $List2[$idDom]['Coste']
 					    );   
 				    }
 				}
@@ -605,7 +605,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 				if($Global !== false){
 					if($GlobalY === false){
 						$GlobalY['FL'] = 0;
-						$GlobalY['Revenue'] = 0;
+						$GlobalY['Coste'] = 0;
 					}
 					
 					if($Global['FL'] > $GlobalY['FL']){
@@ -636,21 +636,21 @@ function getGlobal($Date1, $Date2, $idAccM){
 						$Sig = '';
 					}
 					
-					if($Global['RevenueRaw'] > $GlobalY['RevenueRaw']){
-						$Dif = $Global['RevenueRaw'] - $GlobalY['RevenueRaw'];
+					if($Global['CosteRaw'] > $GlobalY['CosteRaw']){
+						$Dif = $Global['CosteRaw'] - $GlobalY['CosteRaw'];
 						
-						if($GlobalY['RevenueRaw'] > 0){
-							$PorcR = $Dif / $GlobalY['RevenueRaw'] * 100;
+						if($GlobalY['CosteRaw'] > 0){
+							$PorcR = $Dif / $GlobalY['CosteRaw'] * 100;
 						}else{
 							$PorcR = 100;
 						}
 						
 						$SigR = '+';
-					}elseif($Global['RevenueRaw'] < $GlobalY['RevenueRaw']){
-						$Dif = $GlobalY['RevenueRaw'] - $Global['RevenueRaw'];
+					}elseif($Global['CosteRaw'] < $GlobalY['CosteRaw']){
+						$Dif = $GlobalY['CosteRaw'] - $Global['CosteRaw'];
 						
-						if($GlobalY['RevenueRaw'] > 0){
-							$PorcR = $Dif / $GlobalY['RevenueRaw'] * 100;
+						if($GlobalY['CosteRaw'] > 0){
+							$PorcR = $Dif / $GlobalY['CosteRaw'] * 100;
 						}else{
 							$PorcR = 100;
 						}
@@ -673,8 +673,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 					    <td style="font-family: sans-serif; color:' . $SColor . ';">' . number_format($GlobalY['FL'], 0, '', '.') . '</td>
 						<td style="font-family: sans-serif; color:' . $SColor . ';">' . number_format($Global['FL'], 0, '', '.') . '</td>
 						<td style="font-family: sans-serif; color:' . $SColor . ';">' . $Sig . number_format($Porc, 2, ',', '.') . '%</td>
-					    <td class="hidem" style="font-family: sans-serif; color:' . $SColor . ';">' . $GlobalY['Revenue'] . '</td>
-					    <td class="hidem" style="font-family: sans-serif; color:' . $SColor . ';">' . $Global['Revenue'] . '</td>
+					    <td class="hidem" style="font-family: sans-serif; color:' . $SColor . ';">' . $GlobalY['Coste'] . '</td>
+					    <td class="hidem" style="font-family: sans-serif; color:' . $SColor . ';">' . $Global['Coste'] . '</td>
 					    <td class="hidem" style="font-family: sans-serif; color:' . $SColor . ';">' . $SigR . number_format($PorcR, 2, ',', '.') . '%</td>
 					</tr>';
 				}else{
@@ -715,8 +715,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 			<td style="font-family: sans-serif; color:red;">' . number_format($Dec['FL1'], 0, '', '.') . '</td>
 			<td style="font-family: sans-serif; color:red;">' . number_format($Dec['FL2'], 0, '', '.') . '</td>
 			<td style="font-family: sans-serif; color:red;">-' . $Dec['DifP'] . '%</td>
-		    <td class="hidem" style="font-family: sans-serif; color:red;">' . $Dec['Revenue1'] . '</td>
-		    <td class="hidem" style="font-family: sans-serif; color:red;">' . $Dec['Revenue2'] . '</td>
+		    <td class="hidem" style="font-family: sans-serif; color:red;">' . $Dec['Coste1'] . '</td>
+		    <td class="hidem" style="font-family: sans-serif; color:red;">' . $Dec['Coste2'] . '</td>
 		</tr>';
 		
 		if($NcT >= 5){
@@ -740,8 +740,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 			<td style="font-family: sans-serif; color:green;">' . number_format($Inc['FL1'], 0, '', '.') . '</td>
 			<td style="font-family: sans-serif; color:green;">' . number_format($Inc['FL2'], 0, '', '.') . '</td>
 			<td style="font-family: sans-serif; color:green;">+' . $Inc['DifP'] . '%</td>
-		    <td class="hidem" style="font-family: sans-serif; color:green;">' . $Inc['Revenue1'] . '</td>
-		    <td class="hidem" style="font-family: sans-serif; color:green;">' . $Inc['Revenue2'] . '</td>
+		    <td class="hidem" style="font-family: sans-serif; color:green;">' . $Inc['Coste1'] . '</td>
+		    <td class="hidem" style="font-family: sans-serif; color:green;">' . $Inc['Coste2'] . '</td>
 		</tr>';
 		
 		if($NcT >= 10){
@@ -791,65 +791,66 @@ function getGlobal($Date1, $Date2, $idAccM){
 	$UserName = 'Marcos Cuesta';
 	$UserEmail = 'marcos.cuesta@vidoomy.com';
 	
-	$mail->addAddress($UserEmail, $UserName);
+	// $mail->addAddress($UserEmail, $UserName);
 	$mail->AddBCC('federico.izuel@vidoomy.com');
 	$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
+	$mail->AddBCC('maxi.gyldenfeldt@vidoomy.com');
 	
 	$mail->Subject = "Reporte de variaciones $RepType";
 	$mail->msgHTML(str_replace('#MarcosEric#','Marcos',$MailContent));
 	$mail->send();
 	
 	//MAIL ERIC
-	$mail2 = new PHPMailer;
+	// $mail2 = new PHPMailer;
 				
-	$mail2->isSMTP();
-	$mail2->SMTPDebug = 0;
-	$mail2->Debugoutput = 'html';
+	// $mail2->isSMTP();
+	// $mail2->SMTPDebug = 0;
+	// $mail2->Debugoutput = 'html';
 	
-	$mail2->Host = 'smtp.gmail.com';
-	$mail2->Port = 465;
-	$mail2->SMTPSecure = 'ssl';
-	$mail2->SMTPAuth = true;
-	$mail2->Username = "notifysystem@vidoomy.net";
-	$mail2->Password = "NoTyFUCK05-1";
-	$mail2->CharSet = 'UTF-8';
-	$mail2->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail2->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail2->Host = 'smtp.gmail.com';
+	// $mail2->Port = 465;
+	// $mail2->SMTPSecure = 'ssl';
+	// $mail2->SMTPAuth = true;
+	// $mail2->Username = "notifysystem@vidoomy.net";
+	// $mail2->Password = "NoTyFUCK05-1";
+	// $mail2->CharSet = 'UTF-8';
+	// $mail2->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail2->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
 
 	
-	$UserName = 'Eric Raventos';
-	$UserEmail = 'eric.raventos@vidoomy.com';
+	// $UserName = 'Eric Raventos';
+	// $UserEmail = 'eric.raventos@vidoomy.com';
 	
-	$mail2->addAddress($UserEmail, $UserName);
+	// $mail2->addAddress($UserEmail, $UserName);
 	
-	$mail2->Subject = "Reporte de variaciones $RepType";
-	$mail2->msgHTML(str_replace('#MarcosEric#','Eric',$MailContent));
-	$mail2->send();
+	// $mail2->Subject = "Reporte de variaciones $RepType";
+	// $mail2->msgHTML(str_replace('#MarcosEric#','Eric',$MailContent));
+	// $mail2->send();
 	
 	//MAIL ANGEL
-	$mail3 = new PHPMailer;
+	// $mail3 = new PHPMailer;
 				
-	$mail3->isSMTP();
-	$mail3->SMTPDebug = 0;
-	$mail3->Debugoutput = 'html';
+	// $mail3->isSMTP();
+	// $mail3->SMTPDebug = 0;
+	// $mail3->Debugoutput = 'html';
 	
-	$mail3->Host = 'smtp.gmail.com';
-	$mail3->Port = 465;
-	$mail3->SMTPSecure = 'ssl';
-	$mail3->SMTPAuth = true;
-	$mail3->Username = "notifysystem@vidoomy.net";
-	$mail3->Password = "NoTyFUCK05-1";
-	$mail3->CharSet = 'UTF-8';
-	$mail3->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail3->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail3->Host = 'smtp.gmail.com';
+	// $mail3->Port = 465;
+	// $mail3->SMTPSecure = 'ssl';
+	// $mail3->SMTPAuth = true;
+	// $mail3->Username = "notifysystem@vidoomy.net";
+	// $mail3->Password = "NoTyFUCK05-1";
+	// $mail3->CharSet = 'UTF-8';
+	// $mail3->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail3->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
 
 	
-	$UserName = 'Angel Burgos';
-	$UserEmail = 'angel.burgos@vidoomy.com';
+	// $UserName = 'Angel Burgos';
+	// $UserEmail = 'angel.burgos@vidoomy.com';
 	
-	$mail3->addAddress($UserEmail, $UserName);
+	// $mail3->addAddress($UserEmail, $UserName);
 	
-	$mail3->Subject = "Reporte de variaciones $RepType";
-	$mail3->msgHTML(str_replace('#MarcosEric#','Angel',$MailContent));
-	$mail3->send();
+	// $mail3->Subject = "Reporte de variaciones $RepType";
+	// $mail3->msgHTML(str_replace('#MarcosEric#','Angel',$MailContent));
+	// $mail3->send();
 	
