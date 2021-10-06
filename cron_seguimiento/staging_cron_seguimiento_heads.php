@@ -64,7 +64,8 @@
 			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal';
 
-            $date1 = new DateTime();
+			// TODO - remove this date for prod
+            $date1 = new DateTime('2021-10-01');
             $date1->add(DateInterval::createFromDateString('yesterday'));
             $Date1 = $date1->format('Y-m-d');
             $Date1Nice = $date1->format('d/m/Y');
@@ -97,10 +98,11 @@
 			$MonthNice1 = "Última Quincena";
 			$MonthNice2 = "Quincena Anterior";
 		}elseif($argv[1] == 'quincenal-anual'){
-			$TPL = 'seguimiento_me_quincenal.html';
+			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal - Anual';
 
-			$date1 = new DateTime();
+			// TODO - remove this date for prod
+			$date1 = new DateTime('2021-10-01');
 			$date1->add(DateInterval::createFromDateString('yesterday'));
 			$Date1 = $date1->format('Y-m-d');
 			$Date1Nice = $date1->format('d/m/Y');
@@ -387,10 +389,7 @@ function getGlobal($Date1, $Date2, $idAccM){
 					users.AccM = $idAccM
 		)) AS R";
 	}
-
-
-
-	//exit(0);		
+		
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		$DataQ = $db->fetch_array($query);
@@ -846,8 +845,8 @@ function getGlobal($Date1, $Date2, $idAccM){
 		// $mail->addAddress($UserEmail, $Cname);
 		$mail->AddBCC('federico.izuel@vidoomy.com');
 		// $mail->AddBCC('angel.burgos@vidoomy.com');
-		// $mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
-		// $mail->AddBCC('maxi.gyldenfeldt@vidoomy.com');
+		$mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
+		$mail->AddBCC('maxi.gyldenfeldt@vidoomy.com');
 		
 		$mail->Subject = "Reporte de variaciones $RepType";
 		$mail->msgHTML(str_replace('#MarcosEric#', $HeadName, $MailContent));

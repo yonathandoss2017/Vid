@@ -100,10 +100,11 @@
 			$MonthNice1 = "Última Quincena";
 			$MonthNice2 = "Quincena Anterior";
 		}elseif($argv[1] == 'quincenal-anual'){
-			$TPL = 'seguimiento_me_quincenal.html';
+			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal - Anual';
 
-			$date1 = new DateTime();
+			// TODO - remove this date for prod
+			$date1 = new DateTime('2021-10-01');
 			$date1->add(DateInterval::createFromDateString('yesterday'));
 			$Date1 = $date1->format('Y-m-d');
 			$Date1Nice = $date1->format('d/m/Y');
