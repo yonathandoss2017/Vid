@@ -297,8 +297,7 @@ if (
     exit(0);
 }
 
-// $requiredParams = ['company_id', 'countries', 'start_date', 'end_date', 'advertiser_id', 'type'];
-$requiredParams = [];
+$requiredParams = ['company_id', 'type'];
 
 foreach($requiredParams as $key) {
     if(!isset($params[$key])) {
@@ -310,8 +309,8 @@ foreach($requiredParams as $key) {
 
 $companyId = $params['company_id'] ?? null;
 $countriesISO = $params['countries'] ?? [];
-$startDate = isset($params['start_date']) ? build_date($params['start_date']) : null;
-$endDate = isset($params['end_date']) ? build_date($params['end_date']) : null;
+$startDate = null;
+$endDate = null;
 $advertisersId = $params['advertiser_id'] ?? null;
 $type = $params['type'] ?? 'investment';
 $allowedTypes = ['impressions', 'investment'];
