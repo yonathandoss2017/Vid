@@ -28,8 +28,8 @@
 	} elseif ($_POST['env'] == 'pre') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
-		require('config_pre.php');
-		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+		require('config.php');
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 	} elseif ($_POST['env'] == 'staging') {
 		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
 
@@ -61,6 +61,7 @@
 
     if (!array_key_exists("APP_ENV", $_ENV) || $_ENV["APP_ENV"] != 'local') {
         $sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
+
 		$query = $db2->query($sql);
         if($db2->num_rows($query) > 0){
             $Repo = $db2->fetch_array($query);
@@ -610,10 +611,7 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
-			WHERE 
-				STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom'
-				AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $PubManFilter";
+			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $PubManFilter";
 			
 			/*if(count($UnionTables) > 1){
 				$Union = "";
@@ -699,11 +697,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
-		WHERE 
-			STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom'
-			AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' 
-			$SQLWhere $PubManFilter ";
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $SQLWhere $PubManFilter ";
 		
 		/*
 		if(count($UnionTables) > 1){
@@ -785,11 +779,7 @@
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins 
-			WHERE  
-				STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom'
-				AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' 
-				$SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";

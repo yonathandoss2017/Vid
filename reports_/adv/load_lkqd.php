@@ -64,6 +64,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		'1056907' => 29,
 		'1056906' => 29,
 		'1056824' => 80,//
+		'1060885' => 5,
 	);
 	
 	/* 
@@ -261,7 +262,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 						$Impressions = $Impressions * $Multi;
 						$VImpressions = $VImpressions * $Multi;
 						$CompleteV = $CompleteV * $Multi;
-						$Clicks = $Clicks * $Multi;
+
+						// No multiply clicks for this deal id
+						if ('1060885' != $TagId) {
+							$Clicks = $Clicks * $Multi;
+						}
+
 						$Revenue = $Revenue * $Multi;
 						$Complete25 = $Complete25 * $Multi;
 						$Complete50 = $Complete50 * $Multi;

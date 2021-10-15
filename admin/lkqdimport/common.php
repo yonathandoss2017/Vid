@@ -1849,7 +1849,78 @@ function newOrUpdateDeal(
 	return $response->data->dealId;
 }
 
-function unselectSupplyPartner(array $tags) {
+/**
+ * Function to select propvided sources to a demand tag and unselect the rest of the sources.
+ */
+function keepDemandTagsSelected(array $tags): bool {
+	global $cookie_file;
+
+	$URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
+
+	$sources = getSources();
+	$additionIds = [];
+
+	$payload = [
+		"removeAssociations" => [],
+		"addAssociations" => [],
+		"updateAssociations" => []
+	];
+
+	foreach ($tags as $tag) {
+		foreach ($tag["sources"] as $source) {
+			$payload["addAssociations"][] = [
+				"siteId" => $source,
+				"tagId" => $tag["demand_id"],
+			];
+			$additionIds[] = $source;
+		}
+	}
+
+	foreach ($sources as $source) {
+		if (!in_array($source->siteId, $additionIds)) {
+			$payload["removeAssociations"][] = [
+				"siteId" => $source->siteId,
+				"tagId" => $tag["demand_id"],
+			];
+		}
+	}
+
+	$payloadJson = json_encode($payload);
+
+	$Headers = array(
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	);
+
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $URL);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	$data = json_decode($result, false);
+
+	if(!empty($data) && property_exists($data, 'errorId')){
+		return $data->errorId;
+	}
+
+	return true;
+}
+
+function unselectDemandTags(array $tags) {
 	global $cookie_file;
 
 	$URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
