@@ -288,10 +288,12 @@
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
 				$DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
-				$DFrom = $DateFrom->format('Y-m-d H:i');
+				$dFrom = $DateFrom->format('Y-m-d');
+				$hFrom = $DateFrom->format('H');
 				$StartMonth = $DateFrom->format('Ym');
 				$DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
-				$DTo = $DateTo->format('Y-m-d H:i');
+				$dTo = $DateTo->format('Y-m-d');
+				$hTo = $DateTo->format('H');
 				$EndMonth = $DateTo->format('Ym');
 				$DatesOK = true;						
 			}
@@ -611,7 +613,7 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $PubManFilter";
+			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $PubManFilter";
 			
 			/*if(count($UnionTables) > 1){
 				$Union = "";
@@ -697,7 +699,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $SQLWhere $PubManFilter ";
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter ";
 		
 		/*
 		if(count($UnionTables) > 1){
@@ -779,7 +781,7 @@
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE STR_TO_DATE(CONCAT({ReportsTable}.Date, ' ', {ReportsTable}.Hour, ':00'), '%Y-%m-%d %H:%i') >= '$DFrom' AND STR_TO_DATE(CONCAT(date, ' ', {ReportsTable}.Hour, ':59'), '%Y-%m-%d %H:%i') <= '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
