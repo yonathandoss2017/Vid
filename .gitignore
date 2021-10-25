@@ -24,6 +24,7 @@ worldcitiespop.txt
 
 .env
 .env.local
+.history/
 
 vendor
 .idea
