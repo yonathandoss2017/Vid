@@ -15,10 +15,19 @@
 		exit(0);
 	}
 	
-	if($_POST['env'] == 'prod'){
+	if ($_POST['env'] == 'prod') {
 		$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
-		
-	}else{
+	} elseif ($_POST['env'] == 'staging') {
+		$db2 = new SQL($pubStaging['host'], $pubStaging['db'], $pubStaging['user'], $pubStaging['pass']);
+	} elseif ($_POST['env'] == 'integration') {
+		$db2 = new SQL($pubIntegration['host'], $pubIntegration['db'], $pubIntegration['user'], $pubIntegration['pass']);
+	} elseif ($_POST['env'] == 'dev') {
+		$db2 = new SQL($pubDev01['host'], $pubDev01['db'], $pubDev01['user'], $pubDev01['pass']);
+	} elseif ($_POST['env'] == 'dev02') {
+		$db2 = new SQL($pubDev02['host'], $pubDev02['db'], $pubDev02['user'], $pubDev02['pass']);
+	} elseif ($_POST['env'] == 'dev03') {
+		$db2 = new SQL($pubDev03['host'], $pubDev03['db'], $pubDev03['user'], $pubDev03['pass']);
+	} else {
 		$dbuser2 = $pubStaging['user'];
         $dbpass2 = $pubStaging['pass'];
         $dbhost2 = $pubStaging['host'];

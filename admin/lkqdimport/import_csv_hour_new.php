@@ -39,7 +39,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 	
-//	echo $Date = "2021-09-26";
+//	echo $Date = "2021-10-23";
 	echo $Date = date('Y-m-d', time() - 1200);
 	
 	//if($Date == "2021-06-02"){
@@ -67,14 +67,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$HTo = 23;
 	//sleep(rand(1,90));
 	
-	if($Date == '2021-08-31'){
-		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
-		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
-	}else{
+	if($Date == '2021-10-22'){
 		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'France');
 		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica');
+		$SpecialFill12 = array();
+	}else{
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Italy');
+		$SpecialFill25 = array('Jamaica');
+		$SpecialFill12 = array('Turkey', 'Italy', 'Belgium', 'Trinidad and Tobago');
 	}
-	
+
 	//print_r($arraySpecialFill);
 	//exit(0);
 	
@@ -386,8 +388,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 								//echo "$Domain Not in BL - ";
 								if($formatLoads >= 2){
 									
-									// && ($Hour > 10 || $Date != '2021-04-15'
-									 
 									if(in_array($Country, $SpecialFill25)){
 										//echo "$Country $Date $Hour \n";
 										
@@ -408,8 +408,45 @@ function calcPercents($Perc , $Impressions, $Complete){
 											}									
 										}
 										
-										$Multiplier = (12.5 - $HourI) / 100;
+										$Multiplier = (13.5 - $HourI) / 100;
 										$Impressions = intval($formatLoads * $Multiplier);
+										
+										$Revenue = $Impressions * 0.0030;
+										$Coste = $Revenue * 0.4;
+										
+										if ($idSite % 2 == 0){
+											$VTRValue = 720 - $Day + $Month + $Hour;
+										}else{
+											$VTRValue = 720 + $Day - $Hour - $Month;
+										}
+										$VTRValue = $VTRValue / 1000;
+										$CompletedViews = intval($Impressions * $VTRValue);
+										
+									}elseif(in_array($Country, $SpecialFill12)){
+										//echo "$Country $Date $Hour \n";
+										
+										if(intval($TagId) % 2 == 0){
+											if($Hour >= 10){
+												$HourI = $Hour / 2; 
+												if($HourI >= 10){
+													$HourI = $HourI / 2; 
+												}
+											}else{
+												$HourI = $Hour;
+											}
+										}else{
+											if($Hour >= 6){
+												$HourI = $Hour / 3;
+											}else{
+												$HourI = $Hour;
+											}			
+										}
+										
+										$Multiplier = (10.25 - $HourI) / 100;
+										$Impressions = intval($formatLoads * $Multiplier);
+										if($Impressions < 0){
+											$Impressions = 0;
+										}
 										
 										$Revenue = $Impressions * 0.0030;
 										$Coste = $Revenue * 0.4;
