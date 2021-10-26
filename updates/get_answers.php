@@ -16,6 +16,9 @@
 	$SumImp = 0;
 	$SumImpPlus = 0;
 	
+	$YoDecido = '';
+	$Basta = '';
+	
 	$sql = "SELECT * FROM basta ";
 	$query = $db->query($sql);
 	
@@ -27,8 +30,13 @@
 			
 			if(!property_exists($Data, 'email')){
 				
-				print_r($Data);
-				exit(0);
+				//print_r($Data);
+				$Basta .= "'" . $Data->name . "','" . $Data->age . "','" . $Data->comments . "'\n";
+				
+			}else{
+				
+				
+				$YoDecido .= "'" . $Data->name . "','" . $Data->email . "','" . $Data->phone . "','" . $Data->age . "','" . $Data->comments . "'\n";
 				
 			}
 			
@@ -39,4 +47,10 @@
 		}
 	}
 	
+	echo $YoDecido;
 	
+	
+	echo "\n\n\n";
+	
+	
+	echo $Basta;

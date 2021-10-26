@@ -16,7 +16,7 @@
 	$SumImp = 0;
 	$SumImpPlus = 0;
 	
-	$sql = "SELECT * FROM reports202110 WHERE idUser = 26215 AND Date = '2021-10-24' AND Impressions > 5";
+	$sql = "SELECT * FROM reports202110 WHERE idUser = 26215 AND Date = '2021-10-25' AND Impressions > 5";
 	$query = $db->query($sql);
 	
 	if($db->num_rows($query) > 0){
