@@ -307,10 +307,10 @@ if (
 $validator = (new Validator());
 
 $validation = $validator->make($params, [
-    'company_id' => 'required|integer|min:1',
-    'type'       => 'required|in:impressions,investment',
+    'company_id'    => 'required|integer|min:1',
+    'type'          => 'required|in:impressions,investment',
     'advertiser_id' => 'integer|min:1',
-    'countries'  => 'array',
+    'countries'     => 'array',
 ]);
 
 $validation->validate();
