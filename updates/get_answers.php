@@ -9,15 +9,22 @@
 	require('/var/www/html/login/constantes.php');
 	require('/var/www/html/login/db.php');
 	require('/var/www/html/login/common.lib.php');
-
+	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
+	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
 	$SumImp = 0;
 	$SumImpPlus = 0;
 	
-	$YoDecido = '';
-	$Basta = '';
+	$YoDecido = '"Nombre","Nombre","Email","Teléfono","Edad","Comentario"' . "\n";
+	$Basta = '"Nombre","Edad","Comentario"' . "\n";
+	
+	$Date = date('Y-m-d');
+	
+	$Path = "/var/www/html/login/updates/answers/";
+	$YoDecidoFilename = "YoDecido-" . date('Ymd') . ".csv";
+	$BastaFilename = "Basta-" . date('Ymd') . ".csv";
 	
 	$sql = "SELECT * FROM basta ";
 	$query = $db->query($sql);
@@ -31,26 +38,46 @@
 			if(!property_exists($Data, 'email')){
 				
 				//print_r($Data);
-				$Basta .= "'" . $Data->name . "','" . $Data->age . "','" . $Data->comments . "'\n";
+				$Basta .= '"' . $Data->name . '","' . $Data->age . '","' . $Data->comments . '"' . "\n";
 				
 			}else{
 				
-				
-				$YoDecido .= "'" . $Data->name . "','" . $Data->email . "','" . $Data->phone . "','" . $Data->age . "','" . $Data->comments . "'\n";
+				$YoDecido .= '"' . $Data->name . '","' . $Data->email . '","' . $Data->phone . '","' . $Data->age . '","' . $Data->comments . '"' . "\n";
 				
 			}
-			
-			
-			
-			
 			
 		}
 	}
 	
-	echo $YoDecido;
 	
+	file_put_contents($Path . $YoDecidoFilename, $YoDecido);
+	file_put_contents($Path . $BastaFilename, $Basta);
 	
-	echo "\n\n\n";
+	$mail = new PHPMailer;
+								
+	$mail->isSMTP();
+	$mail->SMTPDebug = 0;
+	$mail->Debugoutput = 'html';
 	
+	$mail->Host = 'smtp.gmail.com';
+	$mail->Port = 465;
+	$mail->SMTPSecure = 'ssl';
+	$mail->SMTPAuth = true;
+	$mail->Username = "notify@vidoomy.net";
+	$mail->Password = "24NotTFiY-9G8";
+	$mail->CharSet = 'UTF-8';
+	$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
+	$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+	$mail->addAddress('ernesto.gonzalez@vidoomy.com');
+	$mail->AddCC('mayte.santos@vidoomy.com');
 	
-	echo $Basta;
+	$mail->AddBCC('federico.izuel@vidoomy.com');
+	$mail->AddBCC('eric.raventos@vidoomy.com');
+	
+	$mail->AddAttachment($Path . $YoDecidoFilename, $YoDecidoFilename);
+	$mail->AddAttachment($Path . $BastaFilename, $BastaFilename);
+	
+	$mail->Subject = "$Date Respuestas campaña Juntos por el Cambio";
+	$mail->msgHTML("$Date Respuestas campaña Juntos por el Cambio");
+	$mail->send();
+	

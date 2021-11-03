@@ -13,13 +13,18 @@
 		exit(0);
 	}
 	
-	if ($_POST['env'] == 'pre' || $_POST['env'] == 'dev') {
+	if ($_POST['env'] == 'dev') {
+		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
+
+		require('config.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	} elseif ($_POST['env'] == 'pre') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'staging') {
-		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
+	} elseif ($_POST['env'] == 'integration') {
+		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
@@ -94,11 +99,11 @@
 		$Dates = $_POST['PDate'];
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
-				$DateFrom = DateTime::createFromFormat('d/m/Y', $Dates[0]);
-				$DFrom = $DateFrom->format('Y-m-d');
+				$DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
+				$DFrom = $DateFrom->format('Y-m-d H:i:00');
 				$StartMonth = $DateFrom->format('Ym');
-				$DateTo = DateTime::createFromFormat('d/m/Y', $Dates[1]);
-				$DTo = $DateTo->format('Y-m-d');
+				$DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
+				$DTo = $DateTo->format('Y-m-d H:i:59');
 				$EndMonth = $DateTo->format('Ym');
 				$DatesOK = true;						
 			}
@@ -407,7 +412,7 @@
 		$Nd = 0;
 		if($ThereAreFilters){
 
-			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom 00:00:00' AND TIMESTAMP '$DTo 23:59:59' ";
+			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' ";
 							
 			if($IncludeTime){
 				$DataT[$Nd][] = "";
@@ -451,14 +456,14 @@
 		}
 					
 		//CALCULA LOS TOTALES CON FILTROS
-		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom 00:00:00' AND TIMESTAMP '$DTo 23:59:59' $SQLWhere ";
+		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $SQLWhere ";
+		//error_log($SQLSuperQueryT);
 		
 		if($IncludeTime){
 			$DataT[$Nd][] = "";
 		}
 		
 		$Row = druidQuery($SQLSuperQueryT);
-		error_log($SQLSuperQueryT);
 		$Keys = $Row[0];
 		array_shift($Row);
 						
@@ -496,7 +501,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom 00:00:00' AND TIMESTAMP '$DTo 23:59:59' $SQLWhere $SQLGroups";
+		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $SQLWhere $SQLGroups";
 		if($OrderParam != ""){
 			$SQLQuery .= " ORDER BY $OrderParam";
 			if($Start !== false || $Length !== false){
@@ -544,6 +549,12 @@
 								$Data[$Nd][] = 'Mobile';
 							}else{
 								$Data[$Nd][] = $DimensionValue;
+							}
+						}elseif($DimensionName == 'sync' || $DimensionName == 'gdprcs' || $DimensionName == 'gdpr'){
+							if(intval($DimensionValue) == 1){
+								$Data[$Nd][] = 'Yes';
+							}else{
+								$Data[$Nd][] = 'No';
 							}
 						}else{
 							$Data[$Nd][] = $DimensionValue;

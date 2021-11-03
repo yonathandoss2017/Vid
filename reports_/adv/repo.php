@@ -28,10 +28,10 @@
 	} elseif ($_POST['env'] == 'pre') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 
-		require('config_pre.php');
-		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'staging') {
-		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
+		require('config.php');
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	} elseif ($_POST['env'] == 'integration') {
+		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config.php');
 		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
@@ -61,7 +61,8 @@
 
     if (!array_key_exists("APP_ENV", $_ENV) || $_ENV["APP_ENV"] != 'local') {
         $sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
-        $query = $db2->query($sql);
+
+		$query = $db2->query($sql);
         if($db2->num_rows($query) > 0){
             $Repo = $db2->fetch_array($query);
             $RepId = $Repo['id'];
@@ -286,11 +287,13 @@
 		$Dates = $_POST['PDate'];
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
-				$DateFrom = DateTime::createFromFormat('d/m/Y', $Dates[0]);
-				$DFrom = $DateFrom->format('Y-m-d');
+				$DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
+				$dFrom = $DateFrom->format('Y-m-d');
+				$hFrom = $DateFrom->format('H');
 				$StartMonth = $DateFrom->format('Ym');
-				$DateTo = DateTime::createFromFormat('d/m/Y', $Dates[1]);
-				$DTo = $DateTo->format('Y-m-d');
+				$DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
+				$dTo = $DateTo->format('Y-m-d');
+				$hTo = $DateTo->format('H');
 				$EndMonth = $DateTo->format('Ym');
 				$DatesOK = true;						
 			}
@@ -610,8 +613,7 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
-			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter ";
+			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $PubManFilter";
 			
 			/*if(count($UnionTables) > 1){
 				$Union = "";
@@ -681,7 +683,6 @@
 					$Nd++;
 				}
 				
-				$CacheArrayT = [];
 				if(array_key_exists($Nd, $DataT)){
 					$CacheArrayT['DataNF'] = $DataT[$Nd];
 				}
@@ -698,8 +699,7 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
-		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter ";
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter ";
 		
 		/*
 		if(count($UnionTables) > 1){
@@ -781,7 +781,7 @@
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";

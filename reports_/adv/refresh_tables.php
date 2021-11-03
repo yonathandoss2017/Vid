@@ -6,7 +6,7 @@
 	require('/var/www/html/login/config.php');
 	
 	$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
-	$dbStaging = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
+	$dbStaging = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 	
 	require('/var/www/html/login/reports_/adv/config.php');
 	$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);

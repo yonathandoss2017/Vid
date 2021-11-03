@@ -65,7 +65,7 @@
 			$RepType = 'Quincenal';
 
 			// TODO - remove this date for prod
-            $date1 = new DateTime('2021-10-01');
+            $date1 = new DateTime('2021-10-16');
             $date1->add(DateInterval::createFromDateString('yesterday'));
             $Date1 = $date1->format('Y-m-d');
             $Date1Nice = $date1->format('d/m/Y');
@@ -188,7 +188,7 @@
 	
 	
 	echo "Date 1: $Date1 \n Date 2: $Date2 \n Date 3: $Date3 \n Date 4: $Date4 \n ";
-	//exit(0);
+//	exit(0);
 function checkActivePubs($idAccM){
 	global $db;
 	

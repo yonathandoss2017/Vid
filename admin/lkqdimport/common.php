@@ -13,6 +13,8 @@
 	
 function logIn($Source = 'Unknown'){
 	global $sessionId, $cookie_file, $lkqdCred;
+
+	file_put_contents($cookie_file, "");
 	
 	$headers1 = array(
 		'Accept: application/json, text/plain, */*',

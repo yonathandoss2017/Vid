@@ -23,8 +23,8 @@
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'staging') {
-		$db2 = new SQL($advStaging['host'], $advStaging['db'], $advStaging['user'], $advStaging['pass']);
+	} elseif ($_POST['env'] == 'integration') {
+		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
@@ -293,13 +293,20 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
-								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal' LIMIT 1";
-								$FVal = $db2->getOne($sql);
+								$FVal = mysqli_real_escape_string($db2->link, $FVal);
+								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
+								$query = $db2->query($sql);
+								if($db2->num_rows($query) > 0){
+									while($Camp = $db2->fetch_array($query)){
+										$FVal = mysqli_real_escape_string($db2->link, $Camp['deal_id']);
+										$SQLWhere .= $Or . $KeySearch . " NOT LIKE '$FVal'";
+										$And = " AND "; 
+									}
+								}
+							}else{
+								$FVal = mysqli_real_escape_string($db->link, $FVal);
+								$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 							}
-							
-							$FVal = mysqli_real_escape_string($db->link, $FVal);
-							
-							$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 						}else{
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
@@ -336,6 +343,7 @@
 							}
 							
 							if($KFilter == 'campaign_name'){
+								$FVal = mysqli_real_escape_string($db2->link, $FVal);
 								$sql = "SELECT deal_id FROM campaign WHERE name LIKE '$FVal'";
 								$query = $db2->query($sql);
 								if($db2->num_rows($query) > 0){

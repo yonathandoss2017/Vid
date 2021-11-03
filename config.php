@@ -25,18 +25,18 @@
 		"db" => $_ENV["ADVERTISERS_PROD_DB"]
 	];
 
-	$advStaging = [
-		"user" => $_ENV["ADVERTISERS_STAGING_USER"],
-		"pass" => $_ENV["ADVERTISERS_STAGING_PASSWORD"],
-		"host" => $_ENV["ADVERTISERS_STAGING_HOST"],
-		"db" => $_ENV["ADVERTISERS_STAGING_DB"]
-	];
-
 	$advPre = [
 		"user" => $_ENV["ADVERTISERS_PRE_USER"],
 		"pass" => $_ENV["ADVERTISERS_PRE_PASSWORD"],
 		"host" => $_ENV["ADVERTISERS_PRE_HOST"],
 		"db" => $_ENV["ADVERTISERS_PRE_DB"],
+	];
+
+	$advIntegration = [
+		"user" => $_ENV["ADVERTISERS_INTEGRATION_USER"],
+		"pass" => $_ENV["ADVERTISERS_INTEGRATION_PASSWORD"],
+		"host" => $_ENV["ADVERTISERS_INTEGRATION_HOST"],
+		"db" => $_ENV["ADVERTISERS_INTEGRATION_DB"]
 	];
 
 	$advDev01 = [
