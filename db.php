@@ -1,5 +1,5 @@
 <?php
-@require_once("./secure.php");
+@require_once("secure.php");
 Class SQL {
 	/*var $link;
 	var $row;
