@@ -1,5 +1,9 @@
 <?php
 
+require_once("./../../vendor/autoload.php");
+use Rakit\Validation\Validator;
+
+
 // Endpoint that will provide information from campaigns created in VMP and are currently active.
 
 // FUNCTIONS 
@@ -280,6 +284,9 @@ require('/var/www/html/login/admin/lkqdimport/common.php');
 require('/var/www/html/login/config.php');
 require('/var/www/html/login/db.php');
 
+// require("../../config_local.php");
+// require("../../db.php");
+
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 header("Access-Control-Allow-Methods: POST");
@@ -297,14 +304,22 @@ if (
     exit(0);
 }
 
-$requiredParams = ['company_id', 'type'];
+$validator = (new Validator());
 
-foreach($requiredParams as $key) {
-    if(!isset($params[$key])) {
-        header('HTTP/1.0 400 Bad Request');
-        echo sprintf('"Missing required parameters: %s"', implode(', ', $requiredParams));
-        exit(0);
-    }
+$validation = $validator->make($params, [
+    'company_id'    => 'required|integer|min:1',
+    'type'          => 'required|in:impressions,investment',
+    'advertiser_id' => 'integer|min:1',
+    'countries'     => 'array',
+]);
+
+$validation->validate();
+
+if ($validation->fails()) {
+    header('HTTP/1.0 422 Unprocessable Entity ');
+    $errors = $validation->errors()->toArray();
+    echo json_encode(compact('errors')); // response
+    exit;
 }
 
 $companyId = $params['company_id'] ?? null;
@@ -312,22 +327,7 @@ $countriesISO = $params['countries'] ?? [];
 $startDate = null;
 $endDate = null;
 $advertisersId = $params['advertiser_id'] ?? null;
-$type = $params['type'] ?? 'investment';
-$allowedTypes = ['impressions', 'investment'];
-
-if( ! in_array($type, $allowedTypes)) {
-    header('HTTP/1.0 400 Bad Request');
-    echo sprintf('"Invalid type value. Allowed values: %s"', join(', ', $allowedTypes));
-    exit(0);
-}
-
-if($startDate !== null && $endDate !== null) {
-    if($endDate < $startDate) {
-        header('HTTP/1.0 400 Bad Request');
-        echo '"Invalid dates range"';
-        exit(0);
-    }
-}
+$type = $params['type'];
 
 $campaignQuery = get_campaigns_sql($companyId, $advertisersId);
 
