@@ -271,6 +271,19 @@ if(! function_exists('get_adv_last_investment')) {
     }
 }
 
+if(! function_exists('get_agency_by_id')) {
+    /**
+     * Get the latest advertisers investment
+     *
+     * @return void
+     */
+    function get_agency_by_id($agencyId) {
+        $sql = "SELECT * FROM agency where id = $agencyId";
+        $db = get_database_connection();
+        return $db->getAll($sql)[0] ?? [];
+    }
+}
+
 
 // API RESPONSE:
 
@@ -280,12 +293,12 @@ ini_set('memory_limit', '-1');
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 define('CONST',1);
 
-require('/var/www/html/login/admin/lkqdimport/common.php');
-require('/var/www/html/login/config.php');
-require('/var/www/html/login/db.php');
+//require('/var/www/html/login/admin/lkqdimport/common.php');
+//require('/var/www/html/login/config.php');
+//require('/var/www/html/login/db.php');
 
-// require("../../config_local.php");
-// require("../../db.php");
+require("../../config_local.php");
+require("../../db.php");
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -307,27 +320,54 @@ if (
 $validator = (new Validator());
 
 $validation = $validator->make($params, [
-    'company_id'    => 'required|integer|min:1',
+    'company_id'    => ['required','integer','min:1'],
     'type'          => 'required|in:impressions,investment',
-    'advertiser_id' => 'integer|min:1',
-    'countries'     => 'array',
+    'advertiser_id' => ['array', function ($values) {
+        if(! is_array($values)) {
+            return false;
+        };
+
+        foreach($values as $value) {
+            if(! is_int($value) || $value <= 0) {
+                return ":attribute must be an array of positive integers.";
+            }
+        }
+    }],
+    'countries'     => ['array', function ($values) {
+        if(! is_array($values)) {
+            return false;
+        };
+
+        foreach($values as $value) {
+            if(strlen($value) !== 2) {
+                return ":attribute contains a invalid ISO code ($value). Code length should be: 2";
+            }
+        }
+    }],
 ]);
 
 $validation->validate();
 
 if ($validation->fails()) {
-    header('HTTP/1.0 422 Unprocessable Entity ');
+    header('HTTP/1.0 400 Bad Request');
     $errors = $validation->errors()->toArray();
     echo json_encode(compact('errors')); // response
-    exit;
+    exit(0);
 }
 
 $companyId = $params['company_id'] ?? null;
 $countriesISO = $params['countries'] ?? [];
 $startDate = null;
 $endDate = null;
-$advertisersId = $params['advertiser_id'] ?? null;
+$advertisersId = $params['advertiser_id'] ?? [];
 $type = $params['type'];
+
+$agency = get_agency_by_id($companyId);
+if(!$agency) {
+    header('HTTP/1.0 404 Not Found');
+    echo '"Company with id: ' . $companyId . ' not found"';
+    exit(0);
+}
 
 $campaignQuery = get_campaigns_sql($companyId, $advertisersId);
 
