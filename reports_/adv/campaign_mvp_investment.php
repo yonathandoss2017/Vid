@@ -293,12 +293,12 @@ ini_set('memory_limit', '-1');
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 define('CONST',1);
 
-//require('/var/www/html/login/admin/lkqdimport/common.php');
-//require('/var/www/html/login/config.php');
-//require('/var/www/html/login/db.php');
+require('/var/www/html/login/admin/lkqdimport/common.php');
+require('/var/www/html/login/config.php');
+require('/var/www/html/login/db.php');
 
-require("../../config_local.php");
-require("../../db.php");
+// require("../../config_local.php");
+// require("../../db.php");
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
