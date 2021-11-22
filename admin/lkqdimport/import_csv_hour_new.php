@@ -67,14 +67,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$HTo = 23;
 	//sleep(rand(1,90));
 	
-	if($Date == '2021-10-22'){
-		$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'France');
-		$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica');
-		$SpecialFill12 = array();
-	}else{
+	if($Date == '2021-11-19'){
 		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Italy');
+		$SpecialFill25 = array('Jamaica', 'Italy');
+		$SpecialFill12 = array('Turkey', 'Belgium', 'Trinidad and Tobago');
+		$arraySpecialFillWL = array();
+	}else{
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
 		$SpecialFill25 = array('Jamaica');
-		$SpecialFill12 = array('Turkey', 'Italy', 'Belgium', 'Trinidad and Tobago');
+		$SpecialFill12 = array('Turkey', 'Belgium', 'Trinidad and Tobago');
+		$arraySpecialFillWL = array('Italy');
 	}
 
 	//print_r($arraySpecialFill);
@@ -86,6 +88,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		$new = '';
 	}
 	*/
+	$BLDomains = array();
 	foreach($arraySpecialFill AS $Cntry){
 		$CntryFile = str_replace(' ', '', $Cntry);
 		//$FileCSV = '/var/www/html/login/admin/lkqdimport/cpm_blacklist'.$new.'/'.$CntryFile.'.csv';
@@ -99,8 +102,23 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}else{
 			$BLDomains[$Cntry][] = 'none';
 		}
+	}	
+		
+	$WLDomains = array();	
+	foreach($arraySpecialFillWL AS $Cntry){
+		$CntryFile = str_replace(' ', '', $Cntry);
+		$FileCSV = '/var/www/html/login/admin/lkqdimport/cpm_blacklist/'.$CntryFile.'WL.csv';
+		
+		if(file_exists($FileCSV)){
+			$Csv = array_map('str_getcsv', file($FileCSV));
+			foreach($Csv as $Co){
+				$WLDomains[$Cntry][] = $Co[0];
+			}
+		}else{
+			$WLDomains[$Cntry][] = 'none';
+		}
 	}
-	
+		
 	//echo "Import $DateFrom to $DateTo - $HFrom $HTo \n";
 	//exit(0);
 	$StartTime = round(microtime(true) * 1000);
@@ -460,7 +478,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 										$CompletedViews = intval($Impressions * $VTRValue);
 										
 									}else{
-									
 										//echo "$formatLoads >= 2 - ";
 										if(intval($TagId) % 2 == 0){
 											if($Hour >= 10){
@@ -495,6 +512,53 @@ function calcPercents($Perc , $Impressions, $Complete){
 										
 									}
 									
+									//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
+								}
+							}
+						}
+						//echo "\n";
+					}
+					
+					if(in_array($Country, $arraySpecialFillWL)){
+						//echo "Is Country $Country - ";
+						if(in_array($Domain, $WLDomains[$Country])){
+							if(intval($idUser) != 28336){
+								//echo "$Domain in WL - ";
+								if($formatLoads >= 2){
+									//echo "$Country $Date $Hour \n";									
+									if(intval($TagId) % 2 == 0){
+										if($Hour >= 10){
+											$HourI = $Hour / 2; 
+											if($HourI >= 10){
+												$HourI = $HourI / 2; 
+											}
+										}else{
+											$HourI = $Hour;
+										}
+									}else{
+										if($Hour >= 6){
+											$HourI = $Hour / 3;
+										}else{
+											$HourI = $Hour;
+										}			
+									}
+									
+									$Multiplier = (18.5 - $HourI) / 100;
+									$Impressions = intval($formatLoads * $Multiplier);
+									if($Impressions < 0){
+										$Impressions = 0;
+									}
+									
+									$Revenue = $Impressions * 0.0030;
+									$Coste = $Revenue * 0.4;
+									
+									if ($idSite % 2 == 0){
+										$VTRValue = 720 - $Day + $Month + $Hour;
+									}else{
+										$VTRValue = 720 + $Day - $Hour - $Month;
+									}
+									$VTRValue = $VTRValue / 1000;
+									$CompletedViews = intval($Impressions * $VTRValue);
 									//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
 								}
 							}
@@ -595,6 +659,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}
 		
 		echo "Hours Imported - LKQD\n";
+		//exit(0);
 		
 		
 		/*

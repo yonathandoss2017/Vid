@@ -145,7 +145,6 @@ $campaignData = [
         "clicks" => $campaignStats['clicks'],
         "cpv" => $cpv
     ]
-]
-?>
+];
 
-<? echo json_encode($campaignData) ?>
+echo json_encode($campaignData);
