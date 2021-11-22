@@ -103,7 +103,7 @@ foreach ($deals as $deal) {
             $supplySources = $data["data"]["entries"];
         }
 
-        if (array_key_exists("associations", $sourcesData)) {
+        if (is_array($sourcesData) && array_key_exists("associations", $sourcesData)) {
             $activeSources = array_column($sourcesData["associations"], "siteId");
         }
 
@@ -195,7 +195,6 @@ function getDealData(string $dealId, string $campaignName, string $startDate, st
     $response = getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $endDate);
 	
     if ($response === false) {
-        echo "Loggin in... \n\n";
         logIn('Deals reports update');
         $response = getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $endDate);
     }
@@ -207,7 +206,6 @@ function getActiveSources(string $dealId): string {
     $response = getSourcesByDealId($dealId);
         
     if ($response === false) {
-        echo "Loggin in... \n\n";
         logIn('Deals reports update');
         $response = getSourcesByDealId($dealId);
     }
