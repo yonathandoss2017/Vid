@@ -308,18 +308,25 @@ header('Content-Type: application/json');
 
 $params = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
-if (
-    !isset($params['uuid']) ||
-    !isset($params['env'])
-) {
-    header('HTTP/1.0 403 Forbidden');
-    echo '"Access denied"';
+$validator = (new Validator());
+$allowedParams = array_diff(array_keys($params), [
+    'uuid',
+    'env',
+    'company_id',
+    'type',
+    'advertiser_id',
+    'countries',
+]);
+
+if ($allowedParams) {
+    header('HTTP/1.0 400 Bad Request');
+    echo "Request contains invalid properties: " . implode(',', $allowedParams);
     exit(0);
 }
 
-$validator = (new Validator());
-
 $validation = $validator->make($params, [
+    'uuid'          => ['required'],
+    'env'           => ['required'],
     'company_id'    => ['required','integer','min:1'],
     'type'          => 'required|in:impressions,investment',
     'advertiser_id' => ['array', function ($values) {
