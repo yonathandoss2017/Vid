@@ -67,17 +67,23 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$HTo = 23;
 	//sleep(rand(1,90));
 	
-	if($Date == '2021-11-19'){
-		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Italy');
-		$SpecialFill25 = array('Jamaica', 'Italy');
-		$SpecialFill12 = array('Turkey', 'Belgium', 'Trinidad and Tobago');
-		$arraySpecialFillWL = array();
-	}else{
+	
+	
+	if($Date == '2021-11-24'){
 		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
 		$SpecialFill25 = array('Jamaica');
 		$SpecialFill12 = array('Turkey', 'Belgium', 'Trinidad and Tobago');
+		$SpecialFill6 = array();
+		$arraySpecialFillWL = array('Italy');
+	}else{
+		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
+		$SpecialFill25 = array('Jamaica');
+		$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
+		$SpecialFill6 = array('Turkey');
 		$arraySpecialFillWL = array('Italy');
 	}
+		
+	
 
 	//print_r($arraySpecialFill);
 	//exit(0);
@@ -461,6 +467,43 @@ function calcPercents($Perc , $Impressions, $Complete){
 										}
 										
 										$Multiplier = (10.25 - $HourI) / 100;
+										$Impressions = intval($formatLoads * $Multiplier);
+										if($Impressions < 0){
+											$Impressions = 0;
+										}
+										
+										$Revenue = $Impressions * 0.0030;
+										$Coste = $Revenue * 0.4;
+										
+										if ($idSite % 2 == 0){
+											$VTRValue = 720 - $Day + $Month + $Hour;
+										}else{
+											$VTRValue = 720 + $Day - $Hour - $Month;
+										}
+										$VTRValue = $VTRValue / 1000;
+										$CompletedViews = intval($Impressions * $VTRValue);
+										
+									}elseif(in_array($Country, $SpecialFill6)){
+										//echo "$Country $Date $Hour \n";
+										
+										if(intval($TagId) % 2 == 0){
+											if($Hour >= 10){
+												$HourI = $Hour / 2; 
+												if($HourI >= 10){
+													$HourI = $HourI / 2; 
+												}
+											}else{
+												$HourI = $Hour;
+											}
+										}else{
+											if($Hour >= 6){
+												$HourI = $Hour / 3;
+											}else{
+												$HourI = $Hour;
+											}			
+										}
+										
+										$Multiplier = (5.25 - $HourI) / 100;
 										$Impressions = intval($formatLoads * $Multiplier);
 										if($Impressions < 0){
 											$Impressions = 0;
