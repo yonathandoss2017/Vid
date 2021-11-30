@@ -44,9 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date1 = '2021-09-16';
-	$Date2 = '2021-09-16';
-	$idCampaing = 4196;
+	$Date1 = '2021-11-14';
+	$Date2 = '2021-11-17';
+	$idCampaing = 5286;
 	
 	/*
 	$date2 = new DateTime($Date1);
