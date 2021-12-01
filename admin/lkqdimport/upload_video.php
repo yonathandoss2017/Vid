@@ -27,6 +27,7 @@ function notifyFailure($Log = ''){
 	$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
 	$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
 	$mail->addAddress('federico.izuel@vidoomy.com');
+	$mail->addAddress('gadiel.reyesdelrosario@vidoomy.com');
 	
 	$mail->Subject = 'Video Upload FAIL (Creador de demos)';
 	$mail->msgHTML(nl2br($Log));
