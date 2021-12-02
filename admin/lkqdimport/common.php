@@ -1845,7 +1845,7 @@ function newOrUpdateDeal(
 	$response = json_decode($result);
 
 	if (!empty($response->errors)) {
-		return $response->errors;
+		return json_encode($response->errors);
 	}
 
 	return $response->data->dealId;
