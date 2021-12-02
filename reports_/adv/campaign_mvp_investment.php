@@ -108,8 +108,13 @@ if(! function_exists('get_total_investments')) {
         $db = get_database_connection();
         $totalInvestments = $db->getAll($sql)[0];
 
-        $totalInvestments['investment'] = (float) $totalInvestments['investment'] ?? 0;
+        $totalInvestments['investment']  = (float) $totalInvestments['investment'] ?? 0;
         $totalInvestments['impressions'] = (float) $totalInvestments['impressions'] ?? 0;
+        $totalInvestments['ecpm']        = 0;
+
+        if($totalInvestments['impressions'] > 0 ) {
+            $totalInvestments['ecpm'] = $totalInvestments['investment'] / $totalInvestments['impressions'];
+        }
 
         return $totalInvestments;
     }
@@ -264,7 +269,9 @@ if(! function_exists('get_adv_last_investment')) {
             $totalInvestment = get_total_investments($campaignQuery, $countriesISO, $range[0], $range[1]);
             $investment = $totalInvestment['investment'];
             $impressions = $totalInvestment['impressions'];
-            $investments[] = compact('investment', 'impressions', 'period');
+            $ecpm = $totalInvestment['ecpm'];
+            $date = $range[0]->format('Y-m-d');
+            $investments[] = compact('date', 'investment', 'impressions', 'ecpm');
         }
 
         return $investments;
