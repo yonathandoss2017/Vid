@@ -10,15 +10,40 @@
 
     require('../../db.php');
 
+    $VALID_PARAMS = [
+        'uuid',
+        'env',
+        'campaign_id',
+        'start_date',
+        'end_date'
+    ];
+
+    // Validate unvalid params
+    foreach ($_POST as $key => $value) {
+        $invalidParams = [];
+        if (!in_array($key, $VALID_PARAMS)) {
+            $invalidParams[] = $key;
+        }
+    }
+
+    if (count($invalidParams) > 0) {
+        header('HTTP/1.0 400 Bad Request');
+        echo sprintf("Invalid param: %s", join($invalidParams));
+		exit(0);
+    }
+
     if(!isset($_POST['uuid']) || !isset($_POST['env'])){
 		header('HTTP/1.0 403 Forbidden');
 		echo 'Access denied';
 		exit(0);
 	}
 
-    if (!isset($_POST['campaign_id'])) {
+    if (!isset($_POST['campaign_id']) ||
+        !is_numeric($_POST['campaign_id']) ||
+        intval($_POST['campaign_id']) != $_POST['campaign_id']
+    ) {
         header('HTTP/1.0 400 Bad Request');
-		echo 'Missing campaign_id';
+		echo 'Missing or invalid campaign_id';
 		exit(0);
     }
 
@@ -53,6 +78,8 @@ if(! function_exists('get_database_connection')) {
 if(! function_exists('build_date')) {
     function build_date($date) {
         if (!$date) return null;
+
+        $date = str_replace(array('"', '\''), "", $date);
 
         try {
             return new DateTime($date);
@@ -132,9 +159,6 @@ $vtr = $campaignStats['complete_v'] / $campaignStats['impressions'] * 100;
 $viewability = $campaignStats['v_impressions'] / $campaignStats['impressions'] * 100;
 
 $campaignData = [
-    "campaign_id" => $_POST['campaign_id'],
-    "start_date" => $startDate,
-    "end_date" => $endDate,
     "total_delivery" => [
         "impressions" => $campaignStats['impressions']
     ],
@@ -150,8 +174,8 @@ $campaignData = [
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 header("Access-Control-Allow-Methods: POST");
-header("Allow: POST");
 header('Content-Type: application/json; charset=utf-8');
+header("Allow: POST");
 
 echo json_encode($campaignData);
 ?>
