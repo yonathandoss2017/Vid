@@ -179,4 +179,3 @@ header("Allow: POST");
 
 echo json_encode($campaignData);
 ?>
-

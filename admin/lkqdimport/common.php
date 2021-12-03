@@ -2148,10 +2148,8 @@ function getGeoTargetingData(array $countries): string {
 	return json_encode($geoTargetingData);
 }
 
-/**
- * Creates a new demand tag in LKQD
- */
-function newDemandTag(
+function updateCreative(
+	int $demandTagId,
 	int $dealId,
 	string $name,
 	string $status,
@@ -2175,7 +2173,44 @@ function newDemandTag(
 
 	$additions = getAdditions($filteredSources);
 	$pixels = getTrackingPixels($trackingPixels);
-	
+
+	$headers = [
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	];
+
+	$tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+	$tagAssociationsPayload = [
+		"adds" => [
+			[
+			  "tagId" => $demandTagId,
+			  "creativeId" => $creativeId
+			]
+		  ],
+		"removes" => []
+	];
+
+	$tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
 	$url = 'https://ui-api.lkqd.com/tags';
 
 	$levels = [];
@@ -2187,8 +2222,62 @@ function newDemandTag(
 		];
 	}
 
-	$payload = [
-		"tagId" => null,
+	$payload = getDemandTagPayload(
+		$demandTagId,
+		$dealInfo,
+		$dealId,
+		$name,
+		$status,
+		$envsArray,
+		$geoTargetingData,
+		$levels,
+		$clickThroughUrl,
+		$additions,
+		$pixels
+	);
+
+	$payloadJson = json_encode($payload);
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	$response = json_decode($result, true);
+
+	if (!empty($response['errors'])) {
+		return $response['errors'];
+	}
+
+	return $response['status'];
+}
+
+/**
+ * Function to build array payload for a demand tag as LKQD is expecting.
+ */
+function getDemandTagPayload(
+	int $demantTagId,
+	array $dealInfo,
+	int $dealId,
+	string $name,
+	string $status,
+	array $envsArray,
+	string $geoTargetingData,
+	array $levels,
+	string $clickThroughUrl,
+	array $additions,
+	array $pixels
+) {
+	return [
+		"tagId" => $demantTagId > 0 ? $demantTagId : null,
 		"dealCpm" => 0,
 		"dealCpmType" => $dealInfo['cpmType'],
 		"dealId" => $dealId,
@@ -2360,6 +2449,59 @@ function newDemandTag(
 		"endTs" => null,
 		"customFlightTimeZone" => null
 	];
+}
+
+/**
+ * Creates a new demand tag in LKQD
+ */
+function newDemandTag(
+	int $dealId,
+	string $name,
+	string $status,
+	string $clickThroughUrl,
+	string $trackingPixels,
+	int $creativeId,
+	string $environments,
+	string $countries
+) {
+	global $cookie_file;
+
+	$sources = getSources();
+	$envs = json_decode($environments, true);
+	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
+	$envsArray = getEnvironments($envs);
+	$dealInfo = getDealInfo($dealId);
+
+	$filteredSources = array_filter($sources, function ($source) use ($envs) {
+		return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
+	});
+
+	$additions = getAdditions($filteredSources);
+	$pixels = getTrackingPixels($trackingPixels);
+	
+	$url = 'https://ui-api.lkqd.com/tags';
+
+	$levels = [];
+	for ($j = 1; $j <= 40; $j++) {
+		$levels[] = [
+			"levelNum" => $j,
+			"targetingType" => null,
+			"parameters" => []
+		];
+	}
+
+	$payload = getDemandTagPayload(0,
+		$dealInfo,
+		$dealId,
+		$name,
+		$status,
+		$envsArray,
+		$geoTargetingData,
+		$levels,
+		$clickThroughUrl,
+		$additions,
+		$pixels
+	);
 
 	$payloadJson = json_encode($payload);
 
