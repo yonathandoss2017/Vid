@@ -282,20 +282,28 @@
 	$Overall = false;
 	$UsedInnerJ = array();
 	$ThereAreFilters = false;
-	
+	$AddHourRange = '';
+
 	if(isset($_POST['PDate'])){
 		$Dates = $_POST['PDate'];
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
-				$DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
-				$dFrom = $DateFrom->format('Y-m-d');
-				$hFrom = $DateFrom->format('H');
-				$StartMonth = $DateFrom->format('Ym');
-				$DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
-				$dTo = $DateTo->format('Y-m-d');
-				$hTo = $DateTo->format('H');
-				$EndMonth = $DateTo->format('Ym');
-				$DatesOK = true;						
+                $DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
+                $DFrom = $DateFrom->format('Y-m-d');
+                $StartMonth = $DateFrom->format('Ym');
+                $StartHour = $DateFrom->format('H');
+
+                $DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
+                $DTo = $DateTo->format('Y-m-d');
+                $EndMonth = $DateTo->format('Ym');
+                $EndHour = $DateTo->format('H');
+
+				$DatesOK = true;
+
+                if($StartHour > 0 || $EndHour < 23){
+                    $ForceHourTable = true;
+                    $AddHourRange = " AND {ReportsTable}.Hour >= $StartHour AND {ReportsTable}.Hour <= $EndHour ";
+                }
 			}
 		}
 	}
@@ -485,11 +493,11 @@
 
 		//print_r($Dimensions);
 		//exit(0);
-		
+
 		$SQLWhere = "";
 		foreach($ToFilter as $KInclude => $KFilterVal){
 			foreach($KFilterVal as $KFilter => $FilterVals){
-				if(!in_array($KFilter, $Dimensions)){
+				if(!in_array($KFilter, $Dimensions) && $KFilter != 'hour-range') {
 					$SQLDimensions .= $C . $DimensionsSQL[$KFilter]['Name'];
 					
 					if(count($DimensionsSQL[$KFilter]['InnerJoin']) > 0){
@@ -511,7 +519,7 @@
 				$Or = "";
 				if($KInclude == 'exclude'){
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'hour-range'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
@@ -520,7 +528,13 @@
 							$FVal = mysqli_real_escape_string($db->link, $FVal);
 							
 							$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
-						}else{
+						}elseif ($KFilter == 'hour-range') {
+                            $arFv = explode('-', $FVal);
+                            $FilterHFrom = $arFv[0];
+                            $FilterHTo = $arFv[1];
+                            $SQLWhere .= $Or . " Hour NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            $ForceHourTable = true;
+                        }else {
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
@@ -534,7 +548,7 @@
 					}
 				}else{
 					foreach($FilterVals as $FVal){
-						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type'){
+						if($KFilter != 'sales_manager' && $KFilter != 'country' && $KFilter != 'dsp' && $KFilter != 'ssp' && $KFilter != 'type' && $KFilter != 'hour-range'){
 							if(strpos($FVal, ' (') !== false){
 								$arFv = explode('(', $FVal);
 								$FVal = str_replace('*', '%', trim($arFv[0]));
@@ -546,6 +560,12 @@
 							
 							$FVal = mysqli_real_escape_string($db->link, $FVal);
 							$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
+						}elseif ($KFilter == 'hour-range') {
+							$arFv = explode('-', $FVal);
+							$FilterHFrom = $arFv[0];
+							$FilterHTo = $arFv[1];
+							$SQLWhere .= $Or . " Hour BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+							$ForceHourTable = true;
 						}else{
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
@@ -613,29 +633,30 @@
 
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $PubManFilter";
-			
-			/*if(count($UnionTables) > 1){
-				$Union = "";
-				$SQLQueryT = "";
-				if($Overall || 1==1){
-					$SQLMetricsT = str_replace('{ReportsTable}', 'R', $SQLMetrics);
-					$SQLQueryT = "SELECT '' $SQLMetricsT FROM (";
-					foreach($UnionTables as $Table){
-						$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
-						$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
-						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter) ";
-						$Union = "UNION ALL";
-					}    
-					$SQLQueryT .= ")  AS R ";
-					
-				}else{
-					foreach($UnionTables as $Table){
-						$SQLQueryT .= "$Union (" . str_replace('{ReportsTable}', $Table, $SQLSuperQueryT) . ") ";
-						$Union = "UNION ALL";
-					}
-				}
-			}else{*/
+			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
+			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $PubManFilter ";
+
+            /*if(count($UnionTables) > 1){
+                $Union = "";
+                $SQLQueryT = "";
+                if($Overall || 1==1){
+                    $SQLMetricsT = str_replace('{ReportsTable}', 'R', $SQLMetrics);
+                    $SQLQueryT = "SELECT '' $SQLMetricsT FROM (";
+                    foreach($UnionTables as $Table){
+                        $SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
+                        $SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
+                        $SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter) ";
+                        $Union = "UNION ALL";
+                    }
+                    $SQLQueryT .= ")  AS R ";
+
+                }else{
+                    foreach($UnionTables as $Table){
+                        $SQLQueryT .= "$Union (" . str_replace('{ReportsTable}', $Table, $SQLSuperQueryT) . ") ";
+                        $Union = "UNION ALL";
+                    }
+                }
+            }else{*/
 			$SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
 			//}
 			
@@ -699,8 +720,9 @@
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter ";
-		
+		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
+		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter ";
+
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
@@ -781,7 +803,7 @@
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date >= '{$dFrom}' AND {ReportsTable}.Hour >= '{$hFrom}' AND {ReportsTable}.Date <= '{$dTo}' AND {ReportsTable}.Hour <= '{$hTo}' $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
