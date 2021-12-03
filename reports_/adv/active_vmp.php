@@ -15,7 +15,7 @@
         'env',
         'campaign_id',
         'start_date',
-        'end_date'
+        'stop_date'
     ];
 
     // Validate unvalid params
@@ -143,7 +143,7 @@ $db = get_database_connection();
 $campaignQuery = get_campaign_sql($_POST['campaign_id']);
 $campaign = $db->getAll($campaignQuery)[0];
 $startDate = build_date($_POST['start_date']);
-$endDate = build_date($_POST['end_date']);
+$endDate = build_date($_POST['stop_date']);
 
 if (!$campaign) {
     header('HTTP/1.0 404 Not Found');
