@@ -288,17 +288,15 @@
 		$Dates = $_POST['PDate'];
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
-                $arDa1 = explode(' ', $Dates[0]);
-				$DateFrom = DateTime::createFromFormat('d/m/Y', $arDa1[0]);
-                $DFrom = $DateFrom->format('Y-m-d 00:00:00');
+                $DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
+                $DFrom = $DateFrom->format('Y-m-d');
                 $StartMonth = $DateFrom->format('Ym');
-                $StartHour = intval($arDa1[1]);
+                $StartHour = $DateFrom->format('H');
 
-                $arDa2 = explode(' ', $Dates[1]);
-                $DateTo = DateTime::createFromFormat('d/m/Y', $arDa2[0]);
-                $DTo = $DateTo->format('Y-m-d 23:59:59');
+                $DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
+                $DTo = $DateTo->format('Y-m-d');
                 $EndMonth = $DateTo->format('Ym');
-                $EndHour = intval($arDa2[1]);
+                $EndHour = $DateTo->format('H');
 
 				$DatesOK = true;
 
