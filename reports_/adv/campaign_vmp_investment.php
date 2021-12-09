@@ -322,7 +322,7 @@ $allowedParams = array_diff(array_keys($params), [
     'company_id',
     'type',
     'advertiser_id',
-    'countries',
+    'iso_code',
 ]);
 
 if ($allowedParams) {
@@ -347,7 +347,7 @@ $validation = $validator->make($params, [
             }
         }
     }],
-    'countries'     => ['array', function ($values) {
+    'iso_code'     => ['array', function ($values) {
         if(! is_array($values)) {
             return false;
         };
@@ -370,7 +370,7 @@ if ($validation->fails()) {
 }
 
 $companyId = $params['company_id'] ?? null;
-$countriesISO = $params['countries'] ?? [];
+$countriesISO = $params['iso_code'] ?? [];
 $startDate = null;
 $endDate = null;
 $advertisersId = $params['advertiser_id'] ?? [];
