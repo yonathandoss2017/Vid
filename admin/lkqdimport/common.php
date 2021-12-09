@@ -1674,9 +1674,15 @@ function getDealInfo(int $dealId): array {
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
 	$result = curl_exec($ch);
-	curl_close($ch);
-
 	$response = json_decode($result, true);
+
+	if (!is_array($response)) {
+		logIn();
+		$result = curl_exec($ch);
+		$response = json_decode($result, true);
+	}
+
+	curl_close($ch);
 
 	if (!empty($response->errors)) {
 		return $response->errors;
