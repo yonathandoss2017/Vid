@@ -336,15 +336,25 @@ $validation = $validator->make($params, [
     'env'           => ['required'],
     'company_id'    => ['required','integer','min:1'],
     'type'          => 'required|in:impressions,investment',
-    'advertiser_id' => ['array', function ($values) {
-        if(! is_array($values)) {
+    'advertiser_id' => ['array', function (&$values) use (&$params) {
+        if(!$values) {
             return false;
-        };
+        }
+        
+        $atLeastOneInt = false;
 
-        foreach($values as $value) {
-            if(! is_int($value) || $value <= 0) {
-                return ":attribute must be an array of positive integers.";
+        foreach($values as $index => $value) {
+            if(is_int($value) && $value > 0) {
+                $atLeastOneInt = true;
+            }else{
+                unset($values[$index]);
             }
+        }
+
+        $params['advertiser_id'] = $values;
+
+        if(!$atLeastOneInt) {
+            return ":attribute must contain at least one positive integer.";
         }
     }],
     'iso_code'     => ['array', function ($values) {
