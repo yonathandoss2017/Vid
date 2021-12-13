@@ -1691,6 +1691,56 @@ function getDealInfo(int $dealId): array {
 	return $response['data'];
 }
 
+/**
+ * Function to update demand tag status on LKQD
+ * 
+ * @param int $demandTagId
+ * @param int $status active or inactive
+ */
+function updateDemandTagStatus(int $demandTagId, string $status) {
+	global $cookie_file;
+
+	$url = sprintf("https://ui-api.lkqd.com/tags/%d/status", $demandTagId);
+
+	$headers = [
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	];
+
+	$payload = ["status" => $status];
+	$jsonPayload = json_encode($payload);
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
+		return "unauthorized";
+	}
+
+	$response = json_decode($result);
+
+	if (!empty($response->errors)) {
+		return json_encode($response->errors);
+	}
+
+	return $response->status;
+}
+
 function getDeal(int $orderId, string $name) {
 	global $cookie_file;
 	
