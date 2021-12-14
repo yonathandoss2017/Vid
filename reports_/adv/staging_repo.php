@@ -21,7 +21,22 @@
 	}
 
     if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local')) {
+		$db2 = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
+
+		require('config.php');
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	} elseif ($_POST['env'] == 'dev1') {
 		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
+
+		require('config.php');
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	} elseif ($_POST['env'] == 'dev2') {
+		$db2 = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
+
+		require('config.php');
+		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+	} elseif ($_POST['env'] == 'dev3') {
+		$db2 = new SQL($advDev03['host'], $advDev03['db'], $advDev03['user'], $advDev03['pass']);
 
 		require('config.php');
 		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);

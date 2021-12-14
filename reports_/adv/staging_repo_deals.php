@@ -18,6 +18,21 @@
 
 		require('config.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	} elseif ($_POST['env'] == 'dev1') {
+		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
+
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	} elseif ($_POST['env'] == 'dev2') {
+		$db2 = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
+
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
+	} elseif ($_POST['env'] == 'dev3') {
+		$db2 = new SQL($advDev03['host'], $advDev03['db'], $advDev03['user'], $advDev03['pass']);
+
+		require('config_pre.php');
+		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	} elseif ($_POST['env'] == 'pre') {
 		$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 

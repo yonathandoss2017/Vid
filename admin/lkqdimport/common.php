@@ -1144,7 +1144,11 @@ function getSupplyPartner($supplyPartnerName)
 	curl_close($ch); 
 
 	$Data = json_decode($result, true);
-	
+
+	if (!empty($Data["errorId"])) {
+		return $Data["errorId"];
+	}
+
 	$supplyPartner = array_filter($Data, function ($partner) use ($supplyPartnerName) {
 		return $partner["name"] === $supplyPartnerName;
 	});
