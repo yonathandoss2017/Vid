@@ -68,7 +68,7 @@ class CampaignVMPInvestmentController extends Controller {
             $advertisersId = $params['advertiser_id'] ?? [];
             $type = $params['type'];
         
-            $agency = $this->getAgency($companyId);
+            $this->checkAgency($companyId);
             $campaignQuery = CampaignManager::getByCampaignAndAdvertisersSQL($companyId, $advertisersId);
             $investment = InvestmentManager::getInvestments($type, $campaignQuery, $countriesISO);
             $investmentByCountry = InvestmentManager::getInvestmentByCountry($type, $campaignQuery, $countriesISO, $startDate, $endDate);
@@ -114,7 +114,12 @@ class CampaignVMPInvestmentController extends Controller {
         }
     }
 
-    public function getAgency($agencyId) {
+    /**
+     * @param int $agencyId
+     * @return void
+     * @throws UnexpectedValueException
+     */
+    public function checkAgency($agencyId) {
         $agency = AgencyManager::getById($agencyId);
 
         if(!$agency) {
