@@ -119,7 +119,7 @@ class CampaignVMPInvestmentController extends Controller {
      * @return void
      * @throws UnexpectedValueException
      */
-    public function checkAgency($agencyId) {
+    public function checkAgency(int $agencyId) {
         $agency = AgencyManager::getById($agencyId);
 
         if(!$agency) {

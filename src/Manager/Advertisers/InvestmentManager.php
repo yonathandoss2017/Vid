@@ -6,10 +6,14 @@ use DateTime;
 
 class InvestmentManager extends BaseManager
 {
-    public static function getInvestments($type, $campaignQuery, $countriesISO = []) {
+    public static function getInvestments(
+        string $type, 
+        string $campaignQuery, 
+        array $countriesISO = []) 
+    {
         $investments = [];
         $investmentRanges= [
-          // key               date from                          date to       
+             // key               date from                          date to       
             'yesterday'   => [(new DateTime())->modify("-1 day"), new DateTime()],
             'last_month'  => [
                 (new DateTime())->modify("-1 month")->modify("first day of this month"), 
@@ -36,7 +40,12 @@ class InvestmentManager extends BaseManager
         return $investments;
     }
 
-    public static function getTotalInvestments($campaignQuery, $countriesISO = [], $startDate = null, $endDate = null) {
+    public static function getTotalInvestments(
+        string $campaignQuery, 
+        array $countriesISO = [], 
+        DateTime $startDate = null, 
+        DateTime $endDate = null) 
+    {
         $where = [];
         $sql = "SELECT 
             SUM(investment) AS investment,
@@ -91,7 +100,13 @@ class InvestmentManager extends BaseManager
         return $totalInvestments;
     }
 
-    public static function getInvestmentByCountry($type, $campaignQuery, $countriesISO = [], $startDate = null, $endDate = null) {
+    public static function getInvestmentByCountry(
+        string $type, 
+        string $campaignQuery, 
+        array $countriesISO = [], 
+        DateTime $startDate = null, 
+        DateTime $endDate = null) 
+    {
         $totalInvestments = static::getTotalInvestments($campaignQuery, $countriesISO, $startDate, $endDate);
         $totalInvestment = $totalInvestments[$type];
         $sql = "SELECT  
@@ -150,7 +165,12 @@ class InvestmentManager extends BaseManager
         return $investments;
     }
 
-    public static function getLastInvestment($campaignQuery, $countriesISO = [], $startDate = null, $endDate = null) {
+    public static function getLastInvestment(
+        string $campaignQuery, 
+        array $countriesISO = [], 
+        DateTime $startDate = null, 
+        DateTime $endDate = null) 
+    {
         $investments = [];
         $maxIntervalDays = 7;
         

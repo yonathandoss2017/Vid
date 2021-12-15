@@ -45,7 +45,7 @@ class JWTAuth
         return $decoded;
     }
 
-    public function decode($token)
+    public function decode(string $token)
     {
         return JWT::decode(
             $token,
