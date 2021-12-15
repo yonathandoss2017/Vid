@@ -4,7 +4,7 @@ namespace App\Report\Manager\Advertisers;
 
 class CampaignManager extends BaseManager
 {
-    public static function getBy($companyId = null, $advertisersId = []) {
+    public static function getByCampaignAndAdvertisersSQL($companyId = null, $advertisersId = []) {
         $sql = "SELECT id 
             FROM campaign 
             WHERE status = 1

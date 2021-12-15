@@ -9,9 +9,16 @@ use App\Report\Manager\Advertisers\CampaignManager;
 use App\Report\Manager\Advertisers\InvestmentManager;
 use App\Report\Manager\Advertisers\UserManager;
 use App\Report\Security\JWTAuth;
-use Rakit\Validation\Validator;
+use Throwable;
+use UnexpectedValueException;
 
 class CampaignVMPInvestmentController extends Controller {
+
+    /**
+     * Execute the GET request
+     *
+     * @return Response
+     */
     public function get() {
         try {
             $this->checkAuthorization();
@@ -61,26 +68,24 @@ class CampaignVMPInvestmentController extends Controller {
             $advertisersId = $params['advertiser_id'] ?? [];
             $type = $params['type'];
         
-            $agency = AgencyManager::getById($companyId);
-            if(!$agency) {
-                return Response::notFound('"Company with id: ' . $companyId . ' not found"');
-            }
-        
-            $campaignQuery = CampaignManager::getBy($companyId, $advertisersId);
-        
+            $agency = $this->getAgency($companyId);
+            $campaignQuery = CampaignManager::getByCampaignAndAdvertisersSQL($companyId, $advertisersId);
             $investment = InvestmentManager::getInvestments($type, $campaignQuery, $countriesISO);
             $investmentByCountry = InvestmentManager::getInvestmentByCountry($type, $campaignQuery, $countriesISO, $startDate, $endDate);
             $lastInvestment = InvestmentManager::getLastInvestment($campaignQuery, $countriesISO, $startDate, $endDate);
         
             $content = json_encode(compact('investment', 'investmentByCountry', 'lastInvestment'));
+            
             return Response::json($content);
         } catch (UnauthorizedException $uae) {
+            
             return Response::unauthorized();
-        } catch (\UnexpectedValueException $sie) {
+        } catch (UnexpectedValueException $sie) {
+            
             return Response::badRequest($sie->getMessage());
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             error_log($th->getMessage());
-            return Response::internalServerError($th->getMessage());
+            return Response::internalServerError();
         }
     }
 
@@ -106,6 +111,14 @@ class CampaignVMPInvestmentController extends Controller {
     
         if(!$userIsActive) {
             throw new UnauthorizedException();
+        }
+    }
+
+    public function getAgency($agencyId) {
+        $agency = AgencyManager::getById($agencyId);
+
+        if(!$agency) {
+            throw new UnexpectedValueException('"Company with id: ' . $agencyId . ' not found"');
         }
     }
 }
