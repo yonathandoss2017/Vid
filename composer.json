@@ -1,6 +1,12 @@
 {
     "require": {
         "vlucas/phpdotenv": "^4.2",
-        "rakit/validation": "^1.4"
+        "rakit/validation": "^1.4",
+        "firebase/php-jwt": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Report\\": "src/"
+        }
     }
 }

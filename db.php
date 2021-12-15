@@ -75,6 +75,11 @@ Class SQL {
 	function fetchRow($result, $row = NULL) {
 		return mysqli_fetch_row($result);
 	}	
+	function getFirst($sql) {
+		$results = $this->getAll($sql);
+
+		return $results[0] ?? [];
+	}
 
 
 }
