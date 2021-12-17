@@ -1,5 +1,7 @@
 <?php
 require './../../src/bootstrap.php';
+
+use App\Report\App;
 use App\Report\Http\Controller\CampaignVMPInvestmentController;
-$controller = new CampaignVMPInvestmentController();
-$controller->run();
+
+(new App(new CampaignVMPInvestmentController()))->run();
