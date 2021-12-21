@@ -1,7 +1,13 @@
 <?php	
 	@session_start();
 	define('CONST',1);
-	require('/var/www/html/login/config.php');
+
+    if (file_exists('/var/www/html/login/config.php')) {
+        require('/var/www/html/login/config.php');
+    } else {
+        require('../../config_local.php');
+    }
+
 	require('../../db.php');
 	require('../libs/common_adv_deals_druid.php');
 	$mem_var = new Memcached('reps');
@@ -116,12 +122,12 @@
 		if(is_array($Dates)){
 			if(count($Dates) == 2){
                 $DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
-                $DFrom = $DateFrom->format('Y-m-d');
+                $DFrom = $DateFrom->format('Y-m-d H:i:00');
                 $StartMonth = $DateFrom->format('Ym');
                 $StartHour = $DateFrom->format('H');
 
                 $DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
-                $DTo = $DateTo->format('Y-m-d');
+                $DTo = $DateTo->format('Y-m-d H:i:59');
                 $EndMonth = $DateTo->format('Ym');
                 $EndHour = $DateTo->format('H');
 
@@ -129,7 +135,7 @@
 
                 if ($StartHour > 0 || $EndHour < 23) {
                     $ForceHourTable = true;
-                    $AddHourRange = " AND {ReportsTable}.Hour >= $StartHour AND {ReportsTable}.Hour <= $EndHour ";
+                    $AddHourRange = " AND EXTRACT(HOUR FROM TIMESTAMP(__time)) >= $StartHour AND EXTRACT(HOUR FROM TIMESTAMP(__time)) <= $EndHour ";
                 }
 			}
 		}
@@ -328,17 +334,18 @@
 										$And = " AND ";
 									}
 								}
-							}elseif ($KFilter == 'hour-range') {
-                                $arFv = explode('-', $FVal);
-                                $FilterHFrom = $arFv[0];
-                                $FilterHTo = $arFv[1];
-                                $SQLWhere .= $Or . " Hour NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
-                                $ForceHourTable = true;
-                            }else {
+							}else {
 								$FVal = mysqli_real_escape_string($db->link, $FVal);
 								$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 							}
 						}else{
+						    if($KFilter == 'hour-range'){
+                                $arFv = explode('-', $FVal);
+                                $FilterHFrom = $arFv[0];
+                                $FilterHTo = $arFv[1];
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM TIMESTAMP(__time)) NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                                $ForceHourTable = true;
+                            }
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
@@ -388,13 +395,14 @@
 								$FVal = mysqli_real_escape_string($db->link, $FVal);
 								$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 							}
-						}elseif ($KFilter == 'hour-range') {
-                            $arFv = explode('-', $FVal);
-                            $FilterHFrom = $arFv[0];
-                            $FilterHTo = $arFv[1];
-                            $SQLWhere .= $Or . " Hour BETWEEN '$FilterHFrom' AND '$FilterHTo'";
-                            $ForceHourTable = true;
-                        }else {
+						}else {
+                            if($KFilter == 'hour-range'){
+                                $arFv = explode('-', $FVal);
+                                $FilterHFrom = $arFv[0];
+                                $FilterHTo = $arFv[1];
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM TIMESTAMP(__time)) BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                                $ForceHourTable = true;
+                            }
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
@@ -449,7 +457,7 @@
 		$Nd = 0;
 		if($ThereAreFilters){
 
-			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN '$DFrom' AND '$DTo' $AddHourRange";
+			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange";
 							
 			if($IncludeTime){
 				$DataT[$Nd][] = "";
@@ -493,7 +501,7 @@
 		}
 					
 		//CALCULA LOS TOTALES CON FILTROS
-		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere ";
+		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere ";
 		//error_log($SQLSuperQueryT);
 		
 		if($IncludeTime){
@@ -538,7 +546,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $SQLGroups";
+		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere $SQLGroups";
 		if($OrderParam != ""){
 			$SQLQuery .= " ORDER BY $OrderParam";
 			if($Start !== false || $Length !== false){
