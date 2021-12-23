@@ -17,13 +17,11 @@ $dt = new DateTime();
 $dt->setTimezone(new DateTimeZone('UTC'));
 
 if ($dt->format('H') <= 7){
-    $dateTimeConsumedBudgetFrom = date("Y-m-d H:i:s", strtotime("yesterday -1 day 00:00:00"));
-    $dateTimeConsumedBudgetTo = date("Y-m-d H:i:s", strtotime("yesterday -1 day 23:59:59"));
-    $dateTimeFrom = date("Y-m-d H:i:s", strtotime("yesterday 00:00:00"));
-    $dateTimeTo = date("Y-m-d H:i:s", strtotime("yesterday 23:59:59"));
+    $dayBeforeYesterday = date("Y-m-d", strtotime("yesterday -1 day"));
+    $yesterday = date("Y-m-d", strtotime("yesterday"));
 
     $checkConsumedBudgetData = "SELECT idCampaing AS id FROM reports
-     WHERE TIMESTAMP(date, SEC_TO_TIME(hour*3600)) BETWEEN '$dateTimeConsumedBudgetFrom' AND '$dateTimeConsumedBudgetTo' ";
+     WHERE TIMESTAMP(date, SEC_TO_TIME(hour*3600)) BETWEEN '$dayBeforeYesterday' AND '$dayBeforeYesterday' ";
 
     if (0 < $db->num_rows($db->query($checkConsumedBudgetData))) {
 
@@ -32,11 +30,13 @@ if ($dt->format('H') <= 7){
             (
               SELECT idCampaing, SUM(Impressions) AS consumed_impressions, SUM(VImpressions) AS consumed_viewability, SUM(Clicks) AS consumed_clicks, SUM(CompleteV) AS consumed_completes
                   FROM reports
-                  WHERE TIMESTAMP(date, SEC_TO_TIME(hour*3600)) BETWEEN '$dateTimeConsumedBudgetFrom' AND '$dateTimeConsumedBudgetTo'
+                  WHERE date BETWEEN '$dayBeforeYesterday' AND '$dayBeforeYesterday' AND
+                  hour BETWEEN 0 AND 23
                   GROUP BY idCampaing
             ) consumedBugdet
             WHERE r.idCampaing = consumedBugdet.idCampaing
-            AND TIMESTAMP(r.date, SEC_TO_TIME(r.hour*3600)) BETWEEN '$dateTimeFrom' AND '$dateTimeTo'
+            AND r.date BETWEEN '$yesterday' AND '$yesterday'
+            AND r.hour BETWEEN 0 AND 23
             GROUP BY r.idCampaing
             ORDER BY r.idCampaing ASC;
         ";
@@ -44,19 +44,20 @@ if ($dt->format('H') <= 7){
         $sql = "SELECT r.idCampaing AS id, SUM(r.Impressions) AS actual_impressions, SUM(r.VImpressions) AS actual_viewability, SUM(r.CompleteV) AS actual_completes , SUM(r.Clicks) AS actual_clicks
             FROM reports r
             WHERE r.idCampaing
-            AND TIMESTAMP(r.date, SEC_TO_TIME(r.hour*3600)) BETWEEN '$dateTimeFrom' AND '$dateTimeTo'
+            AND r.date BETWEEN '$yesterday' AND '$yesterday'
+            AND r.hour BETWEEN 0 AND 23
             GROUP BY r.idCampaing
             ORDER BY r.idCampaing ASC;
         ";
     }
 }else {
-    $dateTimeFrom = date("Y-m-d H:i:s", strtotime("today 00:00:00"));
-    $dateTimeTo = date("Y-m-d H:i:s", strtotime("today 13:00:00"));
+    $today = date("Y-m-d");
 
     $sql = "SELECT r.idCampaing AS id, SUM(r.Impressions) AS actual_impressions, SUM(r.VImpressions) AS actual_viewability, SUM(r.CompleteV) AS actual_completes , SUM(r.Clicks) AS actual_clicks
         FROM reports r
-        WHERE r.idCampaing
-        AND TIMESTAMP(r.date, SEC_TO_TIME(r.hour*3600)) BETWEEN '$dateTimeFrom' AND '$dateTimeTo'
+        WHERE r.idCampaing AND
+        r.date BETWEEN '{$today}' AND '{$today}' AND
+        r.Hour BETWEEN 0 AND 13
         GROUP BY r.idCampaing
         ORDER BY r.idCampaing ASC;
     ";

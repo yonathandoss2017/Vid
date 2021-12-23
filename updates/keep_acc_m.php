@@ -38,7 +38,7 @@
 				$Own = intval($U['show_only_own_stats']);
 				
 				$sql = "INSERT INTO acc_managers (id, Email, Password, Name, Nick, Type, LastLogin, IP, Date, Time, Deleted, Follow, OwnStats) 
-				VALUES ('$idUser', '$Email', '$Pass', '$Name $Last', '$Nick', 1, 0, '', '$Date', '$Time', 0, 3, $Own)";
+				VALUES ('$idUser', '$Email', '$Pass', '$Name $Last', '$Nick', 1, 0, '', '$Date', '$Time', 0, 1, $Own)";
 				//echo "$sql<br/>";
 				$db->query($sql);
 				

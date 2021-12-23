@@ -1144,7 +1144,11 @@ function getSupplyPartner($supplyPartnerName)
 	curl_close($ch); 
 
 	$Data = json_decode($result, true);
-	
+
+	if (!empty($Data["errorId"])) {
+		return $Data["errorId"];
+	}
+
 	$supplyPartner = array_filter($Data, function ($partner) use ($supplyPartnerName) {
 		return $partner["name"] === $supplyPartnerName;
 	});
@@ -1674,15 +1678,279 @@ function getDealInfo(int $dealId): array {
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
 	$result = curl_exec($ch);
-	curl_close($ch);
-
 	$response = json_decode($result, true);
+
+	if (!is_array($response) || empty($response)) {
+		return [];
+	}
+
+	curl_close($ch);
 
 	if (!empty($response->errors)) {
 		return $response->errors;
 	}
 
 	return $response['data'];
+}
+
+/**
+ * Function to update demand tag status on LKQD
+ * 
+ * @param int $demandTagId
+ * @param int $status active or inactive
+ */
+function updateDemandTagStatus(int $demandTagId, string $status) {
+	global $cookie_file;
+
+	$url = sprintf("https://ui-api.lkqd.com/tags/%d/status", $demandTagId);
+
+	$headers = [
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	];
+
+	$payload = ["status" => $status];
+	$jsonPayload = json_encode($payload);
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
+		return "unauthorized";
+	}
+
+	$response = json_decode($result);
+
+	if (!empty($response->errors)) {
+		return json_encode($response->errors);
+	}
+
+	return $response->status;
+}
+
+/**
+ * Function to get the deal name from the report server DB
+ */
+function getDealName(int $dealId): string {
+	global $db;
+
+	$sql = <<<SQL
+SELECT
+	name
+FROM
+	campaign
+WHERE
+	deal_id = {$dealId}
+SQL;
+
+	$dealName = $db->getOne($sql);
+
+	return empty($dealName) ? '' : $dealName;
+}
+
+/**
+ * Function that returns date range type as needed for LKQD
+ */
+function getDateRangeType(string $startDate, string $endDate): string {
+
+	if (DateTime::createFromFormat('Y-m-d', $startDate) === false ||
+		DateTime::createFromFormat('Y-m-d', $endDate) === false
+	) {
+		return 'No valid dates!';
+	}
+
+	$start = new DateTime($startDate);
+	$end = new DateTime($endDate);
+	$today = new DateTime('NOW');
+	$yesterday = new DateTime('NOW');
+	$yesterday->sub(new DateInterval('P1D'));
+	$dayBeforeYesterday = new DateTime('NOW');
+	$dayBeforeYesterday->sub(new DateInterval('P2D'));
+	$firstDayOfThisMonth = new DateTime('NOW');
+	$firstDayOfThisMonth->modify('first day of this month');
+	$lastDayOfThisMonth = new DateTime('NOW');
+	$lastDayOfThisMonth->modify('last day of this month');
+	$firstDayOfLastMonth = new DateTime('NOW');
+	$firstDayOfLastMonth->modify('first day of last month');
+	$lastDayOfLastMonth = new DateTime('NOW');
+	$lastDayOfLastMonth->modify('last day of last month');
+	$diff = $end->diff($start);
+
+	if ($start->format('Y-m-d') === $today->format('Y-m-d') &&
+		$end->format('Y-m-d') === $today->format('Y-m-d')
+	) {
+		return 'TODAY';
+	} elseif ($start->format('Y-m-d') === $yesterday->format('Y-m-d') &&
+		$end->format('Y-m-d') === $yesterday->format('Y-m-d')
+	) {
+		return 'YESTERDAY';
+	} elseif ($start->format('Y-m-d') === $dayBeforeYesterday->format('Y-m-d') &&
+		$end->format('Y-m-d') === $dayBeforeYesterday->format('Y-m-d')
+	) {
+		return 'DAY_BEFORE_YESTERDAY';
+	} elseif ($end->format('Y-m-d') === $today->format('Y-m-d') && $diff->days === 6) {
+		return 'PAST_7_DAYS';
+	} elseif ($end->format('Y-m-d') === $yesterday->format('Y-m-d') && $diff->days === 6) {
+		return '7_DAYS_BEFORE_TODAY';
+	} elseif ($end->format('Y-m-d') === $today->format('Y-m-d') && $diff->days === 29) {
+		return 'PAST_30_DAYS';
+	} elseif ($start->format('Y-m-d') === $firstDayOfThisMonth->format('Y-m-d') &&
+		$end->format('Y-m-d') === $lastDayOfThisMonth->format('Y-m-d')
+	) {
+		return 'THIS_MONTH';
+	} elseif ($start->format('Y-m-d') === $firstDayOfLastMonth->format('Y-m-d') &&
+		$end->format('Y-m-d') === $lastDayOfLastMonth->format('Y-m-d')
+	) {
+		return 'LAST_MONTH';
+	} else {
+		return 'CUSTOM';
+	}
+}
+
+/**
+ * Function to get top ten domains of a deal on LKQD
+ * 
+ * @return array of top 10 domains of a deal
+ */
+function getTopDealDomains(int $dealId, string $startDate, string $endDate): array {
+	global $cookie_file;
+	$uuid = gen_uuid();
+
+	$url = 'https://ui-api.lkqd.com/reports';
+
+	$headers = [
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+	];
+
+	$payload = [
+		"whatRequest" => "breakdown",
+		"uuid" => $uuid,
+		"reportFormat" => "JSON",
+		"includeSummary" => true,
+		"dateRangeType" => getDateRangeType($startDate, $endDate),
+		"startDate" => $startDate,
+		"endDate" => $endDate,
+		"startDateHour" => 0,
+		"endDateHour" => 23,
+		"startHour" => 0,
+		"endHour" => 23,
+		"timeDimension" => "OVERALL",
+		"timezone" => "America/New_York",
+		"reportType" => [
+			"TAG",
+			"DOMAIN"
+		],
+		"environmentIds" => [
+			1,
+			2,
+			3,
+			4
+		],
+		"filters" => [
+			[
+			  "dimension" => "ENVIRONMENT",
+			  "operation" => "include",
+			  "filters" => [
+				[
+				  "matchType" => "id",
+				  "value" => "1",
+				  "label" => "Mobile Web"
+				],
+				[
+				  "matchType" => "id",
+				  "value" => "2",
+				  "label" => "Mobile App"
+				],
+				[
+				  "matchType" => "id",
+				  "value" => "3",
+				  "label" => "Desktop"
+				],
+				[
+				  "matchType" => "id",
+				  "value" => "4",
+				  "label" => "CTV"
+				]
+			  ]
+			],
+			[
+			  "dimension" => "TAG",
+			  "operation" => "include",
+			  "filters" => [
+				[
+				  "matchType" => "id",
+				  "value" => $dealId,
+				  "label" => getDealName($dealId),
+				]
+			  ]
+			]
+		  ],
+		  "metrics" => [
+			"COMPLETED_VIEWS"
+		  ],
+		  "sort" => [
+			[
+			  "field" => "COMPLETED_VIEWS",
+			  "order" => "desc"
+			]
+		  ],
+		  "offset" => 0,
+		  "limit" => 500
+	];
+
+	$payloadJson = json_encode($payload);
+
+	$ch = curl_init();	
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate, br');
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	if (false !== strpos($result, 'HTTP method not allowed, supported methods: OPTIONS')) {
+		return ['unauthorized'];
+	}
+	
+	$data = json_decode($result);
+
+	if (!empty($data->errors)) {
+		return $data->errors;
+	}
+
+	$domains = $data->data->entries;
+	$topTenDomainsArray = array_slice($domains, 0, 10);
+	$topTenDomains = array_map(function ($domain) {
+		return $domain->dimension2Name;
+	}, $topTenDomainsArray);
+	
+	return $topTenDomains;
 }
 
 function getDeal(int $orderId, string $name) {
@@ -1725,6 +1993,53 @@ function getDeal(int $orderId, string $name) {
 	}
 
 	return $dealId;
+}
+
+/**
+ * Function for getting a demand tag id from LKQD
+ */
+function getDemandTagId(int $dealId, string $name): string {
+	global $cookie_file;
+	
+	$URL = 'https://ui-api.lkqd.com/demand/tree';
+	
+	$Headers = [
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	];
+	
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $URL);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+
+	$result = curl_exec($ch);
+	curl_close($ch); 
+
+	$data = json_decode($result, true);
+
+	$demandTagId = "demand-tag-not-found";
+
+	foreach ($data["data"] as $partner) {
+		foreach ($partner["orders"] as $order) {
+			foreach ($order["deals"] as $deal) {
+				foreach ($deal["tags"] as $tag) {
+					if ($tag["dealId"] === $dealId && $tag["tagName"] === $name) {
+						$demandTagId = $tag["tagId"];
+					} 
+				}
+			}
+		}
+	}
+
+	return $demandTagId;
 }
 
 function newOrUpdateDeal(
@@ -1860,6 +2175,10 @@ function keepDemandTagsSelected(array $tags): bool {
 	$URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
 
 	$sources = getSources();
+	if (empty($source)) {
+		logIn();
+		$sources = getSources();
+	}
 	$additionIds = [];
 
 	$payload = [
@@ -2162,6 +2481,10 @@ function updateCreative(
 	global $cookie_file;
 
 	$sources = getSources();
+	if (empty($source)) {
+		logIn();
+		$sources = getSources();
+	}
 	$envs = json_decode($environments, true);
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
@@ -2467,10 +2790,18 @@ function newDemandTag(
 	global $cookie_file;
 
 	$sources = getSources();
+	if (empty($source)) {
+		logIn();
+		$sources = getSources();
+	}
 	$envs = json_decode($environments, true);
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
 	$dealInfo = getDealInfo($dealId);
+	if (empty($dealInfo)) {
+		logIn();
+		$dealInfo = getDealInfo($dealId);
+	}
 
 	$filteredSources = array_filter($sources, function ($source) use ($envs) {
 		return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
