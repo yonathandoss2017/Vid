@@ -24,7 +24,7 @@
 	    SUM(Coste) AS Coste,
 	    SUM(CosteEur) AS CosteEur,
 	    Date 
-	    FROM reports_resume202109 WHERE idUser in (29664, 26527) AND Coste > 0 
+	    FROM reports_resume202112 WHERE idUser in (26215) AND Coste > 0 
     GROUP BY idUser, Country, Date"; // AND Date BETWEEN '2020-04-01' AND '2020-04-12'
 	//idUser = 4258 OR
 	$N = 0;
