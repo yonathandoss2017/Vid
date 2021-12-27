@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 }
 
 	//$Date = date('Y-m-d', time() - (3600 * 4));
-	$Date = '2021-11-29';
+	$Date = '2021-12-22';
 	//$Hour = date('H');
 	$Hour = 23;
 	
@@ -60,7 +60,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DemandTags = array();	
 	$ActiveDeals = array();
 	$CampaingData = array();
-	$sql = "SELECT * FROM campaign WHERE id = 5652"; //ssp_id = 4 AND status = 1
+	$sql = "SELECT * FROM campaign WHERE id = 5887"; //ssp_id = 4 AND status = 1
 	$query = $db3->query($sql);
 	if($db3->num_rows($query) > 0){
 		while($Camp = $db3->fetch_array($query)){

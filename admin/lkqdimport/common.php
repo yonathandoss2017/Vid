@@ -1763,14 +1763,17 @@ SQL;
 	return empty($dealName) ? '' : $dealName;
 }
 
+function isValidDate(string $date): bool
+{
+	return strtotime($date);
+}
+
 /**
  * Function that returns date range type as needed for LKQD
  */
 function getDateRangeType(string $startDate, string $endDate): string {
 
-	if (DateTime::createFromFormat('Y-m-d', $startDate) === false ||
-		DateTime::createFromFormat('Y-m-d', $endDate) === false
-	) {
+	if (!isValidDate($startDate) || !isValidDate($endDate)) {
 		return 'No valid dates!';
 	}
 

@@ -65,7 +65,7 @@
 			$RepType = 'Quincenal';
 
 			// TODO - remove this date for prod
-            $date1 = new DateTime('2021-10-16');
+            $date1 = new DateTime('2021-12-16');
             $date1->add(DateInterval::createFromDateString('yesterday'));
             $Date1 = $date1->format('Y-m-d');
             $Date1Nice = $date1->format('d/m/Y');
@@ -76,19 +76,19 @@
             $day1 = intval($date1->format('d'));
 
             if($day1 > 20){
-                $Date2 = $date1->format('Y-m-') . '16';
-                $Date2Nice = '16' . $date1->format('/m/Y');
+                $Date2 = $date1->format('Y-m-16');
+                $Date2Nice = $date1->format('16/m/Y');
 
-                $Date3 = $previousMonth->format('Y-m-') . $day1;
+                $Date3 = $previousMonth->format('Y-m-d');
                 $Date3Nice = $previousMonth->format('d/m/Y');
 
-                $Date4 = $previousMonth->format('Y-m-') . '16';
-                $Date4Nice = '16' . $previousMonth->format('/m/Y');
+                $Date4 = $previousMonth->format('Y-m-16');
+                $Date4Nice = $previousMonth->format('16/m/Y');
             }else{
-                $Date2 = $date1->format('Y-m-') . '01';
-                $Date2Nice = '01' . $date1->format('/m/Y');
+                $Date2 = $date1->format('Y-m-01');
+                $Date2Nice = $date1->format('01/m/Y');
 
-                $Date3 = $previousMonth->format('Y-m-') . '15';
+                $Date3 = $previousMonth->format('Y-m-d');
                 $Date3Nice = $previousMonth->format('d/m/Y');
 
                 $Date4 = $previousMonth->format('Y-m-') . '01';
@@ -102,7 +102,7 @@
 			$RepType = 'Quincenal - Anual';
 
 			// TODO - remove this date for prod
-			$date1 = new DateTime('2021-10-01');
+			$date1 = new DateTime('2021-12-16');
 			$date1->add(DateInterval::createFromDateString('yesterday'));
 			$Date1 = $date1->format('Y-m-d');
 			$Date1Nice = $date1->format('d/m/Y');
@@ -115,7 +115,7 @@
 				$Date2Nice = $date1->format('16/m/Y');
 
 				$Date3 = $dateLY->format('Y-m-d');
-				$Date3Nice = $dateLY->format('t/m/Y');
+				$Date3Nice = $dateLY->format('d/m/Y');
 
 				$Date4 = $dateLY->format('Y-m-16');
 				$Date4Nice = $dateLY->format('16/m/Y');
@@ -123,8 +123,8 @@
 				$Date2 = $date1->format('Y-m-01');
 				$Date2Nice = $date1->format('01/m/Y');
 
-				$Date3 = $dateLY->format('Y-m-t');
-				$Date3Nice = $dateLY->format('t/m/Y');
+				$Date3 = $dateLY->format('Y-m-d');
+				$Date3Nice = $dateLY->format('d/m/Y');
 
 				$Date4 = $dateLY->format('Y-m-01');
 				$Date4Nice = $dateLY->format('01/m/Y');
