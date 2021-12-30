@@ -32,7 +32,8 @@ $sql = "SELECT
         INNER JOIN `vidoomy-adv`.campaign
             ON `vidoomy-adv`.reports.idCampaing = `vidoomy-adv`.campaign.id
         WHERE `vidoomy-adv`.reports.Impressions > 0
-            AND Date = '$yesterday' AND Hour <= 6
+        AND `vidoomy-adv`.campaign.end_at > '$today'
+        AND Date = '$yesterday' AND Hour <= 6
             AND `vidoomy-adv`.campaign.id NOT IN (
                 SELECT idCampaing FROM `vidoomy-adv`.reports
                 WHERE Date = '$today'
