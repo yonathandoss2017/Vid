@@ -11,7 +11,7 @@ if (file_exists('/var/www/html/login/config.php')) {
 
 require('../../db.php');
 
-$db = new SQL($dbhost, 'vidoomy-adv', $dbuser, $dbpass);
+$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
 
 $unixTime = time();
 $timeZone = new \DateTimeZone('Europe/Madrid');
