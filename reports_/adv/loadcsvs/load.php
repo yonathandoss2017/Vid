@@ -41,13 +41,13 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	$csvData = array_map('str_getcsv', file('sing2_consorcio_final.csv'));
+	$csvData = array_map('str_getcsv', file('nexos.csv'));
 	
 	foreach($csvData as $Data){
 		$Date = $Data[0];
 		if($Date != 'Time'){
 			
-			$DateO = DateTime::createFromFormat('m/d/Y', $Date);
+			$DateO = DateTime::createFromFormat('d/m/Y', $Date);
 			$FormatDate = $DateO->format('Y-m-d');
 			
 			$Name = $Data[1];

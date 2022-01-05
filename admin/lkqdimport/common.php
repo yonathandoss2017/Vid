@@ -2610,7 +2610,7 @@ function getDemandTagPayload(
 		"dealTier" => 1,
 		"dealStatus" => $dealInfo['status'],
 		"name" => $name,
-		"status" => $status,
+		"status" => $demantTagId > 0 ? $status : 'inactive',
 		"tagType" => "lkqd-hosted",
 		"tagSource" => "lkqd",
 		"caps" => [],

@@ -20,7 +20,7 @@
 	
 	$sql = "SELECT user.id, user.username, publisher.account_manager_id FROM user 
 	INNER JOIN publisher ON user.id = publisher.user_id
-	WHERE user.roles LIKE '%ROLE_PUBLISHER\";}'";
+	WHERE user.roles LIKE '%14:\"ROLE_PUBLISHER\"%'";
 	$query = $db2->query($sql);
 	
 	$Nq = 0;
