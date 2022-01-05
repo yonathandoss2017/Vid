@@ -18,8 +18,8 @@
 		echo 'Access denied';
 		exit(0);
 	}
-	
-	if ($_POST['env'] == 'dev') {
+
+if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local')) {
 		$db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 
 		require('config.php');
@@ -58,13 +58,11 @@
 		header($_SERVER["SERVER_PROTOCOL"] . ' Wrong ENV', true, 500);
 		exit(0);
 	}
-	
-	
+
 	mysqli_set_charset($db->link,'utf8');
 	mysqli_set_charset($db2->link,'utf8');
 
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
-	
 	$sql = "SELECT report_key.*, user.roles AS URoles FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
 	$query = $db2->query($sql);
 	if($db2->num_rows($query) > 0){
@@ -73,8 +71,6 @@
 		$UserId = $Repo['user_id'];
 		//$SOOS = $Repo['show_only_own_stats'];
 		$RolesJSON = json_decode($Repo['URoles']);
-		
-		
 		$sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
 		$UserName = $db->getOne($sql);
 		$sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
@@ -84,7 +80,6 @@
 		echo 'Access denied';
 		exit(0);
 	}
-	
 	
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON) || in_array('ROLE_REPORTS_DEALS', $RolesJSON)){
@@ -135,7 +130,7 @@
 
                 if ($StartHour > 0 || $EndHour < 23) {
                     $ForceHourTable = true;
-                    $AddHourRange = " AND EXTRACT(HOUR FROM TIMESTAMP(__time)) >= $StartHour AND EXTRACT(HOUR FROM TIMESTAMP(__time)) <= $EndHour ";
+                    $AddHourRange = " AND EXTRACT(HOUR FROM __time) >= $StartHour AND EXTRACT(HOUR FROM __time) <= $EndHour ";
                 }
 			}
 		}
@@ -338,14 +333,15 @@
 								$FVal = mysqli_real_escape_string($db->link, $FVal);
 								$SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
 							}
-						}else{
-						    if($KFilter == 'hour-range'){
-                                $arFv = explode('-', $FVal);
-                                $FilterHFrom = $arFv[0];
-                                $FilterHTo = $arFv[1];
-                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM TIMESTAMP(__time)) NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
-                                $ForceHourTable = true;
-                            }
+						}elseif ($KFilter == 'hour-range'){
+                            $arFv = explode('-', $FVal);
+                            $FilterHFrom = $arFv[0];
+                            $FilterHTo = $arFv[1];
+                            $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time ) NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            $ForceHourTable = true;
+						}
+						else{
+
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
@@ -395,14 +391,15 @@
 								$FVal = mysqli_real_escape_string($db->link, $FVal);
 								$SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
 							}
-						}else {
-                            if($KFilter == 'hour-range'){
-                                $arFv = explode('-', $FVal);
-                                $FilterHFrom = $arFv[0];
-                                $FilterHTo = $arFv[1];
-                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM TIMESTAMP(__time)) BETWEEN '$FilterHFrom' AND '$FilterHTo'";
-                                $ForceHourTable = true;
-                            }
+						}
+						elseif($KFilter == 'hour-range'){
+                            $arFv = explode('-', $FVal);
+                            $FilterHFrom = $arFv[0];
+                            $FilterHTo = $arFv[1];
+                            $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time) BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            $ForceHourTable = true;
+                        }
+						else {
 							if($KFilter == 'type'){
 								if($FVal == 'Deal'){
 									$FVal = 1;
@@ -430,8 +427,7 @@
 				$SQLWhere .= ") ";
 			}
 		}
-	
-		
+
 		$SQLMetrics = "";
 
 		foreach($Metrics as $MetricName){
@@ -456,14 +452,11 @@
 		//SI HAY FILTROS, CALCULA LOS TOTALES SIN FILRTOS
 		$Nd = 0;
 		if($ThereAreFilters){
-
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM prd_rtb_event_production_1 WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange";
-							
 			if($IncludeTime){
 				$DataT[$Nd][] = "";
 			}
-			
-			//echo $SQLSuperQueryT;
+
 			$Row = druidQuery($SQLSuperQueryT);
 			$Keys = $Row[0];
 			array_shift($Row);
@@ -507,7 +500,6 @@
 		if($IncludeTime){
 			$DataT[$Nd][] = "";
 		}
-		
 		$Row = druidQuery($SQLSuperQueryT);
 		$Keys = $Row[0];
 		array_shift($Row);
