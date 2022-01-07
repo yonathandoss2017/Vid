@@ -12,13 +12,13 @@
 		require('/var/www/html/login/db.php');
 		require('/var/www/html/login/common.lib.php');
 		require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
-    } else {
-        require('./../config_local.php');
+	} else {
+		require('./../config_local.php');
 		require('./../constantes.php');
 		require('./../db.php');
 		require('./../common.lib.php');
 		require './../include/PHPMailer/PHPMailerAutoload.php';
-    }
+	}
 		
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
 	$dbPanel = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
