@@ -5,12 +5,20 @@
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	define('CONST',1);
 	define('AAL_DEAL_ID', '1053459');
-	require('/var/www/html/login/config.php');
-	require('/var/www/html/login/constantes.php');
-	require('/var/www/html/login/db.php');
-	require('/var/www/html/login/common.lib.php');
 	
-	require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
+	if (file_exists('/var/www/html/login/config.php')) {
+		require('/var/www/html/login/config.php');
+		require('/var/www/html/login/constantes.php');
+		require('/var/www/html/login/db.php');
+		require('/var/www/html/login/common.lib.php');
+		require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
+    } else {
+        require('./../config_local.php');
+		require('./../constantes.php');
+		require('./../db.php');
+		require('./../common.lib.php');
+		require './../include/PHPMailer/PHPMailerAutoload.php';
+    }
 		
 	$db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
 	$dbPanel = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
@@ -47,8 +55,38 @@ SET
 WHERE
 	id = {$idCampaing}
 SQL;
-
+	
 	$dbPanel->query($sql);
+}
+
+function getUserManagersEmails($userId, $addOwnEmail = false) {
+	$user = getUser($userId);
+
+	$emails = [];
+
+	if(!$user) {
+		return $emails;
+	}
+	
+	if($addOwnEmail) {
+		$emails = [$user['email']];
+	}
+	
+	if(!isset($user['manager_id']) 
+		|| !$user['manager_id'] 
+		|| (int) $user['manager_id'] === (int) $userId) {
+		return $emails;
+	}
+
+	return array_merge($emails, getUserManagersEmails($user['manager_id'], true));;
+}
+
+function getUser($userId) {
+	global $advProd;
+	$db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
+	$sql = "SELECT * FROM user WHERE id = $userId";
+	
+	return $db3->getFirst($sql);
 }
 
 function sendActivationNotice($Type, $idCampaing, $Today){
@@ -152,15 +190,12 @@ function sendActivationNotice($Type, $idCampaing, $Today){
 			}
 			
 			if(intval($HeadId) > 0){
-				$sql = "SELECT email FROM user WHERE id = $HeadId LIMIT 1";
-				$EmailHead = $db3->getOne($sql);
-				
-				$sql = "SELECT CONCAT(name, ' ', last_name) FROM user WHERE id = $HeadId LIMIT 1";
-				$NameHead = $db3->getOne($sql);
-				
-				//echo "Head Name: $NameHead \n";
-				//echo "Head Email: $EmailHead \n";
-				$mail->AddCC($EmailHead);
+				$headManagersEmail = getUserManagersEmails($HeadId, true);
+				if($headManagersEmail) {
+					foreach($headManagersEmail as $headManagerEmail) {
+						$mail->AddCC($headManagerEmail);
+					}
+				}
 			}
 			
 			$mail->Subject = $EmailTitle;// . " (Fe de erratas)"
@@ -200,30 +235,33 @@ function sendActivationNotice($Type, $idCampaing, $Today){
 	$sql = "SELECT DISTINCT(idCampaing) AS idCampaing FROM reports 
 	INNER JOIN campaign ON campaign.id = reports.idCampaing
 	WHERE reports.Date = '$Today' AND reports.Impressions > 0";
-	
+
 	$query = $db->query($sql);
-	if($db->num_rows($query) > 0){
-		while($TodayDeals = $db->fetch_array($query)){
-			$idCampaing = $TodayDeals['idCampaing'];
-			//echo $idCampaing;
-			
-			$sql = "SELECT COUNT(*) FROM sent_activation WHERE idCampaing = $idCampaing AND Type = 0";
-			if(intval($db->getOne($sql)) == 0){
-				$sql = "SELECT COUNT(*) FROM reports WHERE Date < '$Today' AND Impressions > 0 AND idCampaing = $idCampaing";
-				if($db->getOne($sql) == 0){
-					sendActivationNotice(0, $idCampaing, $Today);
-					setFistImpressionDate($idCampaing);
-					//echo "sendActivationNotice(0, $idCampaing) \n";
-				}
+
+	if($db->num_rows($query) <= 0){
+		return;
+	}
+
+	while($TodayDeals = $db->fetch_array($query)){
+		$idCampaing = $TodayDeals['idCampaing'];
+		
+		$sql = "SELECT COUNT(*) FROM sent_activation WHERE idCampaing = $idCampaing AND Type = 0";
+		
+		if(intval($db->getOne($sql)) == 0){
+			$sql = "SELECT COUNT(*) FROM reports WHERE Date < '$Today' AND Impressions > 0 AND idCampaing = $idCampaing";
+			if($db->getOne($sql) == 0){
+				sendActivationNotice(0, $idCampaing, $Today);
+				setFistImpressionDate($idCampaing);
+				//echo "sendActivationNotice(0, $idCampaing) \n";
 			}
-			
-			$sql = "SELECT COUNT(*) FROM sent_activation WHERE idCampaing = $idCampaing AND Date = '$Today'";
-			if(intval($db->getOne($sql)) == 0){
-				$sql = "SELECT COUNT(*) FROM reports WHERE Date BETWEEN '$ThreeDaysBefore' AND '$Yesterday' AND Impressions > 0 AND idCampaing = $idCampaing";
-				if($db->getOne($sql) == 0){
-					sendActivationNotice(1, $idCampaing, $Today);
-					//echo "sendActivationNotice(1, $idCampaing) \n";
-				}
+		}
+		
+		$sql = "SELECT COUNT(*) FROM sent_activation WHERE idCampaing = $idCampaing AND Date = '$Today'";
+		if(intval($db->getOne($sql)) == 0){
+			$sql = "SELECT COUNT(*) FROM reports WHERE Date BETWEEN '$ThreeDaysBefore' AND '$Yesterday' AND Impressions > 0 AND idCampaing = $idCampaing";
+			if($db->getOne($sql) == 0){
+				sendActivationNotice(1, $idCampaing, $Today);
+				//echo "sendActivationNotice(1, $idCampaing) \n";
 			}
 		}
 	}
