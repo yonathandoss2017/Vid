@@ -50,34 +50,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 }
 
-	$arraySpecialFill = array('Belgium', 'Netherlands', 'Italy', 'Portugal', 'Germany', 'Turkey', 'South Africa', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia', 'France');
-	$SpecialFill25 = array('Turkey', 'Trinidad and Tobago', 'Jamaica', 'Lithuania', 'Latvia', 'Estonia');
-
-	$arraySpecialFill = array(
-		'BE' => 'Belgium', 
-		'NL' => 'Netherlands',
-		'IT' => 'Italy',
-		'PT' => 'Portugal', 
-		'DE' => 'Germany',
-		'TR' => 'Turkey',
-		'ZA' => 'South Africa',
-		'GB' => 'United Kingdom',
-		'TT' => 'Trinidad and Tobago',
-		'JM' => 'Jamaica',
-		'LT' => 'Lithuania',
-		'LV' => 'Latvia',
-		'EE' => 'Estonia',
-		'FR' => 'France'
-	);
+	$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
+	$SpecialFill25 = array('Jamaica');
+	$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
+	$SpecialFill6 = array('Turkey');
+	$arraySpecialFillWL = array('Italy');
 	
-	$SpecialFill25 = array(
-		'TR' => 'Turkey', 
-		'TT' => 'Trinidad and Tobago', 
-		'JM' => 'Jamaica', 
-		'LT' => 'Lithuania',
-		'LV' => 'Latvia',
-		'EE' => 'Estonia'
-	);
 	
 	foreach($arraySpecialFill AS $ISO => $Cntry){
 		$CntryFile = str_replace(' ', '', $Cntry);
@@ -91,6 +69,21 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}
 		}else{
 			$BLDomains[$ISO][] = 'none';
+		}
+	}
+	
+	$WLDomains = array();	
+	foreach($arraySpecialFillWL AS $Cntry){
+		$CntryFile = str_replace(' ', '', $Cntry);
+		$FileCSV = '/var/www/html/login/admin/lkqdimport/cpm_blacklist/'.$CntryFile.'WL.csv';
+		
+		if(file_exists($FileCSV)){
+			$Csv = array_map('str_getcsv', file($FileCSV));
+			foreach($Csv as $Co){
+				$WLDomains[$Cntry][] = $Co[0];
+			}
+		}else{
+			$WLDomains[$Cntry][] = 'none';
 		}
 	}
 	
@@ -140,7 +133,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$HourEST = intval($DateEST->format('H'));
 	$DateESTs = $DateEST->format('Y-m-d');
 	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs' AND Hour BETWEEN '$HourEST' AND '$HourEST' AND Manual = 0 AND Player = 2";
-	///exit(0);
 	$db->query($sql);
 	
 	foreach($result as $kres => $res){
@@ -300,10 +292,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			if(array_key_exists($Country, $arraySpecialFill)){
 				//echo "Is Country $Country - ";
 				if(!in_array($Domain, $BLDomains[$Country])){
-					//echo "$Domain Not in BL - ";
 					if($formatLoads >= 2){
-						
-						// && ($Hour > 10 || $Date != '2021-04-15'
 						 
 						if(array_key_exists($Country, $SpecialFill25)){
 							//echo "$Country $Date $Hour \n";
@@ -325,8 +314,81 @@ function calcPercents($Perc , $Impressions, $Complete){
 								}									
 							}
 							
-							$Multiplier = (12.5 - $HourI) / 100;
+							$Multiplier = (13.5 - $HourI) / 100;
 							$Impressions = intval($formatLoads * $Multiplier);
+							if($Impressions < 0){
+								$Impressions = 0;
+							}
+							
+							$Revenue = $Impressions * 0.0030;
+							$Coste = $Revenue * 0.4;
+							
+							if ($idSite % 2 == 0){
+								$VTRValue = 720 - $Day + $Month + $Hour;
+							}else{
+								$VTRValue = 720 + $Day - $Hour - $Month;
+							}
+							$VTRValue = $VTRValue / 1000;
+							$CompletedViews = intval($Impressions * $VTRValue);
+							
+						}elseif(array_key_exists($Country, $SpecialFill12)){
+							if(intval($idTag) % 2 == 0){
+								if($Hour >= 10){
+									$HourI = $Hour / 2; 
+									if($HourI >= 10){
+										$HourI = $HourI / 2; 
+									}
+								}else{
+									$HourI = $Hour;
+								}
+							}else{
+								if($Hour >= 6){
+									$HourI = $Hour / 3;
+								}else{
+									$HourI = $Hour;
+								}									
+							}
+							
+							$Multiplier = (10.25 - $HourI) / 100;
+							$Impressions = intval($formatLoads * $Multiplier);
+							if($Impressions < 0){
+								$Impressions = 0;
+							}
+							
+							$Revenue = $Impressions * 0.0030;
+							$Coste = $Revenue * 0.4;
+							
+							if ($idSite % 2 == 0){
+								$VTRValue = 720 - $Day + $Month + $Hour;
+							}else{
+								$VTRValue = 720 + $Day - $Hour - $Month;
+							}
+							$VTRValue = $VTRValue / 1000;
+							$CompletedViews = intval($Impressions * $VTRValue);
+							
+						}elseif(array_key_exists($Country, $SpecialFill6)){
+							if(intval($idTag) % 2 == 0){
+								if($Hour >= 10){
+									$HourI = $Hour / 2; 
+									if($HourI >= 10){
+										$HourI = $HourI / 2; 
+									}
+								}else{
+									$HourI = $Hour;
+								}
+							}else{
+								if($Hour >= 6){
+									$HourI = $Hour / 3;
+								}else{
+									$HourI = $Hour;
+								}									
+							}
+							
+							$Multiplier = (5.25 - $HourI) / 100;
+							$Impressions = intval($formatLoads * $Multiplier);
+							if($Impressions < 0){
+								$Impressions = 0;
+							}
 							
 							$Revenue = $Impressions * 0.0030;
 							$Coste = $Revenue * 0.4;
@@ -380,6 +442,48 @@ function calcPercents($Perc , $Impressions, $Complete){
 				
 				}
 				//echo "\n";
+			}			
+			
+			if(in_array($Country, $arraySpecialFillWL)){
+				if(in_array($Domain, $WLDomains[$Country])){
+					if($formatLoads >= 2){
+						
+						if(intval($idTag) % 2 == 0){
+							if($Hour >= 10){
+								$HourI = $Hour / 2; 
+								if($HourI >= 10){
+									$HourI = $HourI / 2; 
+								}
+							}else{
+								$HourI = $Hour;
+							}
+						}else{
+							if($Hour >= 6){
+								$HourI = $Hour / 3;
+							}else{
+								$HourI = $Hour;
+							}									
+						}
+						
+						$Multiplier = (18.5 - $HourI) / 100;
+						$Impressions = intval($formatLoads * $Multiplier);
+						if($Impressions < 0){
+							$Impressions = 0;
+						}
+						
+						$Revenue = $Impressions * 0.0030;
+						$Coste = $Revenue * 0.4;
+						
+						if ($idSite % 2 == 0){
+							$VTRValue = 720 - $Day + $Month + $Hour;
+						}else{
+							$VTRValue = 720 + $Day - $Hour - $Month;
+						}
+						$VTRValue = $VTRValue / 1000;
+						$CompletedViews = intval($Impressions * $VTRValue);
+						
+					}
+				}
 			}
 				
 			if(array_key_exists($Domain, $DomainsArray)){

@@ -69,24 +69,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	if($Date == '2021-11-24'){
-		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
-		$SpecialFill25 = array('Jamaica');
-		$SpecialFill12 = array('Turkey', 'Belgium', 'Trinidad and Tobago');
-		$SpecialFill6 = array();
-		$arraySpecialFillWL = array('Italy');
-	}else{
-		$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
-		$SpecialFill25 = array('Jamaica');
-		$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
-		$SpecialFill6 = array('Turkey');
-		$arraySpecialFillWL = array('Italy');
-	}
-		
-	
-
-	//print_r($arraySpecialFill);
-	//exit(0);
+	$arraySpecialFill = array('Belgium', 'Netherlands', 'Turkey', 'United Kingdom', 'Trinidad and Tobago', 'Jamaica');
+	$SpecialFill25 = array('Jamaica');
+	$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
+	$SpecialFill6 = array('Turkey');
+	$arraySpecialFillWL = array('Italy');
 	
 	/*
 	$new = '';
@@ -108,7 +95,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}else{
 			$BLDomains[$Cntry][] = 'none';
 		}
-	}	
+	}
 		
 	$WLDomains = array();	
 	foreach($arraySpecialFillWL AS $Cntry){
@@ -447,8 +434,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 										$CompletedViews = intval($Impressions * $VTRValue);
 										
 									}elseif(in_array($Country, $SpecialFill12)){
-										//echo "$Country $Date $Hour \n";
-										
 										if(intval($TagId) % 2 == 0){
 											if($Hour >= 10){
 												$HourI = $Hour / 2; 
