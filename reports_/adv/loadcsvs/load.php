@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	$csvData = array_map('str_getcsv', file('nexos.csv'));
+	$csvData = array_map('str_getcsv', file('t2oespana.csv'));
 	
 	foreach($csvData as $Data){
 		$Date = $Data[0];
