@@ -69,7 +69,10 @@ function getUserManagersEmails($userId, $addOwnEmail = false) {
 	}
 	
 	if($addOwnEmail) {
-		$emails = [$user['email']];
+		$Roles = json_decode($user['roles']);
+		if(!in_array('ROLE_ADMIN', $Roles)){
+			$emails = [$user['email']];
+		}
 	}
 	
 	if(!isset($user['manager_id']) 
