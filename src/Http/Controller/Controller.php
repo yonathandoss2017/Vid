@@ -2,7 +2,12 @@
 
 namespace App\Report\Http\Controller;
 
+use App\Report\Exception\UnauthorizedException;
 use App\Report\Http\Response;
+use App\Report\Manager\Advertisers\UserManager;
+use App\Report\Security\JWTAuth;
+use DateTime;
+use Exception;
 use Rakit\Validation\Validator;
 
 class Controller {
@@ -90,6 +95,39 @@ class Controller {
         if ($validation->fails()) {
             $errors = $validation->errors()->toArray();
             throw new \UnexpectedValueException(json_encode(compact('errors')));
+        }
+    }
+
+    protected function getDateTime(string $date, $default = null) {
+        try {
+            return new DateTime($date);
+        } catch (Exception $ex) {
+            return $default;
+        }
+    }
+
+    /**
+     * @return void
+     * @throws UnauthorizedException|UnexpectedValueException
+     */
+    protected function checkJWTAuthorization($client = 'VMP') {
+        $jwtAuth = new JWTAuth($_ENV['JWT_VMP_SECRET']);
+        $user = $jwtAuth->decodeCurrentRequest();
+    
+        if(!$user || !$user->user_id) {
+            throw new UnauthorizedException();
+        }
+
+        $user = UserManager::getById($user->user_id);
+
+        if(!$user) {
+            throw new UnauthorizedException();
+        }
+    
+        $userIsActive = UserManager::isUserExternalClient($user['id'], $client);
+    
+        if(!$userIsActive) {
+            throw new UnauthorizedException();
         }
     }
 }

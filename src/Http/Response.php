@@ -23,7 +23,7 @@ class Response
 
     public static function json($data) {
         header('Content-Type: application/json; charset=utf-8');
-        static::success($data);
+        static::success(json_encode($data));
     }
 
     public static function notFound($data  = null) {

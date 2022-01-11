@@ -21,7 +21,7 @@ class CampaignVMPInvestmentController extends Controller {
      */
     public function get() {
         try {
-            $this->checkAuthorization();
+            $this->checkJWTAuthorization('VMP');
             $params = $this->getRequestPayload();
 
             $this->validatePayload([
@@ -74,7 +74,7 @@ class CampaignVMPInvestmentController extends Controller {
             $investmentByCountry = InvestmentManager::getInvestmentByCountry($type, $campaignQuery, $countriesISO, $startDate, $endDate);
             $lastInvestment = InvestmentManager::getLastInvestment($campaignQuery, $countriesISO, $startDate, $endDate);
         
-            $content = json_encode(compact('investment', 'investmentByCountry', 'lastInvestment'));
+            $content = compact('investment', 'investmentByCountry', 'lastInvestment');
             
             return Response::json($content);
         } catch (UnauthorizedException $uae) {
@@ -86,31 +86,6 @@ class CampaignVMPInvestmentController extends Controller {
         } catch (Throwable $th) {
             error_log($th->getMessage());
             return Response::internalServerError();
-        }
-    }
-
-    /**
-     * @return void
-     * @throws UnauthorizedException|UnexpectedValueException
-     */
-    private function checkAuthorization() {
-        $jwtAuth = new JWTAuth($_ENV['JWT_VMP_SECRET']);
-        $user = $jwtAuth->decodeCurrentRequest();
-    
-        if(!$user || !$user->user_id) {
-            throw new UnauthorizedException();
-        }
-
-        $user = UserManager::getById($user->user_id);
-
-        if(!$user) {
-            throw new UnauthorizedException();
-        }
-    
-        $userIsActive = UserManager::isUserExternalClient($user['id'], 'VMP');
-    
-        if(!$userIsActive) {
-            throw new UnauthorizedException();
         }
     }
 
