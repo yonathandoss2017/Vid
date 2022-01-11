@@ -1,5 +1,7 @@
 <?php
-define('CONST',1);
+if(!defined('CONST')){
+    define('CONST',1);
+}
 // CONSTANTES DE PERMISOS
 define('ADMIN', 10);
 
