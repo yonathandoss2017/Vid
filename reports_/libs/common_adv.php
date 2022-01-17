@@ -30,6 +30,33 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Campaign Name'
 		),
+		'campaign_id' => array(
+			'Name'	=>	"campaign.deal_id AS CampaignID",
+			'SearchName'	=>	"campaign.id",
+			'InnerJoin'		=> 	array(),
+			'GroupBy'		=>	"CampaignID",
+			'OrderVal'		=>	"CampaignID",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Campaign ID'
+		),
+		'campaign_start_at' => array(
+			'Name'	=>	"campaign.start_at AS CampaignStartAt",
+			'SearchName'	=>	"campaign.start_at",
+			'InnerJoin'		=> 	array(),
+			'GroupBy'		=>	"CampaignStartAt",
+			'OrderVal'		=>	"CampaignStartAt",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Campaign Starts At'
+		),
+		'campaign_end_at' => array(
+			'Name'	=>	"campaign.end_at AS CampaignEndAt",
+			'SearchName'	=>	"campaign.end_at",
+			'InnerJoin'		=> 	array(),
+			'GroupBy'		=>	"CampaignEndAt",
+			'OrderVal'		=>	"CampaignEndAt",
+			'InvalInner'	=> '',
+			'HeadName'		=> 'Campaign Ends At'
+		),
 		'deal_id' => array(
 			'Name'	=>	"campaign.deal_id AS DealID",
 			'SearchName'	=>	"campaign.deal_id",

@@ -39,7 +39,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 	
-//	echo $Date = "2021-10-23";
+//	echo $Date = "2022-01-16";
 	echo $Date = date('Y-m-d', time() - 1200);
 	
 	//if($Date == "2021-06-02"){

@@ -1,8 +1,8 @@
 <?php
 	@require_once("secure.php");
 
-    if (file_exists("/var/www/html/vendor/autoload.php")) {
-        require_once("/var/www/html/vendor/autoload.php");
+    if (file_exists("/var/www/html/login/vendor/autoload.php")) {
+        require_once("/var/www/html/login/vendor/autoload.php");
     } else {
         require_once("../vendor/autoload.php");
     }
