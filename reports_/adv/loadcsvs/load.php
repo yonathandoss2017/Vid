@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	$csvData = array_map('str_getcsv', file('maruri.csv'));
+	$csvData = array_map('str_getcsv', file('uw.csv'));
 	
 	foreach($csvData as $Data){
 		$Date = $Data[0];
@@ -69,6 +69,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				
 				$Revenue = str_replace(',', '.', str_replace('$', '', $Data[10]));
 				$Rebate = str_replace(',', '.', str_replace('$', '', $Data[11]));
+//				$Rebate = 0;
 				
 				
 				if($Impressions >= $CompleteV){

@@ -10,8 +10,8 @@
 	require('/var/www/html/login/common.lib.php');
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 
-	$Start = 601;
-	$Cnt = 201;
+	$Start = 1000;
+	$Cnt = 300;
 
 function generateRandomString($length = 10) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -31,11 +31,12 @@ function generateRandomString($length = 10) {
 			$Len = 6;
 		}
 		
-		$Code = 'GO' . $Start . strtoupper(generateRandomString($Len));
+		$Code = 'FU' . $Start . strtoupper(generateRandomString($Len));
 		
 		//$sql = "INSERT INTO `dev_test_front` (`id`, `Name`, `Last`, `Code`, `Start`, `Submit1`, `Submit2`, `Submit3`, `Submit4`, `Submit5`, `Finish`, `Activity`) VALUES (NULL, 'FRONT$Start', 'F$Start', '$Code', '0', '0', '0', '0', '0', '0', '0', '');";
 		//$sql = "INSERT INTO `dev_test_front_new` (`id`, `Name`, `Last`, `Code`, `Start`, `Submit1`, `Submit2`, `Submit3`, `Submit4`, `Submit5`, `Finish`, `Activity`) VALUES (NULL, 'FULL$Start', 'F$Start', '$Code', '0', '0', '0', '0', '0', '0', '0', '');";
-		$sql = "INSERT INTO `dev_test_go` (`id`, `Name`, `Last`, `Code`, `Start`, `Submit1`, `Submit2`, `Submit3`, `Submit4`, `Submit5`, `Finish`, `Activity`) VALUES (NULL, 'GOLANG$Start', 'G$Start', '$Code', '0', '0', '0', '0', '0', '0', '0', '');";
+		//$sql = "INSERT INTO `dev_test_go` (`id`, `Name`, `Last`, `Code`, `Start`, `Submit1`, `Submit2`, `Submit3`, `Submit4`, `Submit5`, `Finish`, `Activity`) VALUES (NULL, 'GOLANG$Start', 'G$Start', '$Code', '0', '0', '0', '0', '0', '0', '0', '');";
+		$sql = "INSERT INTO `dev_test_full` (`id`, `Name`, `Last`, `Code`, `Start`, `Submit1`, `Submit2`, `Submit3`, `Submit4`, `Submit5`, `Finish`, `Activity`) VALUES (NULL, 'FULL$Start', 'F$Start', '$Code', '0', '0', '0', '0', '0', '0', '0', '');";
 		$db->query($sql);
 		
 		echo "$Start: $Code \n";
