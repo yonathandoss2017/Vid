@@ -31,7 +31,7 @@
 	} elseif ($_POST['env'] == 'dev3') {
 		$db2 = new SQL($pubDev03['host'], $pubDev03['db'], $pubDev03['user'], $pubDev03['pass']);
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'pre') {
+	} elseif ($_POST['env'] == 'pre' || $_POST['env'] == 'staging') {
 		$db2 = new SQL($pubStaging['host'], $pubStaging['db'], $pubStaging['user'], $pubStaging['pass']);
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	} elseif ($_POST['env'] == 'integration') {
