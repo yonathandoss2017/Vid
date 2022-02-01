@@ -13,17 +13,17 @@ require('../../db.php');
 
 $db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
 
-$sql = "SELECT r.idCampaing AS id, r.date, MAX(r.Impressions) AS impressions
+$sql = "SELECT r.idCampaing AS id, r.date, SUM(r.Impressions) AS impressions
         FROM reports r,
         (
-	        SELECT idCampaing, MAX(CONCAT(date, LPAD(hour, 2, 0))) AS max_date_hour
+	        SELECT idCampaing, MAX(date) AS max_date
 		        FROM reports
 		        WHERE Impressions > 0
 		        GROUP BY idCampaing
-		        ORDER BY max_date_hour DESC
+		        ORDER BY max_date DESC
         ) max
         WHERE r.idCampaing = max.idCampaing
-        AND CONCAT(date, LPAD(hour, 2, 0)) = max.max_date_hour
+        AND r.date = max.max_date
         GROUP BY r.idCampaing, r.date
         ORDER BY r.idCampaing ASC;
     ";
