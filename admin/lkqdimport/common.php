@@ -1408,6 +1408,45 @@ function getDemandPartner($supplyPartnerName)
 	}
 }
 
+function getAgenciesData(): array
+{
+	global $cookie_file;
+	
+	$URL = 'https://ui-api.lkqd.com/demand/tree';
+	
+	$Headers = array(
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/login',
+		'lkqd-api-version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	);
+	
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $URL);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
+		return ["unauthorized"];
+	}
+
+	$response = json_decode($result, true);
+
+	if (!is_array($response) || empty($response)) {
+		return [];
+	}
+
+	return $response;
+}
+
 function getOrder(int $partnerId, string $name)
 {
 	global $cookie_file;
@@ -1649,6 +1688,47 @@ function updateDemandPartner(int $demandPartnerId, string $name) {
 	return true;
 }
 
+function getTagInfo(int $tagId): array
+{
+	global $cookie_file;
+
+	$url = "https://ui-api.lkqd.com/tags/" . $tagId;
+
+	$Headers = array(
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/',
+		'LKQD-Api-Version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	);
+
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+	$response = json_decode($result, true);
+
+	if (!is_array($response) || empty($response)) {
+		return [];
+	}
+
+	if (!empty($response->errors)) {
+		return $response->errors;
+	}
+
+	return $response['data'];
+}
+
 /**
  * Fuction to get deal info from LKQD.
  */
@@ -1678,13 +1758,13 @@ function getDealInfo(int $dealId): array {
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
 	$result = curl_exec($ch);
+	curl_close($ch);
+
 	$response = json_decode($result, true);
 
 	if (!is_array($response) || empty($response)) {
 		return [];
 	}
-
-	curl_close($ch);
 
 	if (!empty($response->errors)) {
 		return $response->errors;

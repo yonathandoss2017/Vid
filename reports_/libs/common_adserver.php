@@ -75,22 +75,22 @@
 
 	$TimesSQL = array(
 		'monthly' => array(
-			'Name'	=> 	"TIME_FORMAT(__time, 'MMMM YYYY') AS \"Month\"",
+			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-01 00:00:00') AS \"Month\"",
 			'ShowName'		=> 	"Month",
-			'GroupBy'		=>	"TIME_FORMAT(__time, 'MMMM YYYY')",
-			'OrderVal'		=>	"TIME_FORMAT(__time, 'MMMM YYYY')"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-01 00:00:00')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-01 00:00:00')"
 		),
 		'daily' => array(
-			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd') AS \"Date\"",
+			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd 00:00:00') AS \"Date\"",
 			'ShowName'		=> 	"Date",
-			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd')",
-			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd')"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd 00:00:00')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd 00:00:00')"
 		),
 		'hourly' => array(
-			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa') AS \"Hour\"",
+			'Name'	=> 	"TIME_FORMAT(__time, 'YYYY-MM-dd HH:mm:ss') AS \"Hour\"",
 			'ShowName'		=> 	"Hour",
-			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa')",
-			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd, haa')"
+			'GroupBy'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd HH:mm:ss')",
+			'OrderVal'		=>	"TIME_FORMAT(__time, 'YYYY-MM-dd HH:mm:ss')"
 		),
 		'overall' => array(
 			'Name'	=> 	"'Overall' AS Overall",

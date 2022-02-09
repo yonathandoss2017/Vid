@@ -135,7 +135,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
-			$Query = "SELECT __time, Country, Domain, Device, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$DateFrom' AND  __time <= '$DateTo' AND Deal = '$DealID' GROUP BY __time, Deal, Country, Domain, Device ORDER BY 1 DESC";
+			echo $Query = "SELECT __time, Country, Domain, Device, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$DateFrom' AND  __time <= '$DateTo' AND Deal = '$DealID' GROUP BY __time, Deal, Country, Domain, Device ORDER BY 1 DESC";
 
 			$context = new \stdClass();
 			$context->sqlOuterLimit = 30000;

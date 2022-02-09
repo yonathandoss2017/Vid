@@ -134,9 +134,9 @@
 	}
 	$DimensionsOK = true;
 	
-	if(isset($_POST['reportType'])){
+	if(isset($_POST['ReportType'])){
 		$TypeOK = true;
-		$RepType = $_POST['reportType'];
+		$RepType = $_POST['ReportType'];
 		
 		if($RepType != 'overall' || count($Dimensions) == 0){
 			$IncludeTime = true;
@@ -536,7 +536,7 @@
 		if($OrderParam != ""){
 			$SQLQuery .= " ORDER BY $OrderParam";
 			if($Start !== false || $Length !== false){
-				$SQLQuery .= " LIMIT $Start, $Length";
+				//$SQLQuery .= " LIMIT $Start, $Length";
 			}
 		}
 		

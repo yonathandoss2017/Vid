@@ -1,0 +1,1696 @@
+[
+    {
+        "zone_id": "15441",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "0",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15442",
+        "metrics": {
+            "opportunities": "24",
+            "bid_requests": "192",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15443",
+        "metrics": {
+            "opportunities": "31",
+            "bid_requests": "248",
+            "bid_responses": "5",
+            "impressions": "3",
+            "revenue": "0",
+            "bid_won": "5",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15445",
+        "metrics": {
+            "opportunities": "28",
+            "bid_requests": "224",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15446",
+        "metrics": {
+            "opportunities": "34",
+            "bid_requests": "272",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15447",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "0",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15448",
+        "metrics": {
+            "opportunities": "2441",
+            "bid_requests": "16004",
+            "bid_responses": "339",
+            "impressions": "2",
+            "revenue": "0",
+            "bid_won": "318",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15449",
+        "metrics": {
+            "opportunities": "10707",
+            "bid_requests": "73168",
+            "bid_responses": "824",
+            "impressions": "30",
+            "revenue": "0.04",
+            "bid_won": "824",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15450",
+        "metrics": {
+            "opportunities": "13279",
+            "bid_requests": "91788",
+            "bid_responses": "1705",
+            "impressions": "375",
+            "revenue": "0.26",
+            "bid_won": "1641",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "8"
+        }
+    },
+    {
+        "zone_id": "15451",
+        "metrics": {
+            "opportunities": "12474",
+            "bid_requests": "85882",
+            "bid_responses": "1506",
+            "impressions": "411",
+            "revenue": "0.26",
+            "bid_won": "1450",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15452",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "2",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "2",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15453",
+        "metrics": {
+            "opportunities": "9",
+            "bid_requests": "71",
+            "bid_responses": "3",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "3",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15455",
+        "metrics": {
+            "opportunities": "228",
+            "bid_requests": "614",
+            "bid_responses": "16",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "15",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15460",
+        "metrics": {
+            "opportunities": "3936",
+            "bid_requests": "31465",
+            "bid_responses": "412",
+            "impressions": "115",
+            "revenue": "0.02",
+            "bid_won": "360",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "31"
+        }
+    },
+    {
+        "zone_id": "15462",
+        "metrics": {
+            "opportunities": "637",
+            "bid_requests": "3736",
+            "bid_responses": "36",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "34",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15464",
+        "metrics": {
+            "opportunities": "10243",
+            "bid_requests": "56360",
+            "bid_responses": "241",
+            "impressions": "226",
+            "revenue": "0.01",
+            "bid_won": "238",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "86"
+        }
+    },
+    {
+        "zone_id": "15466",
+        "metrics": {
+            "opportunities": "5219",
+            "bid_requests": "41697",
+            "bid_responses": "685",
+            "impressions": "189",
+            "revenue": "0.06",
+            "bid_won": "633",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "123"
+        }
+    },
+    {
+        "zone_id": "15470",
+        "metrics": {
+            "opportunities": "1001",
+            "bid_requests": "8000",
+            "bid_responses": "25",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "25",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15473",
+        "metrics": {
+            "opportunities": "1001",
+            "bid_requests": "7990",
+            "bid_responses": "50",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "50",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15474",
+        "metrics": {
+            "opportunities": "16090",
+            "bid_requests": "128602",
+            "bid_responses": "1036",
+            "impressions": "505",
+            "revenue": "0.08",
+            "bid_won": "997",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "162"
+        }
+    },
+    {
+        "zone_id": "15477",
+        "metrics": {
+            "opportunities": "888",
+            "bid_requests": "4808",
+            "bid_responses": "62",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "62",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15478",
+        "metrics": {
+            "opportunities": "14880",
+            "bid_requests": "79394",
+            "bid_responses": "886",
+            "impressions": "712",
+            "revenue": "0.04",
+            "bid_won": "835",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "277"
+        }
+    },
+    {
+        "zone_id": "15479",
+        "metrics": {
+            "opportunities": "888",
+            "bid_requests": "4814",
+            "bid_responses": "31",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "29",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15480",
+        "metrics": {
+            "opportunities": "20457",
+            "bid_requests": "163474",
+            "bid_responses": "1532",
+            "impressions": "708",
+            "revenue": "0.08",
+            "bid_won": "1456",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "261"
+        }
+    },
+    {
+        "zone_id": "15488",
+        "metrics": {
+            "opportunities": "18131",
+            "bid_requests": "143966",
+            "bid_responses": "698",
+            "impressions": "199",
+            "revenue": "0.04",
+            "bid_won": "692",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "55"
+        }
+    },
+    {
+        "zone_id": "15492",
+        "metrics": {
+            "opportunities": "28703",
+            "bid_requests": "129271",
+            "bid_responses": "237",
+            "impressions": "50",
+            "revenue": "0.01",
+            "bid_won": "237",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "40"
+        }
+    },
+    {
+        "zone_id": "15494",
+        "metrics": {
+            "opportunities": "21021",
+            "bid_requests": "167355",
+            "bid_responses": "892",
+            "impressions": "289",
+            "revenue": "0.06",
+            "bid_won": "886",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "112"
+        }
+    },
+    {
+        "zone_id": "15502",
+        "metrics": {
+            "opportunities": "2990",
+            "bid_requests": "23368",
+            "bid_responses": "807",
+            "impressions": "193",
+            "revenue": "0.04",
+            "bid_won": "710",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "122"
+        }
+    },
+    {
+        "zone_id": "15506",
+        "metrics": {
+            "opportunities": "11943",
+            "bid_requests": "55753",
+            "bid_responses": "982",
+            "impressions": "315",
+            "revenue": "0.04",
+            "bid_won": "874",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "146"
+        }
+    },
+    {
+        "zone_id": "15508",
+        "metrics": {
+            "opportunities": "3069",
+            "bid_requests": "24077",
+            "bid_responses": "709",
+            "impressions": "189",
+            "revenue": "0.04",
+            "bid_won": "594",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "118"
+        }
+    },
+    {
+        "zone_id": "15511",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "48",
+            "bid_responses": "2",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "2",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15512",
+        "metrics": {
+            "opportunities": "15",
+            "bid_requests": "120",
+            "bid_responses": "9",
+            "impressions": "4",
+            "revenue": "0",
+            "bid_won": "9",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15513",
+        "metrics": {
+            "opportunities": "21",
+            "bid_requests": "168",
+            "bid_responses": "10",
+            "impressions": "4",
+            "revenue": "0",
+            "bid_won": "10",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15514",
+        "metrics": {
+            "opportunities": "19",
+            "bid_requests": "152",
+            "bid_responses": "1",
+            "impressions": "1",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15515",
+        "metrics": {
+            "opportunities": "5",
+            "bid_requests": "40",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15516",
+        "metrics": {
+            "opportunities": "6",
+            "bid_requests": "48",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15517",
+        "metrics": {
+            "opportunities": "4",
+            "bid_requests": "24",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15518",
+        "metrics": {
+            "opportunities": "133",
+            "bid_requests": "756",
+            "bid_responses": "82",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "69",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15519",
+        "metrics": {
+            "opportunities": "560",
+            "bid_requests": "3000",
+            "bid_responses": "265",
+            "impressions": "46",
+            "revenue": "0",
+            "bid_won": "265",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15520",
+        "metrics": {
+            "opportunities": "132",
+            "bid_requests": "757",
+            "bid_responses": "32",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "30",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15521",
+        "metrics": {
+            "opportunities": "131",
+            "bid_requests": "759",
+            "bid_responses": "32",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "30",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15522",
+        "metrics": {
+            "opportunities": "21",
+            "bid_requests": "168",
+            "bid_responses": "10",
+            "impressions": "7",
+            "revenue": "0",
+            "bid_won": "10",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15523",
+        "metrics": {
+            "opportunities": "24",
+            "bid_requests": "192",
+            "bid_responses": "10",
+            "impressions": "2",
+            "revenue": "0",
+            "bid_won": "10",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15527",
+        "metrics": {
+            "opportunities": "526",
+            "bid_requests": "4182",
+            "bid_responses": "48",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "47",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15530",
+        "metrics": {
+            "opportunities": "9111",
+            "bid_requests": "72630",
+            "bid_responses": "818",
+            "impressions": "507",
+            "revenue": "0.05",
+            "bid_won": "798",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "129"
+        }
+    },
+    {
+        "zone_id": "15534",
+        "metrics": {
+            "opportunities": "19898",
+            "bid_requests": "101553",
+            "bid_responses": "658",
+            "impressions": "378",
+            "revenue": "0.08",
+            "bid_won": "635",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "186"
+        }
+    },
+    {
+        "zone_id": "15536",
+        "metrics": {
+            "opportunities": "12136",
+            "bid_requests": "96648",
+            "bid_responses": "2652",
+            "impressions": "1897",
+            "revenue": "0.12",
+            "bid_won": "2545",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "811"
+        }
+    },
+    {
+        "zone_id": "15547",
+        "metrics": {
+            "opportunities": "15072",
+            "bid_requests": "113615",
+            "bid_responses": "167",
+            "impressions": "27",
+            "revenue": "0.01",
+            "bid_won": "167",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15553",
+        "metrics": {
+            "opportunities": "1",
+            "bid_requests": "0",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15554",
+        "metrics": {
+            "opportunities": "1",
+            "bid_requests": "8",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15555",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15557",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15558",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15559",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "8",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15560",
+        "metrics": {
+            "opportunities": "1316",
+            "bid_requests": "7643",
+            "bid_responses": "861",
+            "impressions": "302",
+            "revenue": "0.04",
+            "bid_won": "763",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15561",
+        "metrics": {
+            "opportunities": "1133",
+            "bid_requests": "6408",
+            "bid_responses": "636",
+            "impressions": "104",
+            "revenue": "0.01",
+            "bid_won": "636",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15562",
+        "metrics": {
+            "opportunities": "203",
+            "bid_requests": "1221",
+            "bid_responses": "39",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "36",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15563",
+        "metrics": {
+            "opportunities": "203",
+            "bid_requests": "1222",
+            "bid_responses": "39",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "36",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15564",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15565",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15566",
+        "metrics": {
+            "opportunities": "1",
+            "bid_requests": "0",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15574",
+        "metrics": {
+            "opportunities": "110",
+            "bid_requests": "743",
+            "bid_responses": "25",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "20",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15575",
+        "metrics": {
+            "opportunities": "110",
+            "bid_requests": "744",
+            "bid_responses": "11",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "11",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15576",
+        "metrics": {
+            "opportunities": "591",
+            "bid_requests": "3524",
+            "bid_responses": "97",
+            "impressions": "2",
+            "revenue": "0",
+            "bid_won": "94",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15582",
+        "metrics": {
+            "opportunities": "94",
+            "bid_requests": "752",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15589",
+        "metrics": {
+            "opportunities": "1268",
+            "bid_requests": "4968",
+            "bid_responses": "112",
+            "impressions": "3",
+            "revenue": "0",
+            "bid_won": "112",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15593",
+        "metrics": {
+            "opportunities": "103",
+            "bid_requests": "824",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15595",
+        "metrics": {
+            "opportunities": "1114",
+            "bid_requests": "5287",
+            "bid_responses": "468",
+            "impressions": "25",
+            "revenue": "0.01",
+            "bid_won": "380",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "3"
+        }
+    },
+    {
+        "zone_id": "15596",
+        "metrics": {
+            "opportunities": "1445",
+            "bid_requests": "11560",
+            "bid_responses": "893",
+            "impressions": "133",
+            "revenue": "0.07",
+            "bid_won": "893",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15597",
+        "metrics": {
+            "opportunities": "994",
+            "bid_requests": "7785",
+            "bid_responses": "883",
+            "impressions": "29",
+            "revenue": "0.09",
+            "bid_won": "749",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "4"
+        }
+    },
+    {
+        "zone_id": "15599",
+        "metrics": {
+            "opportunities": "552",
+            "bid_requests": "4390",
+            "bid_responses": "253",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "218",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15600",
+        "metrics": {
+            "opportunities": "552",
+            "bid_requests": "4384",
+            "bid_responses": "243",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "218",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15602",
+        "metrics": {
+            "opportunities": "414",
+            "bid_requests": "1621",
+            "bid_responses": "119",
+            "impressions": "8",
+            "revenue": "0.01",
+            "bid_won": "117",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "2"
+        }
+    },
+    {
+        "zone_id": "15603",
+        "metrics": {
+            "opportunities": "370",
+            "bid_requests": "1448",
+            "bid_responses": "90",
+            "impressions": "16",
+            "revenue": "0.01",
+            "bid_won": "90",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15604",
+        "metrics": {
+            "opportunities": "158",
+            "bid_requests": "728",
+            "bid_responses": "20",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "19",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15605",
+        "metrics": {
+            "opportunities": "158",
+            "bid_requests": "727",
+            "bid_responses": "24",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "23",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15627",
+        "metrics": {
+            "opportunities": "805",
+            "bid_requests": "6358",
+            "bid_responses": "37",
+            "impressions": "2",
+            "revenue": "0",
+            "bid_won": "37",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15628",
+        "metrics": {
+            "opportunities": "2780",
+            "bid_requests": "22095",
+            "bid_responses": "155",
+            "impressions": "70",
+            "revenue": "0",
+            "bid_won": "152",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15632",
+        "metrics": {
+            "opportunities": "2101",
+            "bid_requests": "12559",
+            "bid_responses": "61",
+            "impressions": "11",
+            "revenue": "0",
+            "bid_won": "56",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15633",
+        "metrics": {
+            "opportunities": "690",
+            "bid_requests": "4409",
+            "bid_responses": "24",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "23",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15634",
+        "metrics": {
+            "opportunities": "771",
+            "bid_requests": "6087",
+            "bid_responses": "62",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "62",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15638",
+        "metrics": {
+            "opportunities": "78",
+            "bid_requests": "624",
+            "bid_responses": "58",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "58",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15641",
+        "metrics": {
+            "opportunities": "758",
+            "bid_requests": "6071",
+            "bid_responses": "175",
+            "impressions": "117",
+            "revenue": "0.01",
+            "bid_won": "174",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15642",
+        "metrics": {
+            "opportunities": "806",
+            "bid_requests": "6443",
+            "bid_responses": "187",
+            "impressions": "131",
+            "revenue": "0.02",
+            "bid_won": "184",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15645",
+        "metrics": {
+            "opportunities": "10",
+            "bid_requests": "32",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15646",
+        "metrics": {
+            "opportunities": "42",
+            "bid_requests": "168",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15647",
+        "metrics": {
+            "opportunities": "40",
+            "bid_requests": "144",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15648",
+        "metrics": {
+            "opportunities": "78",
+            "bid_requests": "613",
+            "bid_responses": "76",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "66",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15649",
+        "metrics": {
+            "opportunities": "809",
+            "bid_requests": "6383",
+            "bid_responses": "762",
+            "impressions": "512",
+            "revenue": "0.08",
+            "bid_won": "675",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15658",
+        "metrics": {
+            "opportunities": "411",
+            "bid_requests": "2888",
+            "bid_responses": "16",
+            "impressions": "11",
+            "revenue": "0",
+            "bid_won": "16",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15659",
+        "metrics": {
+            "opportunities": "550",
+            "bid_requests": "4000",
+            "bid_responses": "36",
+            "impressions": "8",
+            "revenue": "0",
+            "bid_won": "36",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15660",
+        "metrics": {
+            "opportunities": "741",
+            "bid_requests": "5528",
+            "bid_responses": "4",
+            "impressions": "3",
+            "revenue": "0",
+            "bid_won": "4",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15661",
+        "metrics": {
+            "opportunities": "100",
+            "bid_requests": "792",
+            "bid_responses": "1",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "1",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15665",
+        "metrics": {
+            "opportunities": "1641",
+            "bid_requests": "11541",
+            "bid_responses": "60",
+            "impressions": "11",
+            "revenue": "0",
+            "bid_won": "50",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15666",
+        "metrics": {
+            "opportunities": "170",
+            "bid_requests": "1328",
+            "bid_responses": "19",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "19",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15667",
+        "metrics": {
+            "opportunities": "523",
+            "bid_requests": "4149",
+            "bid_responses": "75",
+            "impressions": "20",
+            "revenue": "0.03",
+            "bid_won": "73",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15670",
+        "metrics": {
+            "opportunities": "170",
+            "bid_requests": "1326",
+            "bid_responses": "28",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "25",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15672",
+        "metrics": {
+            "opportunities": "2029",
+            "bid_requests": "2952",
+            "bid_responses": "168",
+            "impressions": "32",
+            "revenue": "0",
+            "bid_won": "153",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15673",
+        "metrics": {
+            "opportunities": "323",
+            "bid_requests": "888",
+            "bid_responses": "7",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "7",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15674",
+        "metrics": {
+            "opportunities": "452",
+            "bid_requests": "1528",
+            "bid_responses": "16",
+            "impressions": "1",
+            "revenue": "0",
+            "bid_won": "15",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15676",
+        "metrics": {
+            "opportunities": "2170",
+            "bid_requests": "16920",
+            "bid_responses": "229",
+            "impressions": "140",
+            "revenue": "0.04",
+            "bid_won": "194",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "16"
+        }
+    },
+    {
+        "zone_id": "15677",
+        "metrics": {
+            "opportunities": "2087",
+            "bid_requests": "16300",
+            "bid_responses": "281",
+            "impressions": "139",
+            "revenue": "0.04",
+            "bid_won": "226",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "15"
+        }
+    },
+    {
+        "zone_id": "15679",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "8",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15680",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15681",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15684",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15686",
+        "metrics": {
+            "opportunities": "145",
+            "bid_requests": "767",
+            "bid_responses": "47",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "44",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15687",
+        "metrics": {
+            "opportunities": "145",
+            "bid_requests": "776",
+            "bid_responses": "37",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "37",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15688",
+        "metrics": {
+            "opportunities": "145",
+            "bid_requests": "768",
+            "bid_responses": "17",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "16",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15690",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15691",
+        "metrics": {
+            "opportunities": "7",
+            "bid_requests": "56",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15693",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15698",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15700",
+        "metrics": {
+            "opportunities": "307",
+            "bid_requests": "2260",
+            "bid_responses": "248",
+            "impressions": "80",
+            "revenue": "0.01",
+            "bid_won": "227",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    },
+    {
+        "zone_id": "15702",
+        "metrics": {
+            "opportunities": "58",
+            "bid_requests": "422",
+            "bid_responses": "9",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "9",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15704",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15705",
+        "metrics": {
+            "opportunities": "2",
+            "bid_requests": "16",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15708",
+        "metrics": {
+            "opportunities": "1553",
+            "bid_requests": "12304",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15709",
+        "metrics": {
+            "opportunities": "1594",
+            "bid_requests": "12578",
+            "bid_responses": "177",
+            "impressions": "19",
+            "revenue": "0.01",
+            "bid_won": "172",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "2"
+        }
+    },
+    {
+        "zone_id": "15715",
+        "metrics": {
+            "opportunities": "477",
+            "bid_requests": "488",
+            "bid_responses": "0",
+            "impressions": "0",
+            "revenue": "0",
+            "bid_won": "0",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "0"
+        }
+    },
+    {
+        "zone_id": "15718",
+        "metrics": {
+            "opportunities": "1743",
+            "bid_requests": "13759",
+            "bid_responses": "198",
+            "impressions": "85",
+            "revenue": "0.01",
+            "bid_won": "191",
+            "bid_error": "0",
+            "clicks": "0",
+            "viewable_impressions": "1"
+        }
+    }
+]

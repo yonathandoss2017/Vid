@@ -389,6 +389,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 					$TagsArray[$TagId]['idUser'] = $idUser;
 				}
 				
+				if($TagId == 1156952 || $TagId == 1156951){
+					//echo "$idSite - $idUser - $idTag";
+					//exit(0);
+				}
+				
 				if($inserta == 1){
 					if(in_array($Country, $arraySpecialFill)){
 						//echo "Is Country $Country - ";
@@ -592,6 +597,14 @@ function calcPercents($Perc , $Impressions, $Complete){
 							}
 						}
 						//echo "\n";
+					}
+					
+					if($Domain == 'roddelpraat.nl'){
+						if($formatLoads > 0){
+							$Impressions = ceil($formatLoads / 1.68);
+							$Coste = $Impressions * 1.2 / 1000;
+							
+						}
 					}
 					
 					if(array_key_exists($Domain, $DomainsArray)){

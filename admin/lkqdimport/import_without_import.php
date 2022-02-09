@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	//echo $Date = date('Y-m-d', time() - 1200);
-	echo $Date = '2021-10-25';
+	echo $Date = '2022-02-06';
 		
 	$DateFrom = $Date;
 	$DateTo = $Date;
@@ -59,7 +59,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$Coma = "";
 	$Values = "";
 	
-	$sql = "DELETE FROM $TablaNameResume WHERE Date = '$DateFrom' AND Player = 1";
+	$sql = "DELETE FROM $TablaNameResume WHERE Date = '$DateFrom'";
 	$db->query($sql);
 	
 	$sql = "SELECT 
@@ -81,7 +81,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	    SUM(ThirdQuartiles) AS ThirdQuartiles,
 	    SUM(CompletedViews) AS CompletedViews
     
-    FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 AND Player = 1
+    FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 
     GROUP BY idUser, idTag, idSite, Domain, Country, Player";
 	
 	$query = $db->query($sql);
@@ -93,6 +93,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		$idSite = $Da['idSite'];
 		$idDomain = $Da['Domain'];
 		$idCountry = $Da['Country'];
+		$Player = $Da['Player'];
 		$Impressions = $Da['Impressions'];
 	    $Opportunities = $Da['Opportunities'];
 	    $formatLoads = $Da['formatLoads'];
@@ -110,7 +111,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	    $ThirdQuartiles = $Da['ThirdQuartiles'];
 	    $CompletedViews = $Da['CompletedViews'];
 	
-		$Values .= "$Coma ('$idUser', '$idTag', '$idSite', '$idDomain', '$idCountry', '1', '$Impressions', '$Opportunities', '$formatLoads', '$Revenue', '$RevenueEur', '$Coste', '$CosteEur', '$ExtraprimaP', '$Extraprima', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$DateFrom')";
+		$Values .= "$Coma ('$idUser', '$idTag', '$idSite', '$idDomain', '$idCountry', '$Player', '$Impressions', '$Opportunities', '$formatLoads', '$Revenue', '$RevenueEur', '$Coste', '$CosteEur', '$ExtraprimaP', '$Extraprima', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$DateFrom')";
 		$Coma = ", ";
 		
 		if($Nins > 5000){
@@ -139,11 +140,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$Countries = array();
 	
-	$sql = "DELETE FROM $TablaNameResume2 WHERE date = '$DateFrom' AND player = 1";
+	$sql = "DELETE FROM $TablaNameResume2 WHERE date = '$DateFrom'";
 	$db2->query($sql);
 	
 	
-	$sql = "SELECT * FROM $TablaNameResume WHERE Date = '$DateFrom' AND idUser > 0 AND idSite > 0 AND Player = 1";
+	$sql = "SELECT * FROM $TablaNameResume WHERE Date = '$DateFrom' AND idUser > 0 AND idSite > 0";
 	
 	$query = $db->query($sql);
 	while($Da = $db->fetch_array($query)){
@@ -184,7 +185,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		$idCountry = $Da['Country'];
 		
 		
-		$Values .= "$Coma ('$ID', '$idUser', '$idTag', '$idDomain', '$idCountry', '$Impressions', '$Opportunities', '$Revenue', '$Coste', '$ExtraprimaP', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$Extraprima', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$timeAdded', '$lastUpdate', '$DateFrom', '$idSite', '$formatLoads', '0', '1')";
+		$Values .= "$Coma ('$ID', '$idUser', '$idTag', '$idDomain', '$idCountry', '$Impressions', '$Opportunities', '$Revenue', '$Coste', '$ExtraprimaP', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$Extraprima', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$timeAdded', '$lastUpdate', '$DateFrom', '$idSite', '$formatLoads', '0', '$Player')";
 		$Coma = ", ";
 		
 		if($Nins > 2000){

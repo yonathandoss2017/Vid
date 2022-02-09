@@ -41,13 +41,13 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	$csvData = array_map('str_getcsv', file('uw.csv'));
+	$csvData = array_map('str_getcsv', file('carat.csv'));
 	
 	foreach($csvData as $Data){
 		$Date = $Data[0];
 		if($Date != 'Time'){
 			
-			$DateO = DateTime::createFromFormat('d/m/Y', $Date);
+			$DateO = DateTime::createFromFormat('m/d/Y', $Date);
 			$FormatDate = $DateO->format('Y-m-d');
 			
 			$Name = $Data[1];

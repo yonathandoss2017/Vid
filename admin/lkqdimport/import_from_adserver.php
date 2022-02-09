@@ -102,7 +102,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
-	$Query = "SELECT __time, Country, Domain, Zone, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone ORDER BY 5 DESC";
+	$Query = "SELECT __time, Country, Domain, Zone, Publisher, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone, Publisher ORDER BY 5 DESC";
 	$Query . "\n\n";
 	//exit(0);
 	
@@ -142,14 +142,15 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$Country = strtoupper($res[1]);
 			$Domain = $res[2];
 			$Zone = $res[3];
-			$OriginalformatLoads = $res[4];
-			$OriginalImpressions = $res[5];
-			$OriginalClicks = $res[6];
+			$Publisher = $res[4];
+			$OriginalformatLoads = $res[5];
+			$OriginalImpressions = $res[6];
+			$OriginalClicks = $res[7];
 			
-			$OriginalFirstQuartiles = $res[7];
-			$OriginalMidpoints = $res[8];
-			$OriginalThirdQuartiles = $res[9];
-			$OriginalCompletedViews = $res[10];
+			$OriginalFirstQuartiles = $res[8];
+			$OriginalMidpoints = $res[9];
+			$OriginalThirdQuartiles = $res[10];
+			$OriginalCompletedViews = $res[11];
 			
 			$adStarts = 0;
 			$Wins = 0;
@@ -165,23 +166,37 @@ function calcPercents($Perc , $Impressions, $Complete){
 				$idSite = $TagsArray[$Zone]['idSite'];
 				$idUser = $TagsArray[$Zone]['idUser'];
 			}else{
-				$sql = "SELECT id FROM " . TAGS . " WHERE TagName = '$Zone' AND idPlatform = 1 ORDER BY id DESC LIMIT 1";
-				$idTag = intval($db->getOne($sql));
-				if($idTag > 0){
-					$sql = "SELECT idSite, idUser FROM " . TAGS . " WHERE id = '$idTag' LIMIT 1";
-					$query = $db->query($sql);
-					if($db->num_rows($query) > 0){
-						$TagData = $db->fetch_array($query);
-						$idSite = $TagData['idSite'];
-						$idUser = $TagData['idUser'];
+				$sql = "SELECT id FROM " . USERS . " WHERE user = '$Publisher' LIMIT 1";
+				$idUser = intval($db->getOne($sql));				
+				
+				$TimeLog = date('Y-m-d H:i:s');
+				
+				if($idUser > 0){
+					$sql = "SELECT id FROM " . TAGS . " WHERE TagName = '$Zone' AND idPlatform = 1 AND idUser = '$idUser' ORDER BY id DESC LIMIT 1";
+					$idTag = intval($db->getOne($sql));
+					if($idTag > 0){
+						$sql = "SELECT idSite FROM " . TAGS . " WHERE id = '$idTag' LIMIT 1";
+						$query = $db->query($sql);
+						if($db->num_rows($query) > 0){
+							$TagData = $db->fetch_array($query);
+							$idSite = $TagData['idSite'];
+						}else{
+							$idSite = 0;
+							file_put_contents('/var/www/html/login/admin/lkqdimport/adserver_log.txt', "$TimeLog Site NOT FOUND, tag: $idTag \n", FILE_APPEND);
+						}
 					}else{
+						file_put_contents('/var/www/html/login/admin/lkqdimport/adserver_log.txt', "$TimeLog Zone: $Zone idUser: $idUser NOT FOUND \n", FILE_APPEND);
+						$idTag = 0;
 						$idSite = 0;
-						$idUser = 0;
 					}
 				}else{
-					$idSite = 0;
 					$idUser = 0;
+					$idSite = 0;
+					$idTag = 0;
+					
+					file_put_contents('/var/www/html/login/admin/lkqdimport/adserver_log.txt', "$TimeLog Publisher: $Publisher NOT FOUND \n", FILE_APPEND);
 				}
+				
 				$TagsArray[$Zone]['idTag'] = $idTag;
 				$TagsArray[$Zone]['idSite'] = $idSite;
 				$TagsArray[$Zone]['idUser'] = $idUser;
@@ -576,7 +591,6 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 	
 	echo "Hours Imported - LKQD\n";
-	
 	
 	$Nins = 0;
 	$Nis = 0;

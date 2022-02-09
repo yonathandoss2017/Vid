@@ -238,7 +238,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 						$sql = "SELECT id FROM country WHERE iso = '$Country' LIMIT 1";
 						$idCountry = $db->getOne($sql);
 						
-						$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour' AND DemangTagId = '' LIMIT 1";
+						$sql = "SELECT id FROM reports WHERE SSP = 7 AND idCampaing = $idCamp AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
 						$idStat = $db->getOne($sql);
 						
 						
@@ -248,8 +248,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 						
 						if(intval($idStat) == 0){
 							$sql = "INSERT INTO reports
-							(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, DemangTagId) 
-							VALUES (7, $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', '')";
+							(SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
+							VALUES (7, $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
 							$db->query($sql);
 							//echo $sql . "\n";	
 						}else{

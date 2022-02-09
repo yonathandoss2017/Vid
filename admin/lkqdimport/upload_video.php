@@ -719,7 +719,6 @@ function newDemoSupplySource($Name, $TagId, $SPartner, $Env = 1, $Rev = 0, $Loop
 	$sql = "SELECT * FROM demo WHERE (status = 0 OR status = 4) AND video != '' ORDER BY id ASC";
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
-		logIn('Upload video');
 		
 		while($Demo = $db->fetch_array($query)){
 			$SSDT = '';
@@ -739,6 +738,11 @@ function newDemoSupplySource($Name, $TagId, $SPartner, $Env = 1, $Rev = 0, $Loop
 			
 			//$newCreativeId = 25794;
 			$newCreativeData = newCreative($NewVideoName, $DPartner);
+			if (!$newCreativeData) {
+				logIn('Upload video');
+				$newCreativeData = newCreative($NewVideoName, $DPartner);
+			}
+
 			$newCreativeId = $newCreativeData->creativeId;
 			
 			$Log .= "|$When| New Creative ID: " . $newCreativeId . " \n";
