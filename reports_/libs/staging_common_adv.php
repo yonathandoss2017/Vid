@@ -175,28 +175,28 @@ function utf8ize($mixed) {
 			'InvalInner'	=> '',
 			'HeadName'		=> 'DSP'
 		),
-		'purchaseOrder' => array(
+		'purchase_order' => array(
 			'Name'	=>	"purchase_order.name AS PurchaseOrder",
-			'SearchName'	=>	"purchase_order.name",
-			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
+			'SearchName'	=>	"$ReportsTable.name",
+			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrder",
 			'OrderVal'		=>	"PurchaseOrder",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Purchase Order'
 		),
-		'purchaseOrder_id' => array(
+		'cid' => array(
 			'Name'	=>	"purchase_order.id AS PurchaseOrderId",
-			'SearchName'	=>	"purchase_order.id",
-			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id "),
+			'SearchName'	=>	"$ReportsTable.id",
+			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrderId",
 			'OrderVal'		=>	"PurchaseOrderId",
 			'InvalInner'	=> '',
-			'HeadName'		=> 'Purchase Order ID'
+			'HeadName'		=> 'CID'
 		),
 		'creativity' => array(
 			'Name'	=>	"creativity.name AS Creativity",
-			'SearchName'	=>	"creativity.name",
-			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
+			'SearchName'	=>	"$ReportsTable.name",
+			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
 			'OrderVal'		=>	"Creativity",
 			'InvalInner'	=> '',
@@ -204,8 +204,8 @@ function utf8ize($mixed) {
 		),
 		'creativity_id' => array(
 			'Name'	=>	"creativity.id AS Creativity",
-			'SearchName'	=>	"creativity.id",
-			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = campaign.id "),
+			'SearchName'	=>	"$ReportsTable.id",
+			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
 			'OrderVal'		=>	"Creativity",
 			'InvalInner'	=> '',
