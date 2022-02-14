@@ -18,13 +18,15 @@
 	
 	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 18857";
 	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 1977";
+/*
 	$sql = "SELECT DISTINCT(idSite) FROM `supplytag` WHERE `Old` = 1";
 	$query2 = $db2->query($sql);
 	if($db2->num_rows($query2) > 0){
 		while($St = $db2->fetch_array($query2)){
 			$idSite = $St['idSite'];
+			*/
 	
-	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = $idSite";
+	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 14978";
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Site = $db->fetch_array($query)){
@@ -37,12 +39,12 @@
 			
 			//if(!file_exists('/var/www/html/ads/newads2/' . $FN)){
 				$sql = "SELECT id FROM supplytag WHERE idSite = $idSite AND PlatformType = 1 AND Old != 1 AND TagName NOT LIKE '%intext%' LIMIT 1";
-				$ZIDDT = $db->getOne($sql);
+				$ZIDDT = intval($db->getOne($sql));
 				
 				$sql = "SELECT id FROM supplytag WHERE idSite = $idSite AND PlatformType = 2 AND Old != 1 AND TagName NOT LIKE '%intext%' LIMIT 1";
-				$ZIDMW = $db->getOne($sql);
+				$ZIDMW = intval($db->getOne($sql));
 				
-				if($ZIDDT > 0 && $ZIDMW > 0){
+				if($ZIDDT > 0 || $ZIDMW > 0){
 					$sql = "SELECT LKQD_id FROM users WHERE id = $idUser LIMIT 1";
 					$LKQDid = $db->getOne($sql);
 					
@@ -89,5 +91,5 @@ top.document.head.appendChild(scr);";
 		}
 	}
 	
-	}
-	}
+	//}
+	//}

@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	
-	$csvData = array_map('str_getcsv', file('carat.csv'));
+	$csvData = array_map('str_getcsv', file('infinity.csv'));
 	
 	foreach($csvData as $Data){
 		$Date = $Data[0];

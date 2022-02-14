@@ -1408,6 +1408,54 @@ function getDemandPartner($supplyPartnerName)
 	}
 }
 
+/**
+ * Function to get creativity if given it's tag id
+ */
+function getTagCreativityId(int $tagId): string
+{
+	global $cookie_file;
+	
+	$URL = sprintf('https://api.lkqd.com/demand/creatives/tag-associations?tagId=%d', $tagId);
+	
+	$Headers = array(
+		'Accept: application/json, text/plain, */*',
+		'Content-Type: application/json;charset=UTF-8',
+		'Origin: https://ui.lkqd.com',
+		'Referer: https://ui.lkqd.com/login',
+		'lkqd-api-version: 88',
+		'Sec-Fetch-Mode: cors',
+		'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+	);
+	
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $URL);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+	if ('Forbidden' === $result) {
+		http_response_code(404);
+		return 'No creativity found with the given tag id!';
+	}
+
+	$response = json_decode($result, true);
+
+	if (!is_array($response) || empty($response)) {
+		return [];
+	}
+
+	if (array_key_exists('errorId', $response)) {
+		http_response_code(404);
+		return $response['message'];
+	}
+
+	return $response[0]['creativeId'];
+}
+
 function getAgenciesData(): array
 {
 	global $cookie_file;
@@ -2133,16 +2181,40 @@ function newOrUpdateDeal(
 	string $deliveryPacing,
 	int $goal,
 	string $status,
-	int $dealId = null
+	int $dealId = null,
+	int $freqCap = null
 ) {
 	global $cookie_file;
-
+error_log($orderId);
+error_log($name);
+error_log($startDate);
+error_log($endDate);
+error_log($deliveryPacing);
+error_log($goal);
+error_log($status);
+error_log($dealId);
+error_log($freqCap);
 	$URL = 'https://ui-api.lkqd.com/deals';
 
 	$deliveryPacings = [
 		"1" => 3,
 		"2" => 8,
+		"3" => 7,
 	];
+
+	$frequencyCap = [];
+
+	if ($freqCap) {
+		$frequencyCap = [
+			[
+				"eventId" => 3,
+				"eventName" => "impression",
+				"timePeriod" => "day",
+				"timePeriodCount" => 1,
+				"capCount" => $freqCap
+			]
+		];
+	}
 
 	$payload = [
 		"dealId" => $dealId,
@@ -2160,7 +2232,7 @@ function newOrUpdateDeal(
 		"costCpm" => 0,
 		"costType" => "none",
 		"caps" => [],
-		"frequencyCaps" => [],
+		"frequencyCaps" => $frequencyCap,
 		"pacings" => [
 			[
 				"eventId" => $deliveryPacings[$deliveryPacing],
@@ -2171,8 +2243,8 @@ function newOrUpdateDeal(
 				"frontLoadRatio" => null
 			]
 		],
-		"frequencyCapKey" => null,
-		"frequencyCapNoUid" => "allowed",
+		"frequencyCapKey" => "any_user_id",
+		"frequencyCapNoUid" => "use_ip",
 		"activeTagCount" => null,
 		"totalTagCount" => null,
 		"budget" => null,
@@ -2238,6 +2310,7 @@ function newOrUpdateDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
+
 	curl_close($ch); 
 
 	$response = json_decode($result);

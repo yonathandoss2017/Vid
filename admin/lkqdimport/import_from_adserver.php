@@ -103,7 +103,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
 	$Query = "SELECT __time, Country, Domain, Zone, Publisher, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone, Publisher ORDER BY 5 DESC";
-	$Query . "\n\n";
+	//echo $Query . "\n\n";
 	//exit(0);
 	
 	$context = new \stdClass();
@@ -130,9 +130,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$TablaNameResume2 = str_replace('_', '', $TablaNameResume);
 	
 	$DateEST->setTimezone(new DateTimeZone('America/New_York'));
-	$HourEST = intval($DateEST->format('H'));
+	$HourEST1 = intval($DateEST->format('H'));
+	$HourEST2 = intval($DateEST->format('H'));
+//	$HourEST1 = intval(0);
+//	$HourEST2 = intval(20);
 	$DateESTs = $DateEST->format('Y-m-d');
-	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs' AND Hour BETWEEN '$HourEST' AND '$HourEST' AND Manual = 0 AND Player = 2";
+	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs' AND Hour BETWEEN $HourEST1 AND $HourEST2 AND Manual = 0 AND Player = 2";
 	$db->query($sql);
 	
 	foreach($result as $kres => $res){
@@ -160,11 +163,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$DateH->setTimezone(new DateTimeZone('America/New_York'));
 			$Hour = intval($DateH->format('H'));
 			$Date = $DateH->format('Y-m-d');
-			
-			if(array_key_exists($Zone, $TagsArray)){
-				$idTag = $TagsArray[$Zone]['idTag'];
-				$idSite = $TagsArray[$Zone]['idSite'];
-				$idUser = $TagsArray[$Zone]['idUser'];
+						
+			if(array_key_exists($Zone.'-'.$Publisher, $TagsArray)){
+				$idTag = $TagsArray[$Zone.'-'.$Publisher]['idTag'];
+				$idSite = $TagsArray[$Zone.'-'.$Publisher]['idSite'];
+				$idUser = $TagsArray[$Zone.'-'.$Publisher]['idUser'];
 			}else{
 				$sql = "SELECT id FROM " . USERS . " WHERE user = '$Publisher' LIMIT 1";
 				$idUser = intval($db->getOne($sql));				
@@ -173,6 +176,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				
 				if($idUser > 0){
 					$sql = "SELECT id FROM " . TAGS . " WHERE TagName = '$Zone' AND idPlatform = 1 AND idUser = '$idUser' ORDER BY id DESC LIMIT 1";
+										
 					$idTag = intval($db->getOne($sql));
 					if($idTag > 0){
 						$sql = "SELECT idSite FROM " . TAGS . " WHERE id = '$idTag' LIMIT 1";
@@ -197,9 +201,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 					file_put_contents('/var/www/html/login/admin/lkqdimport/adserver_log.txt', "$TimeLog Publisher: $Publisher NOT FOUND \n", FILE_APPEND);
 				}
 				
-				$TagsArray[$Zone]['idTag'] = $idTag;
-				$TagsArray[$Zone]['idSite'] = $idSite;
-				$TagsArray[$Zone]['idUser'] = $idUser;
+				$TagsArray[$Zone.'-'.$Publisher]['idTag'] = $idTag;
+				$TagsArray[$Zone.'-'.$Publisher]['idSite'] = $idSite;
+				$TagsArray[$Zone.'-'.$Publisher]['idUser'] = $idUser;
 			}
 			
 			if( array_key_exists($Date, $ArrayRates) ){

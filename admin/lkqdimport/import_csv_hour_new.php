@@ -73,7 +73,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$SpecialFill25 = array('Jamaica');
 	$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
 	$SpecialFill6 = array('Turkey');
-	$arraySpecialFillWL = array('Italy');
+	$arraySpecialFillWL = array('Italy', 'Portugal');
 	
 	/*
 	$new = '';
