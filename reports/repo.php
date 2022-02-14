@@ -113,10 +113,10 @@
 				
 				$DatesOK = true;
 				
-				if($StartHour > 0 || $EndHour < 23){
+				if($StartHour >= 0 || $EndHour <= 23){
 					$ForceHourTable = true;
 					if($RepType == 'hourly'){
-						$AddHourDateRange = "CONCAT(reports.Date, ' ' ,LPAD(reports.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i')."' AND '$DTo $EndHour:".$DateTo->format('i')."'";
+						$AddHourDateRange = "CONCAT(reports.Date, ' ' ,LPAD(reports.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
 					} else {
 						$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo'";
 					}
@@ -468,9 +468,6 @@
 		//SI HAY FILTROS, CALCULA LOS TOTALES SIN FILRTOS
 		$Nd = 0;
 		if($ThereAreFilters){
-			if($AddHourDateRange=='' && $RepType != 'hourly'){
-				$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo'";
-			}
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoinsTotals WHERE $AddHourDateRange $FilterEuroUsers $PubManFilter ";
 			if(count($UnionTables) > 1){
 				$Union = "";
@@ -553,7 +550,6 @@
 				$DataT[$Nd] = $CachedTotalsNF['DataNF'];
 			}
 		}
-		
 		//CALCULA LOS TOTALES CON FILTROS
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoins WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter";
 		
