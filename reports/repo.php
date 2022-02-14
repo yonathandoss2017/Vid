@@ -68,33 +68,7 @@
 	$CacheArrayT = array();
 	$CacheArray = array();
 	$ForceHourTable = false;
-	$AddHourRange = '';
-	
-	if(isset($_POST['PDate'])){
-		$Dates = $_POST['PDate'];
-		if(is_array($Dates)){
-			if(count($Dates) == 2){
-				$arDa1 = explode(' ', $Dates[0]);
-				$DateFrom = DateTime::createFromFormat('d/m/Y', $arDa1[0]);
-				$DFrom = $DateFrom->format('Y-m-d 00:00:00');
-				$StartMonth = $DateFrom->format('Ym');
-				$StartHour = intval($arDa1[1]);
-				
-				$arDa2 = explode(' ', $Dates[1]);
-				$DateTo = DateTime::createFromFormat('d/m/Y', $arDa2[0]);
-				$DTo = $DateTo->format('Y-m-d 23:59:59');
-				$EndMonth = $DateTo->format('Ym');
-				$EndHour = intval($arDa2[1]);
-				
-				$DatesOK = true;
-				
-				if($StartHour > 0 || $EndHour < 23){
-					$ForceHourTable = true;
-					$AddHourRange = " AND {ReportsTable}.Hour >= $StartHour AND {ReportsTable}.Hour <= $EndHour ";
-				}
-			}
-		}
-	}
+	$AddHourDateRange = '';
 	
 	$EuroReport = false;
 	if(isset($_POST['currency'])){
@@ -119,6 +93,36 @@
 	}
 	if($RepType != 'overall' || count($Dimensions) == 0){
 		$IncludeTime = true;
+	}
+	
+	if(isset($_POST['PDate'])){
+		$Dates = $_POST['PDate'];
+		if(is_array($Dates)){
+			if(count($Dates) == 2){
+				$arDa1 = explode(' ', $Dates[0]);
+				$DateFrom = DateTime::createFromFormat('d/m/Y', $arDa1[0]);
+				$DFrom = $DateFrom->format('Y-m-d 00:00:00');
+				$StartMonth = $DateFrom->format('Ym');
+				$StartHour = intval($arDa1[1]);
+				
+				$arDa2 = explode(' ', $Dates[1]);
+				$DateTo = DateTime::createFromFormat('d/m/Y', $arDa2[0]);
+				$DTo = $DateTo->format('Y-m-d 23:59:59');
+				$EndMonth = $DateTo->format('Ym');
+				$EndHour = intval($arDa2[1]);
+				
+				$DatesOK = true;
+				
+				if($StartHour > 0 || $EndHour < 23){
+					$ForceHourTable = true;
+					if($RepType == 'hourly'){
+						$AddHourDateRange = " TIMESTAMP({ReportsTable}.Date,{ReportsTable}.Hour) BETWEEN '$DFrom $StartHour' AND '$DTo $EndHour' ";
+					} else {
+						$AddHourDateRange = " {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' ";
+					}
+				}
+			}
+		}
 	}
 	
 	$CSVResponse = false;
@@ -465,7 +469,7 @@
 		$Nd = 0;
 		if($ThereAreFilters){
 
-			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoinsTotals WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $PubManFilter ";
+			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoinsTotals WHERE $AddHourDateRange $FilterEuroUsers $PubManFilter ";
 			if(count($UnionTables) > 1){
 				$Union = "";
 				$SQLQueryT = "";
@@ -475,7 +479,7 @@
 					foreach($UnionTables as $Table){
 						$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 						$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
-						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $PubManFilter) ";
+						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $PubManFilter) ";
 						$Union = "UNION ALL";
 					}    
 					$SQLQueryT .= ")  AS R ";
@@ -549,7 +553,7 @@
 		}
 		
 		//CALCULA LOS TOTALES CON FILTROS
-		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $SQLWhere $EnvFilter $PubManFilter";
+		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoins WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter";
 		
 		if(count($UnionTables) > 1){
 			$Union = "";
@@ -560,7 +564,7 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $SQLWhere $EnvFilter $PubManFilter) ";
+					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQueryT .= ")  AS R ";
@@ -641,7 +645,7 @@
 			
 		$Nd = 0; 
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $SQLWhere $EnvFilter $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics FROM {ReportsTable} INNER JOIN supplytag ON supplytag.id = {ReportsTable}.idTag $SQLInnerJoins WHERE $AddHourDateRange $FilterEuroUsers  $SQLWhere $EnvFilter $PubManFilter $SQLGroups";
 		if(count($UnionTables) > 1){
 			$Union = "";
 			$SQLQuery = "";
@@ -651,7 +655,7 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourRange $SQLWhere $EnvFilter $PubManFilter) ";
+					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQuery .= ")  AS R $SQLGroups";
