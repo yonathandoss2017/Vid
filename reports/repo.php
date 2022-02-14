@@ -478,7 +478,7 @@
 					foreach($UnionTables as $Table){
 						$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 						$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
-						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $PubManFilter) ";
+						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $PubManFilter) ";
 						$Union = "UNION ALL";
 					}    
 					$SQLQueryT .= ")  AS R ";
@@ -562,7 +562,7 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
+					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQueryT .= ")  AS R ";
@@ -653,7 +653,7 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $AddHourDateRange $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
+					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQuery .= ")  AS R $SQLGroups";
