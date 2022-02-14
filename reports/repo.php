@@ -478,7 +478,13 @@
 					foreach($UnionTables as $Table){
 						$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 						$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
-						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $PubManFilter) ";
+						$HourDateRangeTemp = '';
+						if($RepType == 'hourly'){
+							$HourDateRangeTemp = "CONCAT($Table.Date, ' ' ,LPAD($Table.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+						} else {
+							$HourDateRangeTemp = "$Table.Date BETWEEN '$DFrom' AND '$DTo'";
+						}
+						$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $HourDateRangeTemp $FilterEuroUsers $PubManFilter) ";
 						$Union = "UNION ALL";
 					}    
 					$SQLQueryT .= ")  AS R ";
@@ -562,7 +568,13 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $SQLWhere $EnvFilter $PubManFilter) ";
+					$HourDateRangeTemp = '';
+					if($RepType == 'hourly'){
+						$HourDateRangeTemp = "CONCAT($Table.Date, ' ' ,LPAD($Table.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+					} else {
+						$HourDateRangeTemp = "$Table.Date BETWEEN '$DFrom' AND '$DTo'";
+					}
+					$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $HourDateRangeTemp $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQueryT .= ")  AS R ";
@@ -653,7 +665,13 @@
 				foreach($UnionTables as $Table){
 					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
 					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $FilterEuroUsers $AddHourDateRange $SQLWhere $EnvFilter $PubManFilter) ";
+					$HourDateRangeTemp = '';
+					if($RepType == 'hourly'){
+						$HourDateRangeTemp = "CONCAT($Table.Date, ' ' ,LPAD($Table.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+					} else {
+						$HourDateRangeTemp = "$Table.Date BETWEEN '$DFrom' AND '$DTo'";
+					}
+					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $HourDateRangeTemp $FilterEuroUsers $SQLWhere $EnvFilter $PubManFilter) ";
 					$Union = "UNION ALL";
 				}    
 				$SQLQuery .= ")  AS R $SQLGroups";
