@@ -337,7 +337,12 @@ if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_
                             $arFv = explode('-', $FVal);
                             $FilterHFrom = $arFv[0];
                             $FilterHTo = $arFv[1];
-                            $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time ) NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            if ($FilterHTo < $FilterHFrom){
+                                // Condition that will always return empty result whenever Hour From is greater than Hour To.
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time) = -1 ";
+                            }else {
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time ) NOT BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            }
                             $ForceHourTable = true;
 						}
 						else{
@@ -396,7 +401,12 @@ if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_
                             $arFv = explode('-', $FVal);
                             $FilterHFrom = $arFv[0];
                             $FilterHTo = $arFv[1];
-                            $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time) BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            if ($FilterHTo < $FilterHFrom){
+                                // Condition that will always return empty result whenever Hour From is greater than Hour To.
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time) = -1 ";
+                            }else {
+                                $SQLWhere .= $Or . " EXTRACT(HOUR FROM __time) BETWEEN '$FilterHFrom' AND '$FilterHTo'";
+                            }
                             $ForceHourTable = true;
                         }
 						else {
