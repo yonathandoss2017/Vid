@@ -372,7 +372,7 @@
 				if($StartHour >= 0 || $EndHour <= 23){
 					$ForceHourTable = true;
 					if($RepType == 'hourly'){
-						$AddHourDateRange = "CONCAT(reports.Date, ' ' ,LPAD(reports.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+						$AddHourDateRange = "TIMESTAMP(reports.Date,SEC_TO_TIME((reports.Hour*60)*60)) BETWEEN TIMESTAMP('$DFrom $StartHour:".$DateFrom->format('i').":00') AND TIMESTAMP('$DTo $EndHour:".$DateTo->format('i').":59')";
 					} else {
 						$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo'";
 					}
@@ -380,6 +380,8 @@
 			}
 		}
 	}
+						// $AddHourDateRange = "CONCAT(reports.Date, ' ' ,LPAD(reports.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+						// TIMESTAMP(reports.Date,reports.Hour) BETWEEN TIMESTAMP('2020-02-06 07:00:00','%Y-%m-%d %H:%i:%s')) AND TIMESTAMP(STR_TO_DATE('2020-02-07 23:59','%Y-%m-%d %H:%i:%s'))
 
 	$CSVResponse = false;
 	if(isset($_POST['csv'])){
