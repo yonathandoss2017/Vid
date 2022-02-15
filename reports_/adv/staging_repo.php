@@ -20,7 +20,7 @@
 		exit(0);
 	}
 
-    if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local')) {
+	if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local')) {
 		$db2 = new SQL($advDev02['host'], $advDev02['db'], $advDev02['user'], $advDev02['pass']);
 
 		require('config.php');
@@ -297,31 +297,7 @@
 	$Overall = false;
 	$UsedInnerJ = array();
 	$ThereAreFilters = false;
-	$AddHourRange = '';
-
-	if(isset($_POST['PDate'])){
-		$Dates = $_POST['PDate'];
-		if(is_array($Dates)){
-			if(count($Dates) == 2){
-                $DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
-                $DFrom = $DateFrom->format('Y-m-d');
-                $StartMonth = $DateFrom->format('Ym');
-                $StartHour = $DateFrom->format('H');
-
-                $DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
-                $DTo = $DateTo->format('Y-m-d');
-                $EndMonth = $DateTo->format('Ym');
-                $EndHour = $DateTo->format('H');
-
-				$DatesOK = true;
-
-                if($StartHour > 0 || $EndHour < 23){
-                    $ForceHourTable = true;
-                    $AddHourRange = " AND {ReportsTable}.Hour >= $StartHour AND {ReportsTable}.Hour <= $EndHour ";
-                }
-			}
-		}
-	}
+	$AddHourDateRange = '';
 	
 	if(isset($_POST['Dimensions'])){
 		$Dimensions = $_POST['Dimensions'];
@@ -376,7 +352,35 @@
 	}else{
 		$TypeOK = true;
 	}
-	
+
+	if(isset($_POST['PDate'])){
+		$Dates = $_POST['PDate'];
+		if(is_array($Dates)){
+			if(count($Dates) == 2){
+               $DateFrom = DateTime::createFromFormat('d/m/Y H:i', $Dates[0]);
+               $DFrom = $DateFrom->format('Y-m-d');
+               $StartMonth = $DateFrom->format('Ym');
+               $StartHour = $DateFrom->format('H');
+
+               $DateTo = DateTime::createFromFormat('d/m/Y H:i', $Dates[1]);
+               $DTo = $DateTo->format('Y-m-d');
+               $EndMonth = $DateTo->format('Ym');
+               $EndHour = $DateTo->format('H');
+
+				$DatesOK = true;
+
+				if($StartHour >= 0 || $EndHour <= 23){
+					$ForceHourTable = true;
+					if($RepType == 'hourly'){
+						$AddHourDateRange = "CONCAT(reports.Date, ' ' ,LPAD(reports.Hour,2,'0') , ':00:00') BETWEEN '$DFrom $StartHour:".$DateFrom->format('i').":00' AND '$DTo $EndHour:".$DateTo->format('i').":59'";
+					} else {
+						$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo'";
+					}
+				}
+			}
+		}
+	}
+
 	$CSVResponse = false;
 	if(isset($_POST['csv'])){
 		if($_POST['csv'] == 'true'){
@@ -649,7 +653,7 @@
 			$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 			INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
 			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
-			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $PubManFilter ";
+			WHERE $AddHourDateRange $PubManFilter ";
 
             /*if(count($UnionTables) > 1){
                 $Union = "";
@@ -736,7 +740,7 @@
 		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
 		INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
 		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
-		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter ";
+		WHERE $AddHourDateRange $SQLWhere $PubManFilter ";
 
 		/*
 		if(count($UnionTables) > 1){
@@ -818,7 +822,7 @@
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
+		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE $AddHourDateRange $SQLWhere $PubManFilter $SQLGroups";
 		/*
 		if(count($UnionTables) > 1){
 			$Union = "";
