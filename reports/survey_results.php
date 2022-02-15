@@ -7,7 +7,7 @@
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
-	$Alim = 3;
+	$Alim = 2;
 	
 	for($Q = 1; $Q <= 3; $Q++){
 		
@@ -18,16 +18,16 @@
 		}
 		
 		if($Q == 2){
-			$Alim = 5;
+			$Alim = 2;
 		}
 		
 		if($Q == 1){
-			$Alim = 5;
+			$Alim = 2;
 		}
 		
 		for($A = 1; $A <= $Alim; $A++){
 			
-			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 1 AND Campaign = 11";
+			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 0 AND Campaign = 12";
 			$Cnt = $db->getOne($sql);
 			
 			echo "Respuesta $A: $Cnt \n";
