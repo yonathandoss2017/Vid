@@ -1,4 +1,7 @@
 <?php
+
+define('TAG_TYPE_VIDEO', 1);
+define('TAG_TYPE_VAST', 2);
 	
 	$ExtraP[0] = 27;
 	$ExtraP[1] = 28;
@@ -1411,7 +1414,7 @@ function getDemandPartner($supplyPartnerName)
 /**
  * Function to get creativity if given it's tag id
  */
-function getTagCreativityId(int $tagId): string
+function getTagCreativityId(int $tagId)
 {
 	global $cookie_file;
 	
@@ -1445,6 +1448,7 @@ function getTagCreativityId(int $tagId): string
 	$response = json_decode($result, true);
 
 	if (!is_array($response) || empty($response)) {
+		http_response_code(404);
 		return [];
 	}
 
@@ -2632,7 +2636,9 @@ function updateCreative(
 	string $trackingPixels,
 	int $creativeId,
 	string $environments,
-	string $countries
+	string $countries,
+	int $type,
+	string $demandTagUrl
 ) {
 	global $cookie_file;
 
@@ -2712,7 +2718,9 @@ function updateCreative(
 		$levels,
 		$clickThroughUrl,
 		$additions,
-		$pixels
+		$pixels,
+		$type,
+		$demandTagUrl
 	);
 
 	$payloadJson = json_encode($payload);
@@ -2740,6 +2748,99 @@ function updateCreative(
 }
 
 /**
+ * function to set inactive when creating a new tag to avoid error on creating a tag. 
+ */
+function getDemandTagStatus(int $demandTagId, $status): string
+{
+	return $demantTagId > 0 ? $status : 'inactive';
+}
+
+/**
+ * function to return demand tag id for edition or null for creation.
+ */
+function getTagId(int $tagId)
+{
+	return $demantTagId > 0 ? $demantTagId : null;
+}
+
+/**
+ * Function to get demand tag type on LKQD.
+ */
+function getTagtype(int $type): string
+{
+	return isVideo($type) ? "lkqd-hosted" : "vast";
+}
+
+/**
+ * Function to get tag source on LKQD.
+ */
+function getTagSource(int $type): string
+{
+	return isVideo($type) ? "lkqd" : "other";
+}
+
+function isVideo(int $type): bool
+{
+	return TAG_TYPE_VIDEO === $type;
+}
+
+/**
+ * Function to get ad delivery type depending on tag type.
+ */
+function getAdDeliveryType(int $type): string
+{
+	return isVideo($type) ? "guaranteed" : "non-guaranteed";
+}
+
+/**
+ * Function to get tag player size targeting method depending on tag type.
+ */
+function getPlayerSizeTargetingMethod(int $type)
+{
+	return isVideo($type) ? "detected" : null;
+}
+
+/**
+ * Function to get tag player size targeting allow undetectable depending on tag type.
+ */
+function getPlayerSizeTargetingAllowUndetectable(int $type)
+{
+	return isVideo($type) ? 1 : null;
+}
+
+/**
+ * Function to get ad tag depending on tag type.
+ */
+function getAdTag(int $type, string $demandTagUrl)
+{
+	return isVideo($type) ? null : $demandTagUrl;
+}
+
+/**
+ * Function to get programmatic buyer private deal tag depending on tag type.
+ */
+function getIsProgrammaticBuyerPrivateDealTag(int $type)
+{
+	return isVideo($type) ? null : 0;
+}
+
+/**
+ * Function to get tag click through url depending on tag type.
+ */
+function getClickthroughUrl(int $type, string $clickThroughUrl)
+{
+	return isVideo($type) ? $clickThroughUrl : null;
+}
+
+/**
+ * Function to get tag weight depending on tag type.
+ */
+function getTagWeight(int $type)
+{
+	return isVideo($type) ? 100 : null;
+}
+
+/**
  * Function to build array payload for a demand tag as LKQD is expecting.
  */
 function getDemandTagPayload(
@@ -2753,26 +2854,28 @@ function getDemandTagPayload(
 	array $levels,
 	string $clickThroughUrl,
 	array $additions,
-	array $pixels
+	array $pixels,
+	int $type,
+	string $demandTagUrl
 ) {
 	return [
-		"tagId" => $demantTagId > 0 ? $demantTagId : null,
+		"tagId" => getTagId($demantTagId),
 		"dealCpm" => 0,
 		"dealCpmType" => $dealInfo['cpmType'],
 		"dealId" => $dealId,
 		"dealTier" => 1,
 		"dealStatus" => $dealInfo['status'],
 		"name" => $name,
-		"status" => $demantTagId > 0 ? $status : 'inactive',
-		"tagType" => "lkqd-hosted",
-		"tagSource" => "lkqd",
+		"status" => getDemandTagStatus($demandTagId, $status),
+		"tagType" => getTagtype($type),
+		"tagSource" => getTagSource($type),
 		"caps" => [],
 		"frequencyCaps" => [],
 		"frequencyCapKey" => null,
 		"frequencyCapNoUid" => $dealInfo['frequencyCapNoUid'],
 		"environments" => $envsArray,
 		"adType" => "video",
-  		"adDeliveryType" => "guaranteed",
+  		"adDeliveryType" => getAdDeliveryType($type),
 		"targeting" => [
 			"deviceOses" => [],
 			"browserTargetingEntries" => [],
@@ -2819,8 +2922,8 @@ function getDemandTagPayload(
 				"levels" => $levels
 			],
 			"playerSizeTargeting" => [
-				"method" => "detected",
-				"allowUndetectable" => 1,
+				"method" => getPlayerSizeTargetingMethod($type),
+				"allowUndetectable" => getPlayerSizeTargetingAllowUndetectable($type),
 				"environmentChoice" => "same-for-all-environments",
 				"widthHeightSpecifications" => [
 					"all" => [
@@ -2859,15 +2962,15 @@ function getDemandTagPayload(
 			"adsTxtIgnorePid" => false,
 			"playInitTargeting" => null
 		],
-		"adTag" => null,
+		"adTag" => getAdTag($type),
 		"sslAdTag" => null,
 		"supportsSsl" => 1,
 		"requiredMacros" => [],
 		"partnerId" => null,
 		"partnerName" => null,
 		"programmaticBuyerId" => null,
-		"isProgrammaticBuyerPrivateDealTag" => null,
-		"clickthroughUrl" => $clickThroughUrl,
+		"isProgrammaticBuyerPrivateDealTag" => getIsProgrammaticBuyerPrivateDealTag($type),
+		"clickthroughUrl" => getClickthroughUrl($type, $clickThroughUrl),
 		"hapticPlayerUrl" => null,
 		"companionAssetClickthroughUrl" => null,
 		"daypartStatus" => $status,
@@ -2920,7 +3023,7 @@ function getDemandTagPayload(
 				"ctv" => false
 			]
 		],
-		"weight" => 100,
+		"weight" => getTagWeight($type),
 		"lkqdAccountPublishersSelected" => [],
 		"supplyTargetingType" => "open",
 		"googleImaSdkSupport" => false,
@@ -2941,7 +3044,9 @@ function newDemandTag(
 	string $trackingPixels,
 	int $creativeId,
 	string $environments,
-	string $countries
+	string $countries,
+	int $type,
+	string $demandTagUrl
 ) {
 	global $cookie_file;
 
@@ -2987,7 +3092,9 @@ function newDemandTag(
 		$levels,
 		$clickThroughUrl,
 		$additions,
-		$pixels
+		$pixels,
+		$type,
+		$demandTagUrl
 	);
 
 	$payloadJson = json_encode($payload);
