@@ -38,3 +38,4 @@ vendor
 docker/mysql
 
 deals/log/newdeal.txt
+deals/log/newdeal_error.txt

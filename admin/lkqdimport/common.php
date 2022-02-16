@@ -2,6 +2,7 @@
 
 define('TAG_TYPE_VIDEO', 1);
 define('TAG_TYPE_VAST', 2);
+define('UNAUTHORIZED_PREFIX', 'unauthorized_from_LKQD');
 	
 	$ExtraP[0] = 27;
 	$ExtraP[1] = 28;
@@ -1440,23 +1441,24 @@ function getTagCreativityId(int $tagId)
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if ('Forbidden' === $result) {
+	if (false !== strpos($result, 'Forbidden') || false !== strpos($result, 'tagId must be specified')) {
 		http_response_code(404);
 		return 'No creativity found with the given tag id!';
 	}
 
-	$response = json_decode($result, true);
-
-	if (!is_array($response) || empty($response)) {
-		http_response_code(404);
-		return [];
+	if (false !== strpos($result, 'authorization')) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
 	}
+
+	$response = json_decode($result, true);
 
 	if (array_key_exists('errorId', $response)) {
 		http_response_code(404);
 		return $response['message'];
 	}
 
+	http_response_code(200);
 	return $response[0]['creativeId'];
 }
 
@@ -1487,14 +1489,10 @@ function getAgenciesData(): array
 	curl_close($ch);
 
 	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
-		return ["unauthorized"];
+		return [UNAUTHORIZED_PREFIX];
 	}
 
 	$response = json_decode($result, true);
-
-	if (!is_array($response) || empty($response)) {
-		return [];
-	}
 
 	return $response;
 }
@@ -1681,6 +1679,7 @@ function newDemandPartner(string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
+	die($result);
 	curl_close($ch); 
 
 	$response = json_decode($result);
@@ -1767,17 +1766,21 @@ function getTagInfo(int $tagId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
 	$result = curl_exec($ch);
+	error_log('gadiel --- ' .$result);
 	curl_close($ch);
-	$response = json_decode($result, true);
 
-	if (!is_array($response) || empty($response)) {
-		return [];
+	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+		http_response_code(403);
+		return [UNAUTHORIZED_PREFIX];
 	}
+
+	$response = json_decode($result, true);
 
 	if (!empty($response->errors)) {
 		return $response->errors;
 	}
 
+	http_response_code(200);
 	return $response['data'];
 }
 
@@ -1812,11 +1815,11 @@ function getDealInfo(int $dealId): array {
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	$response = json_decode($result, true);
-
-	if (!is_array($response) || empty($response)) {
-		return [];
+	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+		return [UNAUTHORIZED_PREFIX];
 	}
+
+	$response = json_decode($result, true);
 
 	if (!empty($response->errors)) {
 		return $response->errors;
@@ -1863,7 +1866,7 @@ function updateDemandTagStatus(int $demandTagId, string $status) {
 	curl_close($ch);
 
 	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
-		return "unauthorized";
+		return UNAUTHORIZED_PREFIX;
 	}
 
 	$response = json_decode($result);
@@ -2070,7 +2073,7 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
 	curl_close($ch);
 
 	if (false !== strpos($result, 'HTTP method not allowed, supported methods: OPTIONS')) {
-		return ['unauthorized'];
+		return [UNAUTHORIZED_PREFIX];
 	}
 	
 	$data = json_decode($result);
@@ -2156,7 +2159,12 @@ function getDemandTagId(int $dealId, string $name): string {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	curl_close($ch); 
+	curl_close($ch);
+
+	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$data = json_decode($result, true);
 
@@ -2174,6 +2182,7 @@ function getDemandTagId(int $dealId, string $name): string {
 		}
 	}
 
+	http_response_code(200);
 	return $demandTagId;
 }
 
@@ -2335,8 +2344,8 @@ function keepDemandTagsSelected(array $tags): bool {
 	$URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
 
 	$sources = getSources();
-	if (empty($source)) {
-		logIn();
+	if (UNAUTHORIZED_PREFIX === $sources) {
+		logIn('KeepDemandTagsSelected function');
 		$sources = getSources();
 	}
 	$additionIds = [];
@@ -2450,9 +2459,11 @@ function unselectDemandTags(array $tags) {
 	$data = json_decode($result, false);
 
 	if(!empty($data) && property_exists($data, 'errorId')){
+		http_response_code(403);
 		return $data->errorId;
 	}
 
+	http_response_code(200);
 	return true;
 }
 
@@ -2529,8 +2540,13 @@ function getSources() {
 
 	$result = curl_exec($ch);
 	curl_close($ch);
+	$response = json_decode($result, false);
 
-	return json_decode($result, false);
+	if (!empty($response->errorId)) {
+		return $response->errorId;
+	}
+	
+	return $response;
 }
 
 /**
@@ -2643,14 +2659,18 @@ function updateCreative(
 	global $cookie_file;
 
 	$sources = getSources();
-	if (empty($source)) {
-		logIn();
+	if (UNAUTHORIZED_PREFIX === $sources) {
+		logIn('updateCreative function');
 		$sources = getSources();
 	}
 	$envs = json_decode($environments, true);
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
 	$dealInfo = getDealInfo($dealId);
+	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo)) {
+		logIn('updateCreative function');
+		$dealInfo = getDealInfo($dealId);
+	}
 
 	$filteredSources = array_filter($sources, function ($source) use ($envs) {
 		return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
@@ -2752,7 +2772,7 @@ function updateCreative(
  */
 function getDemandTagStatus(int $demandTagId, $status): string
 {
-	return $demantTagId > 0 ? $status : 'inactive';
+	return $demandTagId > 0 ? $status : 'inactive';
 }
 
 /**
@@ -2760,7 +2780,7 @@ function getDemandTagStatus(int $demandTagId, $status): string
  */
 function getTagId(int $tagId)
 {
-	return $demantTagId > 0 ? $demantTagId : null;
+	return $tagId > 0 ? $tagId : null;
 }
 
 /**
@@ -2844,7 +2864,7 @@ function getTagWeight(int $type)
  * Function to build array payload for a demand tag as LKQD is expecting.
  */
 function getDemandTagPayload(
-	int $demantTagId,
+	int $demandTagId,
 	array $dealInfo,
 	int $dealId,
 	string $name,
@@ -2859,7 +2879,7 @@ function getDemandTagPayload(
 	string $demandTagUrl
 ) {
 	return [
-		"tagId" => getTagId($demantTagId),
+		"tagId" => getTagId($demandTagId),
 		"dealCpm" => 0,
 		"dealCpmType" => $dealInfo['cpmType'],
 		"dealId" => $dealId,
@@ -2962,7 +2982,7 @@ function getDemandTagPayload(
 			"adsTxtIgnorePid" => false,
 			"playInitTargeting" => null
 		],
-		"adTag" => getAdTag($type),
+		"adTag" => getAdTag($type, $demandTagUrl),
 		"sslAdTag" => null,
 		"supportsSsl" => 1,
 		"requiredMacros" => [],
@@ -3051,16 +3071,16 @@ function newDemandTag(
 	global $cookie_file;
 
 	$sources = getSources();
-	if (empty($source)) {
-		logIn();
+	if (UNAUTHORIZED_PREFIX === $sources) {
+		logIn('newDemandTag function');
 		$sources = getSources();
 	}
 	$envs = json_decode($environments, true);
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
 	$dealInfo = getDealInfo($dealId);
-	if (empty($dealInfo)) {
-		logIn();
+	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo)) {
+		logIn('newDemandTag function');
 		$dealInfo = getDealInfo($dealId);
 	}
 
