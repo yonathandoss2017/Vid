@@ -317,7 +317,11 @@
 
                 if($StartHour >= 0 || $EndHour <= 23){
                     $ForceHourTable = true;
-						  $AddHourRange = " AND (((reports.Date >= '$DFrom' AND reports.Date < '$DTo') AND reports.Hour >= $StartHour) OR ((reports.Date > '$DFrom' AND reports.Date <= '$DTo') AND reports.Hour <= $EndHour))";
+						  if($DTo != $DFrom){
+							$AddHourRange = " AND (((reports.Date >= '$DFrom' AND reports.Date < '$DTo') AND reports.Hour >= $StartHour) OR ((reports.Date > '$DFrom' AND reports.Date <= '$DTo') AND reports.Hour <= $EndHour))";
+						  } else {
+						  	$AddHourRange = " AND (reports.Hour >= $StartHour AND reports.Hour <= $EndHour)";
+						}
                 }
 			}
 		}
