@@ -371,11 +371,7 @@
 
 				if($StartHour >= 0 || $EndHour <= 23){
 					$ForceHourTable = true;
-					if($RepType == 'hourly'){
-						$AddHourDateRange = "TIMESTAMP(reports.Date,SEC_TO_TIME((reports.Hour*60)*60)) BETWEEN TIMESTAMP('$DFrom','$StartHour:".$DateFrom->format('i').":00') AND TIMESTAMP('$DTo','$EndHour:".$DateTo->format('i').":59')";
-					} else {
-						$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo'";
-					}
+					$AddHourDateRange = "{ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' AND (((reports.Date >= '$DFrom' AND reports.Date < '$DTo') AND reports.Hour >= $StartHour) OR ((reports.Date > '$DFrom' AND reports.Date <= '$DTo') AND reports.Hour <= $EndHour))";
 				}
 			}
 		}
