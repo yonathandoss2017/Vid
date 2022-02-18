@@ -31,7 +31,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Campaign Name'
 		),
 		'campaign_id' => array(
-			'Name'	=>	"campaign.deal_id AS CampaignID",
+			'Name'	=>	"campaign.id AS CampaignID",
 			'SearchName'	=>	"campaign.id",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"CampaignID",
