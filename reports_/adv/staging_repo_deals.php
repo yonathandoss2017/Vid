@@ -44,7 +44,7 @@ if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'integration') {
+	} elseif ($_POST['env'] == 'int') {
 		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config_pre.php');

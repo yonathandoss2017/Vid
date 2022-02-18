@@ -16,7 +16,7 @@
 	$db2 = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	
-//	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 18936";
+	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 18936";
 	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 1977";
 /*
 	$sql = "SELECT DISTINCT(idSite) FROM `supplytag` WHERE `Old` = 1";
@@ -26,7 +26,7 @@
 			$idSite = $St['idSite'];
 			*/
 	
-	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 10048";
+	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 10048";
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Site = $db->fetch_array($query)){

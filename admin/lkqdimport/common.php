@@ -2,7 +2,7 @@
 
 define('TAG_TYPE_VIDEO', 1);
 define('TAG_TYPE_VAST', 2);
-define('UNAUTHORIZED_PREFIX', 'unauthorized_from_LKQD');
+define('UNAUTHORIZED_PREFIX', 'unauthorized');
 	
 	$ExtraP[0] = 27;
 	$ExtraP[1] = 28;
@@ -14,7 +14,7 @@ define('UNAUTHORIZED_PREFIX', 'unauthorized_from_LKQD');
 	$ExtraP[7] = 30;
 	$ExtraP[8] = 27;
 	$ExtraP[9] = 33;
-	
+		
 function logIn($Source = 'Unknown'){
 	global $sessionId, $cookie_file, $lkqdCred;
 
@@ -122,6 +122,34 @@ function gen_uuid() {
         // 48 bits for "node"
         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
     );
+}
+
+function logAccess(
+	SQL $db,
+	string $name,
+	int $status,
+	string $ip,
+	int $type,
+	string $params,
+	string $datetime
+) {
+	$sql = <<<SQL
+INSERT INTO ss_access (Name, Status, IP, Type, Params, DateTime)
+VALUES ("{$name}", $status, "{$ip}", $type, "{$params}", "{$datetime}")
+SQL;
+
+    $db->query($sql);
+}
+
+/**
+ * Function to know if cookie is valid on LKQD.
+ */
+function isLoggedIn(string $response): bool
+{
+	return ('HTTP method not allowed, supported methods: OPTIONS' !== $response
+		|| false === strpos($response, 'HTTP method not allowed, supported methods: OPTIONS'))
+		&& ('Need either a basic authorization header or a session cookie to authenticate.' !== $response
+		|| false === strpos($response, 'Need either a basic authorization header or a session cookie to authenticate.'));
 }
 
 function getResultsHour($DateS, $Hi){
@@ -1186,9 +1214,20 @@ function getCreativity(int $partnerId, string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	curl_close($ch); 
+	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$data = json_decode($result, true);
+
+	$creativityNotFoundMessage = "creative-not-found";
+	if (empty($data)) {
+		http_response_code(404);
+		return $creativityNotFoundMessage;
+	}
 	
 	$creative = array_filter($data, function ($creativity) use ($partnerId, $name) {
 		return $creativity["name"] === $name && $creativity["demandPartnerId"] === $partnerId;
@@ -1197,7 +1236,8 @@ function getCreativity(int $partnerId, string $name) {
 	if ($creative) {
 		return array_column($creative, "creativeId")[0];
 	}else{
-		return "creative-not-found";
+		http_response_code(404);
+		return $creativityNotFoundMessage;
 	}
 }
 
@@ -1243,6 +1283,11 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
 	$result = curl_exec($ch);
 	curl_close($ch);
 
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
+
 	$data = json_decode($result, false);
 
 	if(!empty($data->errors)){
@@ -1284,7 +1329,12 @@ function newCreativity(int $partnerId, string $type, string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	curl_close($ch); 
+	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$response = json_decode($result);
 
@@ -1331,6 +1381,11 @@ function uploadCreativityVideo(int $creativityId, $file) {
 
 	$result = curl_exec($ch);
 	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	return $result;
 }
@@ -1399,6 +1454,11 @@ function getDemandPartner($supplyPartnerName)
 	$result = curl_exec($ch);
 	curl_close($ch);
 
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
+
 	$data = json_decode($result, true);
 	
 	$demandPartner = array_filter($data["data"], function ($partner) use ($supplyPartnerName) {
@@ -1415,7 +1475,7 @@ function getDemandPartner($supplyPartnerName)
 /**
  * Function to get creativity if given it's tag id
  */
-function getTagCreativityId(int $tagId)
+function getTagCreativityId(int $tagId): string
 {
 	global $cookie_file;
 	
@@ -1488,7 +1548,8 @@ function getAgenciesData(): array
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
 		return [UNAUTHORIZED_PREFIX];
 	}
 
@@ -1523,6 +1584,10 @@ function getOrder(int $partnerId, string $name)
 	curl_close($ch); 
 
 	$data = json_decode($result, true);
+
+	if (!empty($data['errorId'])) {
+		return $data['errorId'];
+	}
 	
 	$partnerOrder = array_filter($data, function ($order) use ($partnerId, $name) {
 		return $order["demandPartnerId"] === $partnerId && $order["name"] === $name;
@@ -1570,6 +1635,11 @@ function newOrder(int $sourceId, string $name) {
 
 	$result = curl_exec($ch);
 	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$data = json_decode($result);
 
@@ -1623,6 +1693,11 @@ function updateOrder(int $orderId, int $sourceId, string $name) {
 
 	$result = curl_exec($ch);
 	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$data = json_decode($result, false);
 
@@ -1679,7 +1754,6 @@ function newDemandPartner(string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	die($result);
 	curl_close($ch); 
 
 	$response = json_decode($result);
@@ -1766,10 +1840,9 @@ function getTagInfo(int $tagId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
 	$result = curl_exec($ch);
-	error_log('gadiel --- ' .$result);
 	curl_close($ch);
 
-	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+	if (!isLoggedIn($result)) {
 		http_response_code(403);
 		return [UNAUTHORIZED_PREFIX];
 	}
@@ -1815,7 +1888,8 @@ function getDealInfo(int $dealId): array {
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
 		return [UNAUTHORIZED_PREFIX];
 	}
 
@@ -1834,7 +1908,8 @@ function getDealInfo(int $dealId): array {
  * @param int $demandTagId
  * @param int $status active or inactive
  */
-function updateDemandTagStatus(int $demandTagId, string $status) {
+function updateDemandTagStatus(int $demandTagId, string $status)
+{
 	global $cookie_file;
 
 	$url = sprintf("https://ui-api.lkqd.com/tags/%d/status", $demandTagId);
@@ -1865,7 +1940,8 @@ function updateDemandTagStatus(int $demandTagId, string $status) {
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if ($result === "HTTP method not allowed, supported methods: OPTIONS") {
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
 		return UNAUTHORIZED_PREFIX;
 	}
 
@@ -2072,7 +2148,8 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if (false !== strpos($result, 'HTTP method not allowed, supported methods: OPTIONS')) {
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
 		return [UNAUTHORIZED_PREFIX];
 	}
 	
@@ -2114,7 +2191,12 @@ function getDeal(int $orderId, string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
-	curl_close($ch); 
+	curl_close($ch);
+
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$data = json_decode($result, true);
 
@@ -2161,7 +2243,7 @@ function getDemandTagId(int $dealId, string $name): string {
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-	if ('HTTP method not allowed, supported methods: OPTIONS' === $result) {
+	if (!isLoggedIn($result)) {
 		http_response_code(403);
 		return UNAUTHORIZED_PREFIX;
 	}
@@ -2198,15 +2280,7 @@ function newOrUpdateDeal(
 	int $freqCap = null
 ) {
 	global $cookie_file;
-error_log($orderId);
-error_log($name);
-error_log($startDate);
-error_log($endDate);
-error_log($deliveryPacing);
-error_log($goal);
-error_log($status);
-error_log($dealId);
-error_log($freqCap);
+
 	$URL = 'https://ui-api.lkqd.com/deals';
 
 	$deliveryPacings = [
@@ -2323,8 +2397,12 @@ error_log($freqCap);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
 	$result = curl_exec($ch);
+	curl_close($ch);
 
-	curl_close($ch); 
+	if (!isLoggedIn($result)) {
+		http_response_code(403);
+		return UNAUTHORIZED_PREFIX;
+	}
 
 	$response = json_decode($result);
 
@@ -2667,7 +2745,7 @@ function updateCreative(
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
 	$dealInfo = getDealInfo($dealId);
-	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo)) {
+	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
 		logIn('updateCreative function');
 		$dealInfo = getDealInfo($dealId);
 	}
@@ -3079,7 +3157,7 @@ function newDemandTag(
 	$geoTargetingData = getGeoTargetingData(json_decode($countries, true));
 	$envsArray = getEnvironments($envs);
 	$dealInfo = getDealInfo($dealId);
-	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo)) {
+	if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
 		logIn('newDemandTag function');
 		$dealInfo = getDealInfo($dealId);
 	}

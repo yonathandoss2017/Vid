@@ -41,7 +41,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	//echo $Date = date('Y-m-d', time() - 1200);
-	echo $Date = '2022-02-06';
+	echo $Date = '2022-02-17';
 		
 	$DateFrom = $Date;
 	$DateTo = $Date;

@@ -90,21 +90,22 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
-	$DateDruid = new DateTime();
-	$DateDruid->setTimezone(new DateTimeZone('UTC'));
-	$DateDruid->modify("-1 hour");
-	$Day = intval($DateDruid->format('d'));
-	$Month = intval($DateDruid->format('m'));
-	echo $DateD1 = $DateDruid->format('Y-m-d H:00:00');
-	$DateD2 = $DateDruid->format('Y-m-d H:59:59');
-	$DateEST = $DateDruid;
+	$DateDruid1 = new DateTime();
+	$DateDruid1->setTimezone(new DateTimeZone('UTC'));
+	$DateDruid1->modify("-3 hour");
 	
+	$DateDruid2 = new DateTime();
+	$DateDruid2->setTimezone(new DateTimeZone('UTC'));
+	$DateDruid2->modify("-1 hour");
+	
+	$DateD1 = $DateDruid1->format('Y-m-d H:00:00');
+	$DateD2 = $DateDruid2->format('Y-m-d H:59:59');
+	$DateEST1 = $DateDruid1;
+	$DateEST2 = $DateDruid2;
 	
 	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
 	
 	$Query = "SELECT __time, Country, Domain, Zone, Publisher, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone, Publisher ORDER BY 5 DESC";
-	//echo $Query . "\n\n";
-	//exit(0);
 	
 	$context = new \stdClass();
 	$context->sqlOuterLimit = 500000;//;
@@ -129,14 +130,18 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$TablaNameResume = getTableNameResume($Date);
 	$TablaNameResume2 = str_replace('_', '', $TablaNameResume);
 	
-	$DateEST->setTimezone(new DateTimeZone('America/New_York'));
-	$HourEST1 = intval($DateEST->format('H'));
-	$HourEST2 = intval($DateEST->format('H'));
+	$DateEST1->setTimezone(new DateTimeZone('America/New_York'));
+	$DateEST2->setTimezone(new DateTimeZone('America/New_York'));
+	$HourEST1 = intval($DateEST1->format('H'));
+	$HourEST2 = intval($DateEST2->format('H'));
 //	$HourEST1 = intval(0);
 //	$HourEST2 = intval(20);
-	$DateESTs = $DateEST->format('Y-m-d');
-	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs' AND Hour BETWEEN $HourEST1 AND $HourEST2 AND Manual = 0 AND Player = 2";
+	$DateESTs1 = $DateEST1->format('Y-m-d');
+	$DateESTs2 = $DateEST2->format('Y-m-d');
+	$sql = "DELETE FROM $TablaName WHERE ((Date = '$DateESTs1' AND Hour >= $HourEST1) OR (Date = '$DateESTs2' AND Hour <= $HourEST2)) AND Manual = 0 AND Player = 2";
 	$db->query($sql);
+	//echo $sql;
+	//exit(0);
 	
 	foreach($result as $kres => $res){
 		if($kres >= 1){
@@ -163,6 +168,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$DateH->setTimezone(new DateTimeZone('America/New_York'));
 			$Hour = intval($DateH->format('H'));
 			$Date = $DateH->format('Y-m-d');
+			$Day = intval($DateH->format('d'));
+			$Month = intval($DateH->format('m'));
 						
 			if(array_key_exists($Zone.'-'.$Publisher, $TagsArray)){
 				$idTag = $TagsArray[$Zone.'-'.$Publisher]['idTag'];
@@ -595,7 +602,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 	
 	echo "Hours Imported - LKQD\n";
-	
+	//exit(0);
 	$Nins = 0;
 	$Nis = 0;
 	$Coma = "";

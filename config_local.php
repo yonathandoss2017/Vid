@@ -11,7 +11,7 @@ $dbhost = $_ENV["LOCAL_HOST"];
 $dbname = $_ENV["LOCAL_DB"];
 $dbAdvName = $_ENV["LOCAL_DB_ADV"];
 
-$prefix="vidoomy_";
+$prefix = "vidoomy_";
 
 // This is the local reports server for advertisers database info
 $advProd = $advPre = $advIntegration = $advDev01 = $advDev02 = $advDev03  = [

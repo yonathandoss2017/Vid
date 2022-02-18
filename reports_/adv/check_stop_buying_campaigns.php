@@ -1,15 +1,25 @@
 <?php
 
+/**
+ * PHP version 7
+ *
+ * @category API
+ * @package  Campaign
+ * @author   Author <gadiel.reyesdelrosario@vidoomy.com>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     https://demand.vidoomy.com/creativity
+ */
+
 @session_start();
-define('CONST',1);
+define('CONST', 1);
 
 if (file_exists('/var/www/html/login/config.php')) {
-    require('/var/www/html/login/config.php');
+    include '/var/www/html/login/config.php';
 } else {
-    require('../../config_local.php');
+    include '../../config_local.php';
 }
 
-require('../../db.php');
+require '../../db.php';
 
 $db = new SQL($dbhost, 'vidoomy_adv', $dbuser, $dbpass);
 
@@ -20,33 +30,42 @@ $time = new \DateTime();
 $time->setTimestamp($unixTime)->setTimezone($timeZone);
 
 $today = $time->format('Y-m-d');
-$yesterday = date_modify($time,'-1 day')->format('Y-m-d');
+$yesterday = date_modify($time, '-1 day')->format('Y-m-d');
 
-$sql = "SELECT
-            `vidoomy-adv`.reports.Impressions,
-            `vidoomy-adv`.campaign.id,
-            `vidoomy-adv`.campaign.name,
-            `vidoomy-adv`.campaign.deal_id, 
-            `vidoomy-adv`.campaign.type
-        FROM `vidoomy-adv`.reports
-        INNER JOIN `vidoomy-adv`.campaign
-            ON `vidoomy-adv`.reports.idCampaing = `vidoomy-adv`.campaign.id
-        WHERE `vidoomy-adv`.reports.Impressions > 0
-        AND `vidoomy-adv`.campaign.end_at > '$today'
-        AND Date = '$yesterday' AND Hour <= 6
-            AND `vidoomy-adv`.campaign.id NOT IN (
-                SELECT idCampaing FROM `vidoomy-adv`.reports
-                WHERE Date = '$today'
-                    AND Impressions > 0
-                );
-";
+$sql = <<<SQL
+SELECT
+    reports.Impressions,
+    campaign.id,
+    campaign.name,
+    campaign.deal_id,
+    campaign.type
+FROM
+    reports
+INNER JOIN
+    campaign ON reports.idCampaing = campaign.id
+WHERE
+    reports.Impressions > 0
+    AND campaign.end_at > "{$today}"
+    AND Date = "{$yesterday}"
+    AND Hour <= 6
+    AND campaign.id NOT IN (
+        SELECT
+            idCampaing
+        FROM
+            reports
+        WHERE
+            Date = "{$today}"
+            AND Impressions > 0
+    )
+GROUP BY campaign.id
+SQL;
 
 $query = $db->query($sql);
 
 $campaigns = [];
 
-if(0 < $db->num_rows($query)) {
-    while($campaign = $db->fetch_array($query)) {
+if (0 < $db->num_rows($query)) {
+    while ($campaign = $db->fetch_array($query)) {
         $campaigns[] = [
             'id' => $campaign['id'],
             'deal_id' => $campaign['deal_id'],

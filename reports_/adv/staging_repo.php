@@ -45,7 +45,7 @@
 
 		require('config.php');
 		$db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-	} elseif ($_POST['env'] == 'integration') {
+	} elseif ($_POST['env'] == 'int') {
 		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config.php');

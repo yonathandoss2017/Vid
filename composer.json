@@ -8,5 +8,7 @@
         "psr-4": {
             "App\\Report\\": "src/"
         }
+    },
+    "require-dev": {
     }
 }

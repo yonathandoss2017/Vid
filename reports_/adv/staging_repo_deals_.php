@@ -22,7 +22,7 @@
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'integration') {
+	} elseif ($_POST['env'] == 'int') {
 		$db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 		require('config_pre.php');

@@ -22,6 +22,8 @@ admin/lkqdimport/cookie_test.txt
 admin/lkqdimport/login_log.txt
 admin/lkqdimport/adserver_log.txt
 
+reports_/adv/loadcsvs/
+
 reports_/adv/druidregen/
 
 updates/PhpSpreadsheet-master
