@@ -20,6 +20,9 @@ admin/lkqdimport/cookie4.txt
 admin/lkqdimport/cookie5.txt
 admin/lkqdimport/cookie_test.txt
 admin/lkqdimport/login_log.txt
+admin/lkqdimport/cpm_blacklist/
+admin/lkqdimport/cpm_blacklist_new/
+admin/lkqdimport/cpm_blacklist_old/
 admin/lkqdimport/adserver_log.txt
 
 reports_/adv/loadcsvs/

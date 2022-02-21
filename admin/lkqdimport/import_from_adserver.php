@@ -54,7 +54,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$SpecialFill25 = array('Jamaica');
 	$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
 	$SpecialFill6 = array('Turkey');
-	$arraySpecialFillWL = array('Italy', 'Portugal');
+	$arraySpecialFillWL = array('Italy', 'Portugal', 'Germany', 'Greece');
 	
 	
 	foreach($arraySpecialFill AS $ISO => $Cntry){
