@@ -203,11 +203,11 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Creativity'
 		),
 		'creativity_id' => array(
-			'Name'	=>	"creativity.id AS Creativity",
+            'Name' => "creativity.lkqd_id AS CreativityId",
 			'SearchName'	=>	"creativity.lkqd_id",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
-			'GroupBy'		=>	"Creativity",
-			'OrderVal'		=>	"Creativity",
+			'GroupBy'		=>	"CreativityId",
+			'OrderVal'		=>	"CreativityId",
 			'InvalInner'	=> '',
 			'HeadName'		=> 'Creativity ID'
 		),
