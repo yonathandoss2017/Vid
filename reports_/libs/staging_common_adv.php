@@ -177,7 +177,7 @@ function utf8ize($mixed) {
 		),
 		'purchase_order' => array(
 			'Name'	=>	"purchase_order.name AS PurchaseOrder",
-			'SearchName'	=>	"$ReportsTable.name",
+			'SearchName'	=>	"purchase_order.name",
 			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrder",
 			'OrderVal'		=>	"PurchaseOrder",
@@ -186,7 +186,7 @@ function utf8ize($mixed) {
 		),
 		'cid' => array(
 			'Name'	=>	"purchase_order.id AS PurchaseOrderId",
-			'SearchName'	=>	"$ReportsTable.id",
+			'SearchName'	=>	"purchase_order.cid",
 			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrderId",
 			'OrderVal'		=>	"PurchaseOrderId",
@@ -195,7 +195,7 @@ function utf8ize($mixed) {
 		),
 		'creativity' => array(
 			'Name'	=>	"creativity.name AS Creativity",
-			'SearchName'	=>	"$ReportsTable.name",
+			'SearchName'	=>	"creativity.name",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
 			'OrderVal'		=>	"Creativity",
@@ -204,7 +204,7 @@ function utf8ize($mixed) {
 		),
 		'creativity_id' => array(
 			'Name'	=>	"creativity.id AS Creativity",
-			'SearchName'	=>	"$ReportsTable.id",
+			'SearchName'	=>	"creativity.id",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
 			'OrderVal'		=>	"Creativity",
