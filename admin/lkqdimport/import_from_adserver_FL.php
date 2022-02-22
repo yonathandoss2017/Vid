@@ -26,6 +26,7 @@
 	$Values = "";
 	$Nins = 0;
 	$Ni = 0;
+	$HoursArray = array();
 	
 function calcPercents($Perc , $Impressions, $Complete){
 	if($Perc == 25){
@@ -92,11 +93,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$DateDruid1 = new DateTime();
 	$DateDruid1->setTimezone(new DateTimeZone('UTC'));
-	$DateDruid1->modify("-5 hour");
+	$DateDruid1->modify("-102 hour");
 	
 	$DateDruid2 = new DateTime();
 	$DateDruid2->setTimezone(new DateTimeZone('UTC'));
-	$DateDruid2->modify("-1 hour");
+	$DateDruid2->modify("-82 hour");
 	
 	$DateD1 = $DateDruid1->format('Y-m-d H:00:00');
 	$DateD2 = $DateDruid2->format('Y-m-d H:59:59');
@@ -139,9 +140,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 //	$HourEST2 = intval(20);
 	$DateESTs1 = $DateEST1->format('Y-m-d');
 	$DateESTs2 = $DateEST2->format('Y-m-d');
-	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs1' AND Hour >= $HourEST1 AND Manual = 0 AND Player = 2";
-	$db->query($sql);
-//	echo $sql;
+	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs1' AND Hour <= 20 AND Manual = 0 AND Player = 2";
+//	$db->query($sql);
+	echo $sql;
 //	exit(0);
 	
 	foreach($result as $kres => $res){
@@ -243,276 +244,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$timeAdded = time();
 			$lastUpdate = time();
 			
-			$Min = 1.2;
-			$Max = 1.32;
-			
-			if($OriginalImpressions > 0){
-				$CurrentCPM = $Coste / $OriginalImpressions * 1000;
-			}else{
-				$CurrentCPM = 0;
-			}
-			
-			$Un = '';
-			
-			if($CurrentCPM < $Max){
-					
-				if(intval($idTag) % 2 == 0){
-					if($Hour >= 10){
-						$HourI = $Hour / 2; 
-						if($HourI >= 10){
-							$HourI = $HourI / 2; 
-						}
-					}else{
-						$HourI = $Hour;
-					}
-				}else{
-					if($Hour >= 6){
-						$HourI = $Hour / 3;
-					}else{
-						$HourI = $Hour;
-					}									
-				}
-				
-				$Coef = $Min + ($HourI / 100);
-				if($Coef > $Max){
-					$Coef = $Max;
-				}
-				
-				$Coef = $Coef / 1000;
-				
-				
-				if($OriginalImpressions > 0){
-					$VTR = $OriginalCompletedViews / $OriginalImpressions;
-					$CTR = $OriginalClicks / $OriginalImpressions;
-				
-					$Impressions = round($Coste / $Coef);
-					$CompletedViews = round($Impressions * $VTR);
-					$Clicks = round($Impressions * $CTR);
-				
-					$FirstQuartiles = calcPercents(25 , $Impressions, $CompletedViews);
-					$Midpoints = calcPercents(50 , $Impressions, $CompletedViews);
-					$ThirdQuartiles = calcPercents(75 , $Impressions, $CompletedViews);
-				}else{
-					$Impressions = 0;
-					$CompletedViews = 0;
-					$Clicks = 0;
-					
-					$FirstQuartiles = 0;
-					$Midpoints = 0;
-					$ThirdQuartiles = 0;
-				}
-			}else{
-				$Impressions = $OriginalImpressions;
-				$CompletedViews = $OriginalCompletedViews;
-				$Clicks = $OriginalClicks;
-				
-				$FirstQuartiles = $OriginalFirstQuartiles;
-				$Midpoints = $OriginalMidpoints;
-				$ThirdQuartiles = $OriginalThirdQuartiles;
-				
-				$Un = ' UNTUCHED HIGH CPM';
-			}
+			$Impressions = 0;
+			$CompletedViews = 0;
+			$Clicks = 0;
+		
+			$FirstQuartiles = 0;
+			$Midpoints = 0;
+			$ThirdQuartiles = 0;
 			
 			$formatLoads = ceil($OriginalformatLoads * 94.5 / 100);
-			
-			//if(in_array($Country, $arraySpecialFill)){
-			if(array_key_exists($Country, $arraySpecialFill)){
-				//echo "Is Country $Country - ";
-				if(!in_array($Domain, $BLDomains[$Country])){
-					if($formatLoads >= 2){
-						 
-						if(array_key_exists($Country, $SpecialFill25)){
-							//echo "$Country $Date $Hour \n";
 							
-							if(intval($idTag) % 2 == 0){
-								if($Hour >= 10){
-									$HourI = $Hour / 2; 
-									if($HourI >= 10){
-										$HourI = $HourI / 2; 
-									}
-								}else{
-									$HourI = $Hour;
-								}
-							}else{
-								if($Hour >= 6){
-									$HourI = $Hour / 3;
-								}else{
-									$HourI = $Hour;
-								}									
-							}
-							
-							$Multiplier = (13.5 - $HourI) / 100;
-							$Impressions = intval($formatLoads * $Multiplier);
-							if($Impressions < 0){
-								$Impressions = 0;
-							}
-							
-							$Revenue = $Impressions * 0.0030;
-							$Coste = $Revenue * 0.4;
-							
-							if ($idSite % 2 == 0){
-								$VTRValue = 720 - $Day + $Month + $Hour;
-							}else{
-								$VTRValue = 720 + $Day - $Hour - $Month;
-							}
-							$VTRValue = $VTRValue / 1000;
-							$CompletedViews = intval($Impressions * $VTRValue);
-							
-						}elseif(array_key_exists($Country, $SpecialFill12)){
-							if(intval($idTag) % 2 == 0){
-								if($Hour >= 10){
-									$HourI = $Hour / 2; 
-									if($HourI >= 10){
-										$HourI = $HourI / 2; 
-									}
-								}else{
-									$HourI = $Hour;
-								}
-							}else{
-								if($Hour >= 6){
-									$HourI = $Hour / 3;
-								}else{
-									$HourI = $Hour;
-								}									
-							}
-							
-							$Multiplier = (10.25 - $HourI) / 100;
-							$Impressions = intval($formatLoads * $Multiplier);
-							if($Impressions < 0){
-								$Impressions = 0;
-							}
-							
-							$Revenue = $Impressions * 0.0030;
-							$Coste = $Revenue * 0.4;
-							
-							if ($idSite % 2 == 0){
-								$VTRValue = 720 - $Day + $Month + $Hour;
-							}else{
-								$VTRValue = 720 + $Day - $Hour - $Month;
-							}
-							$VTRValue = $VTRValue / 1000;
-							$CompletedViews = intval($Impressions * $VTRValue);
-							
-						}elseif(array_key_exists($Country, $SpecialFill6)){
-							if(intval($idTag) % 2 == 0){
-								if($Hour >= 10){
-									$HourI = $Hour / 2; 
-									if($HourI >= 10){
-										$HourI = $HourI / 2; 
-									}
-								}else{
-									$HourI = $Hour;
-								}
-							}else{
-								if($Hour >= 6){
-									$HourI = $Hour / 3;
-								}else{
-									$HourI = $Hour;
-								}									
-							}
-							
-							$Multiplier = (5.25 - $HourI) / 100;
-							$Impressions = intval($formatLoads * $Multiplier);
-							if($Impressions < 0){
-								$Impressions = 0;
-							}
-							
-							$Revenue = $Impressions * 0.0030;
-							$Coste = $Revenue * 0.4;
-							
-							if ($idSite % 2 == 0){
-								$VTRValue = 720 - $Day + $Month + $Hour;
-							}else{
-								$VTRValue = 720 + $Day - $Hour - $Month;
-							}
-							$VTRValue = $VTRValue / 1000;
-							$CompletedViews = intval($Impressions * $VTRValue);
-							
-						}else{
-						
-							//echo "$formatLoads >= 2 - ";
-							if(intval($idTag) % 2 == 0){
-								if($Hour >= 10){
-									$HourI = $Hour / 2; 
-									if($HourI >= 10){
-										$HourI = $HourI / 2; 
-									}
-								}else{
-									$HourI = $Hour;
-								}
-							}else{
-								if($Hour >= 6){
-									$HourI = $Hour / 3;
-								}else{
-									$HourI = $Hour;
-								}									
-							}
-							
-							$Multiplier = (25 - $HourI) / 100;
-							$Impressions = intval($formatLoads * $Multiplier);
-							
-							$Revenue = $Impressions * 0.0030;
-							$Coste = $Revenue * 0.4;
-							
-							if ($idSite % 2 == 0){
-								$VTRValue = 720 - $Day + $Month + $Hour;
-							}else{
-								$VTRValue = 720 + $Day - $Hour - $Month;
-							}
-							$VTRValue = $VTRValue / 1000;
-							$CompletedViews = intval($Impressions * $VTRValue);
-							
-						}
-						
-						//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
-					}
-				
-				}
-				//echo "\n";
-			}			
-			
-			if(in_array($Country, $arraySpecialFillWL)){
-				if(in_array($Domain, $WLDomains[$Country])){
-					if($formatLoads >= 2){
-						
-						if(intval($idTag) % 2 == 0){
-							if($Hour >= 10){
-								$HourI = $Hour / 2; 
-								if($HourI >= 10){
-									$HourI = $HourI / 2; 
-								}
-							}else{
-								$HourI = $Hour;
-							}
-						}else{
-							if($Hour >= 6){
-								$HourI = $Hour / 3;
-							}else{
-								$HourI = $Hour;
-							}									
-						}
-						
-						$Multiplier = (18.5 - $HourI) / 100;
-						$Impressions = intval($formatLoads * $Multiplier);
-						if($Impressions < 0){
-							$Impressions = 0;
-						}
-						
-						$Revenue = $Impressions * 0.0030;
-						$Coste = $Revenue * 0.4;
-						
-						if ($idSite % 2 == 0){
-							$VTRValue = 720 - $Day + $Month + $Hour;
-						}else{
-							$VTRValue = 720 + $Day - $Hour - $Month;
-						}
-						$VTRValue = $VTRValue / 1000;
-						$CompletedViews = intval($Impressions * $VTRValue);
-						
-					}
-				}
-			}
-				
 			if(array_key_exists($Domain, $DomainsArray)){
 				$idDomain = $DomainsArray[$Domain];
 			}else{
@@ -573,6 +314,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}else{
 				$CosteEur = 0;
 			}
+			$RevenueEur = 0;
+			$CosteEur = 0;
+			$Coste = 0;
+			$Revenue = 0;
+			
+			$HoursArray[$Hour] = $Hour;
 								
 			$Values .= "$Coma ('$idUser', '$idTag', '$idSite', '$idDomain', '$idCountry', '2', '$Impressions', '$Opportunities', '$formatLoads', '$Revenue', '$RevenueEur', '$Coste', '$CosteEur', '$ExtraprimaP', '$Extraprima', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$Midpoints', '$ThirdQuartiles', '$CompletedViews', '$timeAdded', '$lastUpdate', '$Date', '$Hour')";
 			$Coma = ",";
@@ -602,8 +349,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 		$db->query($sql);
 	}
 	
+	
+	print_r($HoursArray);
 	echo "Hours Imported - LKQD\n";
-	//exit(0);
+//	exit(0);
 	$Nins = 0;
 	$Nis = 0;
 	$Coma = "";
@@ -611,6 +360,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$sql = "DELETE FROM $TablaNameResume WHERE Date = '$Date' AND Player = 2";
 	$db->query($sql);
+	//exit(0);
 	
 	$sql = "SELECT 
 		idUser, idTag, idSite, Domain, Country, Player, Date, 

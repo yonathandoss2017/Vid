@@ -18,7 +18,7 @@ if (file_exists("/var/www/html/login/vendor/autoload.php")) {
     include_once "../vendor/autoload.php";
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv\Dotenv::createMutable(__DIR__);
 $dotenv->load();
 
 $dbuser = $_ENV["LOCAL_USER"];

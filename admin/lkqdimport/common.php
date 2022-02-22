@@ -19,7 +19,8 @@ $ExtraP[7] = 30;
 $ExtraP[8] = 27;
 $ExtraP[9] = 33;
 
-function logIn($Source = 'Unknown') {
+function logIn($Source = 'Unknown')
+{
     global $sessionId, $cookie_file, $lkqdCred;
 
     file_put_contents($cookie_file, "");
@@ -155,7 +156,8 @@ function isLoggedIn(string $response): bool
         || false === strpos($response, 'Need either a basic authorization header or a session cookie to authenticate.'));
 }
 
-function getResultsHour($DateS, $Hi) {
+function getResultsHour($DateS, $Hi)
+{
     global $sessionId, $cookie_file, $post;
     $headers = array(
         'Accept: application/json, text/plain, */*',
@@ -215,7 +217,8 @@ function getResultsHour($DateS, $Hi) {
 
     return $deco;
 }
-function getResultsDay($DateS, $Offset = false) {
+function getResultsDay($DateS, $Offset = false)
+{
     global $sessionId, $cookie_file, $post;
     $headers = array(
         'Accept: application/json, text/plain, */*',
@@ -242,29 +245,30 @@ function getResultsDay($DateS, $Offset = false) {
         //"offset" => $Offset,
         "whatRequest" => "breakdown"
     );
-    
+
     $json = json_encode($post);
     $url = 'https://ui-api.lkqd.com/reports';
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     $result = curl_exec($ch);
-    curl_close($ch);  
+    curl_close($ch);
     $deco = json_decode($result);
-    
+
     return $deco;
 }
 
-function getDayDataCSV($DateFrom, $DateTo){
+function getDayDataCSV($DateFrom, $DateTo)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    $fileDownloadToken = rand(100000,999999);
-    
+    $fileDownloadToken = rand(100000, 999999);
+
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -279,7 +283,7 @@ function getDayDataCSV($DateFrom, $DateTo){
         "timezone" => "America/New_York",
         "reportType" => array("PARTNER", "SITE", "DOMAIN", "COUNTRY"),
         "environmentIds" => array(1, 2, 3, 4),
-        
+
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -323,7 +327,7 @@ function getDayDataCSV($DateFrom, $DateTo){
             "AD_STARTS",
             "VIEWABLE_IMPRESSIONS"
         ),
-        'sort' => 
+        'sort' =>
             array (
                 0 => array (
                     'field' => 'FORMAT_LOADS',
@@ -334,22 +338,22 @@ function getDayDataCSV($DateFrom, $DateTo){
         //'limit' => 10,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
+
     //print_r($post);
     //exit(0);
     $json = json_encode($post);
 
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
-    
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POST, 0);
     //curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    
+
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -364,39 +368,39 @@ function getDayDataCSV($DateFrom, $DateTo){
     //$headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch);  
+    curl_close($ch);
 
     //print_r($result);
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
-    }else{
-        
+    } else {
         //$LogFileName = "complete_month.csv";
         //file_put_contents("/var/www/html/login/admin/lkqdimport/log/$LogFileName", $result);
-        
+
         $N = 0;
         $CSVArray = array();
         $LineArray = array();
-        foreach(preg_split("/((\r?\n)|(\r\n?))/", $result) as $line){
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
             $LineArray = str_getcsv($line);
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-        
+
         //print_r($CSVArray);
         return $CSVArray;
         //exit(0);
     }
 }
 
-function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo){
+function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    $fileDownloadToken = rand(100000,999999);
-    
+    $fileDownloadToken = rand(100000, 999999);
+
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -413,7 +417,7 @@ function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo
         "timezone" => "America/New_York",
         "reportType" => array("PARTNER", "SITE", "DOMAIN", "COUNTRY"),
         "environmentIds" => array(1, 2, 3, 4),
-        
+
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -458,7 +462,7 @@ function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo
             "AD_STARTS",
             "VIEWABLE_IMPRESSIONS"
         ),
-        'sort' => 
+        'sort' =>
             array (
                 0 => array (
                     'field' => 'FORMAT_LOADS',
@@ -469,7 +473,7 @@ function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo
         //'limit' => 10,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
+
     //print_r($post);
     //exit(0);
 
@@ -477,16 +481,16 @@ function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo
 
     //$url = 'https://ui-api.lkqd.com/reports?definition=' . urlencode($json);
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
-    
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POST, 0);
     //curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    
+
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -501,36 +505,36 @@ function getHourDataCSVSomeTags($STags, $DateFrom, $DateTo, int $HFrom, int $HTo
     //$headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch);  
+    curl_close($ch);
 
     //print_r($result);
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
-    }else{
-    
+    } else {
         $N = 0;
         $CSVArray = array();
         $LineArray = array();
-        foreach(preg_split("/((\r?\n)|(\r\n?))/", $result) as $line){
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
             $LineArray = str_getcsv($line);
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-        
+
         //print_r($CSVArray);
         return $CSVArray;
         //exit(0);
     }
 }
 
-function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
+function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    $fileDownloadToken = rand(100000,999999);
-    
+    $fileDownloadToken = rand(100000, 999999);
+
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -547,7 +551,7 @@ function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
         "timezone" => "America/New_York",
         "reportType" => array("PARTNER", "SITE", "DOMAIN", "COUNTRY"),
         "environmentIds" => array(1, 2, 3, 4),
-        
+
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -591,7 +595,7 @@ function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
             "AD_STARTS",
             "VIEWABLE_IMPRESSIONS"
         ),
-        'sort' => 
+        'sort' =>
             array (
                 0 => array (
                     'field' => 'FORMAT_LOADS',
@@ -602,7 +606,7 @@ function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
         //'limit' => 10,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
+
     //print_r($post);
     //exit(0);
 
@@ -610,16 +614,16 @@ function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
 
     //$url = 'https://ui-api.lkqd.com/reports?definition=' . urlencode($json);
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
-    
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POST, 0);
     //curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    
+
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -634,38 +638,38 @@ function getHourDataCSV($DateFrom, $DateTo, int $HFrom, int $HTo){
     //$headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch);  
+    curl_close($ch);
 
     //print_r($result);
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
-    }else{
-    
+    } else {
         $N = 0;
         $CSVArray = array();
         $LineArray = array();
-        foreach(preg_split("/((\r?\n)|(\r\n?))/", $result) as $line){
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
             $LineArray = str_getcsv($line);
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-        
+
         //print_r($CSVArray);
         return $CSVArray;
         //exit(0);
     }
 }
 
-function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
+function getDateDemandReportCSV($Date, int $HFrom, int $HTo)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    $fileDownloadToken = rand(100000,999999);
-    
+    $fileDownloadToken = rand(100000, 999999);
+
     $HTo = $HTo - 1;
-    
+
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -682,7 +686,7 @@ function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
         "timezone" => "America/New_York",
         "reportType" => array("TAG","DOMAIN"),
         "environmentIds" => array(1, 2, 3, 4),
-        
+
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -712,7 +716,7 @@ function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
             ),
         ),
         "metrics" => array("REQUESTS","IMPRESSIONS"),
-        'sort' => 
+        'sort' =>
             array (
                 0 => array (
                     'field' => 'REQUESTS',
@@ -723,19 +727,19 @@ function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
+
     $json = json_encode($post);
-        
+
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
 
-    $ch = curl_init();	
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-    
+
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -750,34 +754,33 @@ function getDateDemandReportCSV($Date, int $HFrom, int $HTo){
     $headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
         return false;
     }
     curl_close($ch);
-    
+
     //echo $result;
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
-    }else{
-    
+    } else {
         $N = 0;
         $CSVArray = array();
         $LineArray = array();
-        foreach(preg_split("/((\r?\n)|(\r\n?))/", $result) as $line){
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
             $LineArray = str_getcsv($line);
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-        
+
         return $CSVArray;
-        
     }
 }
 
-function getSourcesByDealId(string $dealId) {
+function getSourcesByDealId(string $dealId)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
 
@@ -812,17 +815,18 @@ function getSourcesByDealId(string $dealId) {
     }
     curl_close($ch);
     return $result;
-    if(substr($result, 0, 4) == 'HTTP'){
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
     } else {
         return $result;
     }
 }
 
-function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $endDate) {
+function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $endDate)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    
+
     $post = [
         "dateRangeType" => "CUSTOM",
         "endDate" => $endDate,
@@ -892,19 +896,19 @@ function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $e
         "uuid" => $uuid,
         "whatRequest" => "breakdown",
     ];
-    
+
     $json = json_encode($post);
 
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
 
-    $ch = curl_init();	
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-    
+
     $headers = [];
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -919,45 +923,46 @@ function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $e
     $headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
         return false;
     }
     curl_close($ch);
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
     } else {
         return $result;
     }
 }
 
-function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo){
+function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
-    $fileDownloadToken = rand(100000,999999);
-    
+    $fileDownloadToken = rand(100000, 999999);
+
     //$HTo = $HTo - 1;
-    
-    if(is_array($DemandTags)){
-        if(count($DemandTags) == 0){
+
+    if (is_array($DemandTags)) {
+        if (count($DemandTags) == 0) {
             echo "No demand tags 1";
             exit(0);
         }
-    }else{
+    } else {
         echo "No demand tags 2";
         exit(0);
     }
-    
+
     $FiltersArray = array();
-    foreach($DemandTags as $DT){
+    foreach ($DemandTags as $DT) {
         $FiltersArray[] = array(
             'matchType' => 'id',
             'value' => $DT
         );
     }
-    
+
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -974,7 +979,7 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo){
         "timezone" => "UTC",
         "reportType" => array("TAG"),
         "environmentIds" => array(1, 2, 3, 4),
-        
+
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -1010,7 +1015,7 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo){
         ),
 
         "metrics" => array("REQUESTS", "IMPRESSIONS", "VIEWABLE_IMPRESSIONS", "COMPLETED_VIEWS", "CLICKS", "REVENUE", "FIRST_QUARTILES", "MIDPOINTS", "THIRD_QUARTILES"),
-        'sort' => 
+        'sort' =>
             array (
                 0 => array (
                     'field' => 'REQUESTS',
@@ -1021,21 +1026,21 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo){
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
+
     //print_r($post);
-    
+
     $json = json_encode($post);
-        
+
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
 
-    $ch = curl_init();	
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-    
+
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -1050,118 +1055,142 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo){
     $headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
     //echo $result;
-    
+
     if (curl_errno($ch)) {
         return false;
     }
     curl_close($ch);
-    
+
     //echo $result;
-    
-    if(substr($result, 0, 4) == 'HTTP'){
+
+    if (substr($result, 0, 4) == 'HTTP') {
         return false;
-    }else{
-    
+    } else {
         $N = 0;
         $CSVArray = array();
         $LineArray = array();
-        foreach(preg_split("/((\r?\n)|(\r\n?))/", $result) as $line){
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
             $LineArray = str_getcsv($line);
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-        
+
         return $CSVArray;
-        
     }
 }
 
-function myOperator($a, $b, $char) {
-    switch($char) {
-        case '>': 
-            if($a > $b){ return true; } else { return false; }
-        case '<': 
-            if($a < $b){ return true; } else { return false; }
+function myOperator($a, $b, $char)
+{
+    switch ($char) {
+        case '>':
+            if ($a > $b) {
+                return true;
+            } else {
+                return false;
+            }
+        case '<':
+            if ($a < $b) {
+                return true;
+            } else {
+                return false;
+            }
         case '>=':
-            if($a >= $b){ return true; } else { return false; }
+            if ($a >= $b) {
+                return true;
+            } else {
+                return false;
+            }
         case '<=':
-            if($a <= $b){ return true; } else { return false; }
+            if ($a <= $b) {
+                return true;
+            } else {
+                return false;
+            }
     }
-}	
+}
 
-function takeMoney($Value){
-    $Value = str_replace('$' , '', $Value);
+function takeMoney($Value)
+{
+    $Value = str_replace('$', '', $Value);
     return $Value;
 }
 
-function takeComa($Value){
-    $Value = str_replace(',' , '', $Value);
+function takeComa($Value)
+{
+    $Value = str_replace(',', '', $Value);
     return $Value;
 }
 
-function stopUpdate(){
+function stopUpdate()
+{
     $myfile = fopen("/var/www/html/login/admin/lkqdimport/stop", "w");
     fwrite($myfile, time());
     fclose($myfile);
     exit(0);
 }
 
-function lockTable($Table){
+function lockTable($Table)
+{
     global $db;
     $sql = "UPDATE lock_tables SET Status = 1 WHERE TableName = '$Table' LIMIT 1";
     $db->query($sql);
 }
 
-function unlockTable($Table){
+function unlockTable($Table)
+{
     global $db;
     $sql = "UPDATE lock_tables SET Status = 0 WHERE TableName = '$Table' LIMIT 1";
     $db->query($sql);
 }
 
-function isLocked($Table){
+function isLocked($Table)
+{
     global $db;
     $sql = "SELECT Status FROM lock_tables WHERE TableName = '$Table' LIMIT 1";
     $db->query($sql);
 }
 
-function getTableName($Date){
+function getTableName($Date)
+{
     $arD = explode('-', $Date);
     return 'reports' . $arD[0] . $arD[1];
 }
 
-function getTableNameResume($Date){
+function getTableNameResume($Date)
+{
     $arD = explode('-', $Date);
     return 'reports_resume' . $arD[0] . $arD[1];
 }
 
-function checkTablesByDates($DateFrom, $DateTo){
+function checkTablesByDates($DateFrom, $DateTo)
+{
     global $db;
-    
+
     $Dates[0] = $DateFrom;
     $Dates[1] = $DateTo;
-    
-    foreach($Dates as $Date){
+
+    foreach ($Dates as $Date) {
         $TableName = getTableName($Date);
         $TableNameResume = getTableNameResume($Date);
-        
+
         $sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" . $db->dbname . "' AND table_name = '" . $TableName . "' LIMIT 1";
         $chck = $db->getOne($sql);
-        if($chck == 0){
+        if ($chck == 0) {
             $TableStructure = file_get_contents('/var/www/html/login/admin/lkqdimport/reportstable.sql');
             $Table = str_replace('{{tablename}}', $TableName, $TableStructure);
-            
+
             $db->query($Table);
         }
-        
+
         $sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" . $db->dbname . "' AND table_name = '" . $TableNameResume . "' LIMIT 1";
         $chck = $db->getOne($sql);
-        if($chck == 0){
+        if ($chck == 0) {
             $TableResumeStructure = file_get_contents('/var/www/html/login/admin/lkqdimport/reportstableresume.sql');
             $Table = str_replace('{{tablename}}', $TableNameResume, $TableResumeStructure);
-            
+
             $db->query($Table);
         }
     }
@@ -1170,9 +1199,9 @@ function checkTablesByDates($DateFrom, $DateTo){
 function getSupplyPartner($supplyPartnerName)
 {
     global $cookie_file;
-    
+
     $URL = 'https://api.lkqd.com/supply/partners';
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1181,7 +1210,7 @@ function getSupplyPartner($supplyPartnerName)
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1190,7 +1219,7 @@ function getSupplyPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $Data = json_decode($result, true);
 
@@ -1204,16 +1233,17 @@ function getSupplyPartner($supplyPartnerName)
 
     if ($supplyPartner) {
         return array_column($supplyPartner, "supplyPartnerId")[0];
-    }else{
+    } else {
         return "supply-partner-not-found";
     }
 }
 
-function getCreativity(int $partnerId, string $name) {
+function getCreativity(int $partnerId, string $name)
+{
     global $cookie_file;
-    
+
     $URL = "https://api.lkqd.com/demand/creatives?demandPartnerId={$partnerId}";
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1222,7 +1252,7 @@ function getCreativity(int $partnerId, string $name) {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1245,20 +1275,21 @@ function getCreativity(int $partnerId, string $name) {
         http_response_code(404);
         return $creativityNotFoundMessage;
     }
-    
+
     $creative = array_filter($data, function ($creativity) use ($partnerId, $name) {
         return $creativity["name"] === $name && $creativity["demandPartnerId"] === $partnerId;
     });
 
     if ($creative) {
         return array_column($creative, "creativeId")[0];
-    }else{
+    } else {
         http_response_code(404);
         return $creativityNotFoundMessage;
     }
 }
 
-function updateCreativity(int $partnerId, int $creativityId, string $name, string $type) {
+function updateCreativity(int $partnerId, int $creativityId, string $name, string $type)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/demand/creatives/' . $creativityId;
@@ -1270,7 +1301,7 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = [
         'Authority: ui-api.lkqd.com',
         'Method: PUT',
@@ -1289,7 +1320,7 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -1307,14 +1338,15 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
 
     $data = json_decode($result, false);
 
-    if(!empty($data->errors)){
+    if (!empty($data->errors)) {
         return $data->errors;
     }
 
     return true;
 }
 
-function newCreativity(int $partnerId, string $type, string $name) {
+function newCreativity(int $partnerId, string $type, string $name)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/demand/creatives';
@@ -1326,7 +1358,7 @@ function newCreativity(int $partnerId, string $type, string $name) {
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = [
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1335,7 +1367,7 @@ function newCreativity(int $partnerId, string $type, string $name) {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1362,7 +1394,8 @@ function newCreativity(int $partnerId, string $type, string $name) {
     return $response->creativeId;
 }
 
-function uploadCreativityVideo(int $creativityId, $file) {
+function uploadCreativityVideo(int $creativityId, $file)
+{
     global $cookie_file;
 
     $URL = "https://api.lkqd.com/demand/creatives/{$creativityId}/upload-video";
@@ -1410,9 +1443,9 @@ function uploadCreativityVideo(int $creativityId, $file) {
 function getSupplySource(int $partnerId, string $name)
 {
     global $cookie_file;
-    
+
     $URL = 'https://api.lkqd.com/supply/sources?includes=siteId,siteName,partnerId,status';
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1421,7 +1454,7 @@ function getSupplySource(int $partnerId, string $name)
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1430,17 +1463,17 @@ function getSupplySource(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $Data = json_decode($result, true);
-    
+
     $supplySource = array_filter($Data, function ($source) use ($partnerId, $name) {
         return $source["siteName"] === $name && $source["partnerId"] === $partnerId;
     });
 
     if ($supplySource) {
         return array_column($supplySource, "siteId")[0];
-    }else{
+    } else {
         return "supply-source-not-found";
     }
 }
@@ -1448,9 +1481,9 @@ function getSupplySource(int $partnerId, string $name)
 function getDemandPartner($supplyPartnerName)
 {
     global $cookie_file;
-    
+
     $URL = 'https://ui-api.lkqd.com/demand/tree';
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1460,7 +1493,7 @@ function getDemandPartner($supplyPartnerName)
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1477,14 +1510,14 @@ function getDemandPartner($supplyPartnerName)
     }
 
     $data = json_decode($result, true);
-    
+
     $demandPartner = array_filter($data["data"], function ($partner) use ($supplyPartnerName) {
         return $partner["sourceName"] === $supplyPartnerName;
     });
 
     if ($demandPartner) {
         return array_column($demandPartner, "sourceId")[0];
-    }else{
+    } else {
         return "demand-partner-not-found";
     }
 }
@@ -1495,9 +1528,9 @@ function getDemandPartner($supplyPartnerName)
 function getTagCreativityId(int $tagId): string
 {
     global $cookie_file;
-    
+
     $URL = sprintf('https://api.lkqd.com/demand/creatives/tag-associations?tagId=%d', $tagId);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1507,7 +1540,7 @@ function getTagCreativityId(int $tagId): string
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1518,9 +1551,11 @@ function getTagCreativityId(int $tagId): string
     $result = curl_exec($ch);
     curl_close($ch);
 
+    $noCreativityFoundMessage = 'No creativity found with the given tag id!';
+
     if (false !== strpos($result, 'Forbidden') || false !== strpos($result, 'tagId must be specified')) {
         http_response_code(404);
-        return 'No creativity found with the given tag id!';
+        return $noCreativityFoundMessage;
     }
 
     if (false !== strpos($result, 'authorization')) {
@@ -1535,6 +1570,10 @@ function getTagCreativityId(int $tagId): string
         return $response['message'];
     }
 
+    if (empty($response)) {
+        return $noCreativityFoundMessage;
+    }
+
     http_response_code(200);
     return $response[0]['creativeId'];
 }
@@ -1542,9 +1581,9 @@ function getTagCreativityId(int $tagId): string
 function getAgenciesData(): array
 {
     global $cookie_file;
-    
+
     $URL = 'https://ui-api.lkqd.com/demand/tree';
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1554,7 +1593,7 @@ function getAgenciesData(): array
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1578,9 +1617,9 @@ function getAgenciesData(): array
 function getOrder(int $partnerId, string $name)
 {
     global $cookie_file;
-    
+
     $URL = "https://api.lkqd.com/demand/orders?demandPartnerId={$partnerId}";
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1589,7 +1628,7 @@ function getOrder(int $partnerId, string $name)
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1598,26 +1637,27 @@ function getOrder(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $data = json_decode($result, true);
 
     if (!empty($data['errorId'])) {
         return $data['errorId'];
     }
-    
+
     $partnerOrder = array_filter($data, function ($order) use ($partnerId, $name) {
         return $order["demandPartnerId"] === $partnerId && $order["name"] === $name;
     });
 
     if ($partnerOrder) {
         return array_column($partnerOrder, "orderId")[0];
-    }else{
+    } else {
         return "order-not-found";
     }
 }
 
-function newOrder(int $sourceId, string $name) {
+function newOrder(int $sourceId, string $name)
+{
     global $cookie_file;
 
     $URL = 'https://ui-api.lkqd.com/orders';
@@ -1630,7 +1670,7 @@ function newOrder(int $sourceId, string $name) {
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = [
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1640,7 +1680,7 @@ function newOrder(int $sourceId, string $name) {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1660,14 +1700,15 @@ function newOrder(int $sourceId, string $name) {
 
     $data = json_decode($result);
 
-    if(!empty($data->errors)){
+    if (!empty($data->errors)) {
         return $data->errors;
     }
 
     return $data->data->orderId;
 }
 
-function updateOrder(int $orderId, int $sourceId, string $name) {
+function updateOrder(int $orderId, int $sourceId, string $name)
+{
     global $cookie_file;
 
     $URL = 'https://ui-api.lkqd.com/orders/' . $orderId;
@@ -1680,7 +1721,7 @@ function updateOrder(int $orderId, int $sourceId, string $name) {
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = [
         'Authority: ui-api.lkqd.com',
         'Method: PUT',
@@ -1700,7 +1741,7 @@ function updateOrder(int $orderId, int $sourceId, string $name) {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -1718,14 +1759,15 @@ function updateOrder(int $orderId, int $sourceId, string $name) {
 
     $data = json_decode($result, false);
 
-    if(!empty($data->errors)){
+    if (!empty($data->errors)) {
         return $data->errors;
     }
 
     return true;
 }
 
-function newDemandPartner(string $name) {
+function newDemandPartner(string $name)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/demand/partners';
@@ -1751,7 +1793,7 @@ function newDemandPartner(string $name) {
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1760,7 +1802,7 @@ function newDemandPartner(string $name) {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1771,10 +1813,10 @@ function newDemandPartner(string $name) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $response = json_decode($result);
-    
+
     if (array_key_exists('demandPartnerId', $response)) {
         return $response->demandPartnerId;
     }
@@ -1782,7 +1824,8 @@ function newDemandPartner(string $name) {
     return $response->errorId;
 }
 
-function updateDemandPartner(int $demandPartnerId, string $name) {
+function updateDemandPartner(int $demandPartnerId, string $name)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/demand/partners/' . $demandPartnerId;
@@ -1797,7 +1840,7 @@ function updateDemandPartner(int $demandPartnerId, string $name) {
     ];
 
     $payloadJson = json_encode($payload);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -1810,7 +1853,7 @@ function updateDemandPartner(int $demandPartnerId, string $name) {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
@@ -1823,7 +1866,7 @@ function updateDemandPartner(int $demandPartnerId, string $name) {
 
     $data = json_decode($result, false);
 
-    if(!empty($data) && property_exists($data, 'errorId')){
+    if (!empty($data) && property_exists($data, 'errorId')) {
         return $data->errorId;
     }
 
@@ -1849,7 +1892,7 @@ function getTagInfo(int $tagId): array
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
@@ -1877,7 +1920,8 @@ function getTagInfo(int $tagId): array
 /**
  * Fuction to get deal info from LKQD.
  */
-function getDealInfo(int $dealId): array {
+function getDealInfo(int $dealId): array
+{
     global $cookie_file;
 
     $url = "https://ui-api.lkqd.com/deals/" . $dealId;
@@ -1895,7 +1939,7 @@ function getDealInfo(int $dealId): array {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
@@ -1921,7 +1965,7 @@ function getDealInfo(int $dealId): array {
 
 /**
  * Function to update demand tag status on LKQD
- * 
+ *
  * @param int $demandTagId
  * @param int $status active or inactive
  */
@@ -1946,7 +1990,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -1974,7 +2018,8 @@ function updateDemandTagStatus(int $demandTagId, string $status)
 /**
  * Function to get the deal name from the report server DB
  */
-function getDealName(int $dealId): string {
+function getDealName(int $dealId): string
+{
     global $db;
 
     $sql = <<<SQL
@@ -1999,7 +2044,8 @@ function isValidDate(string $date): bool
 /**
  * Function that returns date range type as needed for LKQD
  */
-function getDateRangeType(string $startDate, string $endDate): string {
+function getDateRangeType(string $startDate, string $endDate): string
+{
 
     if (!isValidDate($startDate) || !isValidDate($endDate)) {
         return 'No valid dates!';
@@ -2022,15 +2068,18 @@ function getDateRangeType(string $startDate, string $endDate): string {
     $lastDayOfLastMonth->modify('last day of last month');
     $diff = $end->diff($start);
 
-    if ($start->format('Y-m-d') === $today->format('Y-m-d') &&
+    if (
+        $start->format('Y-m-d') === $today->format('Y-m-d') &&
         $end->format('Y-m-d') === $today->format('Y-m-d')
     ) {
         return 'TODAY';
-    } elseif ($start->format('Y-m-d') === $yesterday->format('Y-m-d') &&
+    } elseif (
+        $start->format('Y-m-d') === $yesterday->format('Y-m-d') &&
         $end->format('Y-m-d') === $yesterday->format('Y-m-d')
     ) {
         return 'YESTERDAY';
-    } elseif ($start->format('Y-m-d') === $dayBeforeYesterday->format('Y-m-d') &&
+    } elseif (
+        $start->format('Y-m-d') === $dayBeforeYesterday->format('Y-m-d') &&
         $end->format('Y-m-d') === $dayBeforeYesterday->format('Y-m-d')
     ) {
         return 'DAY_BEFORE_YESTERDAY';
@@ -2040,11 +2089,13 @@ function getDateRangeType(string $startDate, string $endDate): string {
         return '7_DAYS_BEFORE_TODAY';
     } elseif ($end->format('Y-m-d') === $today->format('Y-m-d') && $diff->days === 29) {
         return 'PAST_30_DAYS';
-    } elseif ($start->format('Y-m-d') === $firstDayOfThisMonth->format('Y-m-d') &&
+    } elseif (
+        $start->format('Y-m-d') === $firstDayOfThisMonth->format('Y-m-d') &&
         $end->format('Y-m-d') === $lastDayOfThisMonth->format('Y-m-d')
     ) {
         return 'THIS_MONTH';
-    } elseif ($start->format('Y-m-d') === $firstDayOfLastMonth->format('Y-m-d') &&
+    } elseif (
+        $start->format('Y-m-d') === $firstDayOfLastMonth->format('Y-m-d') &&
         $end->format('Y-m-d') === $lastDayOfLastMonth->format('Y-m-d')
     ) {
         return 'LAST_MONTH';
@@ -2055,10 +2106,11 @@ function getDateRangeType(string $startDate, string $endDate): string {
 
 /**
  * Function to get top ten domains of a deal on LKQD
- * 
+ *
  * @return array of top 10 domains of a deal
  */
-function getTopDealDomains(int $dealId, string $startDate, string $endDate): array {
+function getTopDealDomains(int $dealId, string $startDate, string $endDate): array
+{
     global $cookie_file;
     $uuid = gen_uuid();
 
@@ -2152,7 +2204,7 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
 
     $payloadJson = json_encode($payload);
 
-    $ch = curl_init();	
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_POST, 1);
@@ -2161,7 +2213,7 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate, br');
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
+
     $result = curl_exec($ch);
     curl_close($ch);
 
@@ -2169,7 +2221,7 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
         http_response_code(403);
         return [UNAUTHORIZED_PREFIX];
     }
-    
+
     $data = json_decode($result);
 
     if (!empty($data->errors)) {
@@ -2181,15 +2233,16 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
     $topTenDomains = array_map(function ($domain) {
         return $domain->dimension2Name;
     }, $topTenDomainsArray);
-    
+
     return $topTenDomains;
 }
 
-function getDeal(int $orderId, string $name) {
+function getDeal(int $orderId, string $name)
+{
     global $cookie_file;
-    
+
     $URL = 'https://ui-api.lkqd.com/demand/tree';
-    
+
     $Headers = [
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -2199,7 +2252,7 @@ function getDeal(int $orderId, string $name) {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -2224,7 +2277,7 @@ function getDeal(int $orderId, string $name) {
             foreach ($order["deals"] as $deal) {
                 if ($order["orderId"] === $orderId && $deal["dealName"] === $name) {
                     $dealId = $deal["dealId"];
-                } 
+                }
             }
         }
     }
@@ -2235,11 +2288,12 @@ function getDeal(int $orderId, string $name) {
 /**
  * Function for getting a demand tag id from LKQD
  */
-function getDemandTagId(int $dealId, string $name): string {
+function getDemandTagId(int $dealId, string $name): string
+{
     global $cookie_file;
-    
+
     $URL = 'https://ui-api.lkqd.com/demand/tree';
-    
+
     $Headers = [
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -2249,7 +2303,7 @@ function getDemandTagId(int $dealId, string $name): string {
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -2433,7 +2487,7 @@ function newOrUpdateDeal(
         'Sec-Fetch-Site: same-site',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -2464,7 +2518,8 @@ function newOrUpdateDeal(
 /**
  * Function to select propvided sources to a demand tag and unselect the rest of the sources.
  */
-function keepDemandTagsSelected(array $tags): bool {
+function keepDemandTagsSelected(array $tags): bool
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
@@ -2516,7 +2571,7 @@ function keepDemandTagsSelected(array $tags): bool {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
@@ -2529,14 +2584,15 @@ function keepDemandTagsSelected(array $tags): bool {
 
     $data = json_decode($result, false);
 
-    if(!empty($data) && property_exists($data, 'errorId')){
+    if (!empty($data) && property_exists($data, 'errorId')) {
         return $data->errorId;
     }
 
     return true;
 }
 
-function unselectDemandTags(array $tags) {
+function unselectDemandTags(array $tags)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/supply-tags/update-db-associations';
@@ -2571,7 +2627,7 @@ function unselectDemandTags(array $tags) {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
@@ -2584,7 +2640,7 @@ function unselectDemandTags(array $tags) {
 
     $data = json_decode($result, false);
 
-    if(!empty($data) && property_exists($data, 'errorId')){
+    if (!empty($data) && property_exists($data, 'errorId')) {
         http_response_code(403);
         return $data->errorId;
     }
@@ -2593,9 +2649,10 @@ function unselectDemandTags(array $tags) {
     return true;
 }
 
-function newDomain($name) {
+function newDomain($name)
+{
     global $db, $db2;
-    
+
     $sql = "SELECT * FROM reports_domain_names WHERE Name = '{$name}' LIMIT 1";
     $domainId = intval($db->getOne($sql));
 
@@ -2622,7 +2679,8 @@ function newDomain($name) {
 /**
  * Function to retrieve from LKQD the sources
  */
-function getSources() {
+function getSources()
+{
     global $cookie_file;
 
     $sourcesUrl = "https://api.lkqd.com/supply/sources/fetch";
@@ -2656,7 +2714,7 @@ function getSources() {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $sourcesUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $sourcePayloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -2671,14 +2729,15 @@ function getSources() {
     if (!empty($response->errorId)) {
         return $response->errorId;
     }
-    
+
     return $response;
 }
 
 /**
  * Function to build array of additions sources as LKQD is expecting.
  */
-function getAdditions(array $sources): array {
+function getAdditions(array $sources): array
+{
     $additions = [];
     foreach ($sources as $source) {
         $additions[] = [
@@ -2694,10 +2753,11 @@ function getAdditions(array $sources): array {
 /**
  * Function to build array of tracking pixels as LKQD is expecting.
  */
-function getTrackingPixels(string $trackingPixels): array {
+function getTrackingPixels(string $trackingPixels): array
+{
     $pixels = [];
     $trackingPixelsDecoded = json_decode($trackingPixels, true);
-    foreach($trackingPixelsDecoded as $pixel) {
+    foreach ($trackingPixelsDecoded as $pixel) {
         $pixels[] = [
             "eventId" => $pixel['event_id'],
             "pixelUrl" => $pixel['pixel_url'],
@@ -2712,9 +2772,10 @@ function getTrackingPixels(string $trackingPixels): array {
 /**
  * Fuction to build array of add associations as LKQD is expecting.
  */
-function getAddAssociations(array $sources, int $demandTagId): array {
+function getAddAssociations(array $sources, int $demandTagId): array
+{
     $associations = [];
-    foreach($sources as $source) {
+    foreach ($sources as $source) {
         $associations[] = [
             "siteId" => $source->siteId,
             "tagId" => $demandTagId,
@@ -2728,7 +2789,8 @@ function getAddAssociations(array $sources, int $demandTagId): array {
 /**
  * Function to build array of environments as LKQD is expecting.
  */
-function getEnvironments(array $environments): array {
+function getEnvironments(array $environments): array
+{
     $envs = [];
     foreach ($environments as $environment) {
         $envs[] = ["id" => $environment];
@@ -2740,7 +2802,8 @@ function getEnvironments(array $environments): array {
 /**
  * Function to build string encoded as LKQD is expecting.
  */
-function getGeoTargetingData(array $countries): string {
+function getGeoTargetingData(array $countries): string
+{
     $children = [];
     foreach ($countries as $country) {
         $children[] = [
@@ -2831,7 +2894,7 @@ function updateCreative(
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -2873,7 +2936,7 @@ function updateCreative(
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -2894,7 +2957,7 @@ function updateCreative(
 }
 
 /**
- * function to set inactive when creating a new tag to avoid error on creating a tag. 
+ * function to set inactive when creating a new tag to avoid error on creating a tag.
  */
 function getDemandTagStatus(int $demandTagId, $status): string
 {
@@ -3333,7 +3396,8 @@ function newDemandTag(
     return $demandTagId;
 }
 
-function newSupplyPartner($SPName) {
+function newSupplyPartner($SPName)
+{
     global $cookie_file;
 
     $URL = 'https://api.lkqd.com/supply/partners';
@@ -3398,20 +3462,21 @@ function newSupplyPartner($SPName) {
 }
 
 
-function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug = false){
+function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug = false)
+{
     global $cookie_file;
     //$debug = true;
-    
-    if($Env == 1){
+
+    if ($Env == 1) {
         $environmentId = 3;
         //$URL = "https://api.lkqd.com/supply-tags/find-by-id?siteId=909242";
         $URL = "https://api.lkqd.com/supply-tags/find-by-id?siteId=1132867";
-    }else{
+    } else {
         $environmentId = 1;
         //$URL = "https://api.lkqd.com/supply-tags/find-by-id?siteId=909244";
         $URL = "https://api.lkqd.com/supply-tags/find-by-id?siteId=1132868";
     }
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3420,44 +3485,44 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-        
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
+    curl_close($ch);
+
     $Data = json_decode($result);
     //print_r($Data);
     //exit(0);
-    if(property_exists($Data, 'errorId')){
+    if (property_exists($Data, 'errorId')) {
         return $Data->errorId;
     }
-    
+
     $tagSiteAssociations = array();
-    
-    foreach($Data->associations as $D){
-        if(property_exists($D, 'priority')){
+
+    foreach ($Data->associations as $D) {
+        if (property_exists($D, 'priority')) {
             $tagSiteAssociations[] = array(
                 'tagId' => $D->tagId,
                 'priority' => $D->priority
             );
-        }else{
+        } else {
             $tagSiteAssociations[] = array(
                 'tagId' => $D->tagId,
                 'priority' => null
             );
         }
     }
-    
+
     $URL = 'https://api.lkqd.com/supply/sources';
-    
-    $LastU = date('Y-m-d\TH:i:s.') . rand(100,999) . 'Z';
+
+    $LastU = date('Y-m-d\TH:i:s.') . rand(100, 999) . 'Z';
 
     $RequestPayload = array(
         "domain" => null,
@@ -3515,11 +3580,11 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
         "cpmFloorDemand" => 1.5,
         "maxDesktopAsyncSlots" => null
     );
-    
+
     //print_r($RequestPayload);
-    
+
     $RequestPayloadJson = json_encode($RequestPayload);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3528,8 +3593,8 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
-    
+
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -3540,28 +3605,29 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $Data = json_decode($result);
     //print_r($Data);
-    
-    if(array_key_exists('siteId', $Data)){
+
+    if (array_key_exists('siteId', $Data)) {
         return $Data->siteId;
-    }else{
-        if($debug){
+    } else {
+        if ($debug) {
             return $result;
-        }else{
+        } else {
             return false;
         }
     }
 }
 
 
-function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = false){
+function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = false)
+{
     global $cookie_file;
-    
+
     $URL = 'https://api.lkqd.com/supply/sources/' . $sID;
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3570,26 +3636,26 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
-    $Data = json_decode($result, FALSE);
+    curl_close($ch);
+
+    $Data = json_decode($result, false);
     //print_r($Data);
     //exit(0);
-    if(property_exists($Data, 'errorId')){
+    if (property_exists($Data, 'errorId')) {
         return $Data->errorId;
     }
-    
+
     //if()
     $SPId = $Data->partnerId;
     $Env = $Data->environmentId;
@@ -3597,12 +3663,12 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
     $cpmFloorDemand = $Data->cpmFloorDemand;
     $siteCostType = $Data->siteCostType;
     //$siteCost = $Data->siteCost;
-    if($Name != ''){
+    if ($Name != '') {
         $siteName = $Name;
-    }else{
+    } else {
         $siteName = $Data->siteName;
     }
-    
+
     $tagSiteAssociations = (object) $Data->tagSiteAssociations;
     //var_dump($tagSiteAssociations);
 
@@ -3610,26 +3676,26 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
+    curl_close($ch);
+
     $Data = json_decode($result);
     //print_r($Data);
     $lkqdPlatformConnection = $Data->lkqdPlatformConnection;
     //exit(0);
 
-    
-    
+
+
     $URL = 'https://api.lkqd.com/supply/sources';
-    
-    $LastU = date('Y-m-d\TH:i:s.') . rand(100,999) . 'Z';
+
+    $LastU = date('Y-m-d\TH:i:s.') . rand(100, 999) . 'Z';
 
     $RequestPayload = array(
         "siteIds" => array($sID),
@@ -3699,11 +3765,11 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
         "publisherDirect" => false,
         "lkqdPlatformConnection" => "$lkqdPlatformConnection"
     );
-    
+
     //print_r($RequestPayload);
-    
+
     $RequestPayloadJson = json_encode($RequestPayload);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3712,8 +3778,8 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
-    
+
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -3725,25 +3791,25 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
+    curl_close($ch);
 
     $Data = json_decode($result);
     //print_r($Data);
-    
-    
-    if($debug){
+
+
+    if ($debug) {
         return $result;
-    }else{
+    } else {
         return true;
     }
-    
 }
 
-function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
+function specialUpdateSupplySource($sID, $NewFloor, $debug = false)
+{
     global $cookie_file;
-    
+
     $URL = 'https://api.lkqd.com/supply/sources/' . $sID;
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3752,26 +3818,26 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
-    $Data = json_decode($result, FALSE);
+    curl_close($ch);
+
+    $Data = json_decode($result, false);
     //print_r($Data);
     //exit(0);
-    if(property_exists($Data, 'errorId')){
+    if (property_exists($Data, 'errorId')) {
         return $Data->errorId;
     }
-    
+
     //if()
     $SPId = $Data->partnerId;
     $Env = $Data->environmentId;
@@ -3782,8 +3848,8 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
     $siteCost = $Data->siteCost;
     $sessionMaxImpressions = $Data->sessionMaxImpressions;
     $siteName = $Data->siteName;
-    
-    
+
+
     $tagSiteAssociations = (object) $Data->tagSiteAssociations;
     //var_dump($tagSiteAssociations);
 
@@ -3791,26 +3857,26 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
+    curl_close($ch);
+
     $Data = json_decode($result);
     //print_r($Data);
     $lkqdPlatformConnection = $Data->lkqdPlatformConnection;
     //exit(0);
 
-    
-    
+
+
     $URL = 'https://api.lkqd.com/supply/sources';
-    
-    $LastU = date('Y-m-d\TH:i:s.') . rand(100,999) . 'Z';
+
+    $LastU = date('Y-m-d\TH:i:s.') . rand(100, 999) . 'Z';
 
     $RequestPayload = array(
         "siteIds" => array($sID),
@@ -3880,11 +3946,11 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
         "publisherDirect" => false,
         "lkqdPlatformConnection" => "$lkqdPlatformConnection"
     );
-    
+
     //print_r($RequestPayload);
-    
+
     $RequestPayloadJson = json_encode($RequestPayload);
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3893,8 +3959,8 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
-    
+
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -3906,24 +3972,24 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false){
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
+    curl_close($ch);
+
     $Data = json_decode($result);
     //print_r($Data);
-    
-    if($debug){
+
+    if ($debug) {
         return $Data;
-    }else{
+    } else {
         return true;
     }
-    
 }
 
-function getSupplySourceNameLoopRev($sID){
+function getSupplySourceNameLoopRev($sID)
+{
     global $cookie_file;
-    
+
     $URL = 'https://api.lkqd.com/supply/sources/' . $sID;
-    
+
     $Headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3932,36 +3998,37 @@ function getSupplySourceNameLoopRev($sID){
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     );
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
     //curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch); 
-    
-    $Data = json_decode($result, FALSE);
+    curl_close($ch);
+
+    $Data = json_decode($result, false);
     //print_r($Data);
     //exit(0);
-    if(property_exists($Data, 'errorId')){
+    if (property_exists($Data, 'errorId')) {
         return $Data->errorId;
-    }else{
+    } else {
         $siteName = $Data->siteName;
         $siteCost = $Data->siteCost;
         $Loop = $Data->sessionMaxImpressions;
-        
+
         return array('Name' => $siteName, 'Rev' => $siteCost, 'Loop' => $Loop);
     }
 }
 
-function getStatsPlusCountry($Date){ //TO TEST
+function getStatsPlusCountry($Date)
+{
     global $sessionId, $cookie_file, $post;
-    
+
     $headers = array(
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
@@ -3970,7 +4037,7 @@ function getStatsPlusCountry($Date){ //TO TEST
         'Referer: https://ui.lkqd.com/reports/7712',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'
     );
-    
+
     $post = array(
         "timeDimension" => "DAILY",
         "reportType" => array("PARTNER", "SITE", "COUNTRY"),
@@ -3981,20 +4048,20 @@ function getStatsPlusCountry($Date){ //TO TEST
         "timezone" => "America/New_York"
         //"limit" => 20
     );
-    
+
     $json = json_encode($post);
     $url = 'https://ui-api.lkqd.com/reports';
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS,$json);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     $result = curl_exec($ch);
-    curl_close($ch);  
+    curl_close($ch);
     $deco = json_decode($result);
-    
+
     return $deco;
 }
