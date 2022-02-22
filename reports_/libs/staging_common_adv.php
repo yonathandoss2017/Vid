@@ -204,7 +204,7 @@ function utf8ize($mixed) {
 		),
 		'creativity_id' => array(
 			'Name'	=>	"creativity.id AS Creativity",
-			'SearchName'	=>	"creativity.id",
+			'SearchName'	=>	"creativity.lkqd_id",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
 			'OrderVal'		=>	"Creativity",
