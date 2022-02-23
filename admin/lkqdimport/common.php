@@ -2384,7 +2384,7 @@ function getDemandTagId(int $dealId, string $name): string
     return $demandTagId;
 }
 
-function getCaps(int $eventId, int $goal, int $dealId): array
+function getCaps(int $eventId, int $goal): array
 {
     $eventNames = [
         EVENT_IMPRESSION => 'ad impression',
@@ -2406,12 +2406,13 @@ function getCaps(int $eventId, int $goal, int $dealId): array
     }
 
     return [
-        "cap" => $cap,
-        "capPeriod" => "daily",
-        "eventId" => $eventId,
-        "eventName" => $eventNames[$eventId],
-        "id" => $dealId,
-        "timezone" => "UTC"
+        [
+            "cap" => $cap,
+            "capPeriod" => "daily",
+            "eventId" => $eventId,
+            "eventName" => $eventNames[$eventId],
+            "timezone" => "UTC"
+        ]
     ];
 }
 
@@ -2465,7 +2466,7 @@ function newOrUpdateDeal(
         "costRev" => 0,
         "costCpm" => 0,
         "costType" => "none",
-        "caps" => getCaps($eventIds[$deliveryPacing], $goal, $dealId),
+        "caps" => getCaps($eventIds[$deliveryPacing], $goal),
         "frequencyCaps" => $frequencyCap,
         "pacings" => [
             [
