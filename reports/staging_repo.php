@@ -45,7 +45,7 @@
 	
 	$UUID = mysqli_real_escape_string($db2->link, $_POST['uuid']);
 
-	if ($_ENV["APP_ENV"] != 'local') {
+	if (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_ENV"] != 'local') {
         $sql   = "SELECT report_key.*, user.show_only_own_stats FROM report_key INNER JOIN user ON user.id = report_key.user_id WHERE report_key.unique_id = '$UUID' LIMIT 1";//AND report_key.status = 0
         $query = $db2->query($sql);
         if ($db2->num_rows($query) > 0) {

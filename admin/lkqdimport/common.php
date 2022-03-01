@@ -2460,7 +2460,7 @@ function newOrUpdateDeal(
         "status" => $status,
         "tier" => 1,
         "weight" => null,
-        "cpm" => 0,
+        "cpm" => 1.5,
         "cpmType" => "fixed",
         "cost" => 0,
         "costRev" => 0,
@@ -2883,13 +2883,13 @@ function updateCreative(
     int $dealId,
     string $name,
     string $status,
-    string $clickThroughUrl,
+    $clickThroughUrl,
     string $trackingPixels,
-    int $creativeId,
+    $creativeId,
     string $environments,
     string $countries,
     int $type,
-    string $demandTagUrl
+    $demandTagUrl
 ) {
     global $cookie_file;
 
@@ -2924,32 +2924,34 @@ function updateCreative(
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     ];
 
-    $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
-    $tagAssociationsPayload = [
-        "adds" => [
-            [
-              "tagId" => $demandTagId,
-              "creativeId" => $creativeId
-            ]
-          ],
-        "removes" => []
-    ];
+    if (isVideo($type)) {
+        $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+        $tagAssociationsPayload = [
+            "adds" => [
+                [
+                "tagId" => $demandTagId,
+                "creativeId" => $creativeId
+                ]
+            ],
+            "removes" => []
+        ];
 
-    $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+        $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
 
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    curl_setopt($ch, CURLOPT_VERBOSE, false);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
 
-    $result = curl_exec($ch);
-    curl_close($ch);
+        $result = curl_exec($ch);
+        curl_close($ch);
+    }
 
     $url = 'https://ui-api.lkqd.com/tags';
 
@@ -3023,7 +3025,7 @@ function getTagId(int $tagId)
  */
 function getTagtype(int $type): string
 {
-    return isVideo($type) ? "lkqd-hosted" : "vast";
+    return isVideo($type) ? "lkqd-hosted" : "vpaid-js";
 }
 
 /**
@@ -3066,7 +3068,7 @@ function getPlayerSizeTargetingAllowUndetectable(int $type)
 /**
  * Function to get ad tag depending on tag type.
  */
-function getAdTag(int $type, string $demandTagUrl)
+function getAdTag(int $type, $demandTagUrl)
 {
     return isVideo($type) ? null : $demandTagUrl;
 }
@@ -3082,7 +3084,7 @@ function getIsProgrammaticBuyerPrivateDealTag(int $type)
 /**
  * Function to get tag click through url depending on tag type.
  */
-function getClickthroughUrl(int $type, string $clickThroughUrl)
+function getClickthroughUrl(int $type, $clickThroughUrl)
 {
     return isVideo($type) ? $clickThroughUrl : null;
 }
@@ -3107,11 +3109,11 @@ function getDemandTagPayload(
     array $envsArray,
     string $geoTargetingData,
     array $levels,
-    string $clickThroughUrl,
+    $clickThroughUrl,
     array $additions,
     array $pixels,
     int $type,
-    string $demandTagUrl
+    $demandTagUrl
 ) {
     return [
         "tagId" => getTagId($demandTagId),
@@ -3228,7 +3230,7 @@ function getDemandTagPayload(
         "clickthroughUrl" => getClickthroughUrl($type, $clickThroughUrl),
         "hapticPlayerUrl" => null,
         "companionAssetClickthroughUrl" => null,
-        "daypartStatus" => $status,
+        "daypartStatus" => 'inactive',
         "daypartTimezone" => $dealInfo['daypartTimezone'],
         "daypartEntries" => [],
         "tagSiteTargeting" => [
@@ -3295,13 +3297,13 @@ function newDemandTag(
     int $dealId,
     string $name,
     string $status,
-    string $clickThroughUrl,
+    $clickThroughUrl,
     string $trackingPixels,
-    int $creativeId,
+    $creativeId,
     string $environments,
     string $countries,
     int $type,
-    string $demandTagUrl
+    $demandTagUrl
 ) {
     global $cookie_file;
 
@@ -3412,32 +3414,38 @@ function newDemandTag(
     $result = curl_exec($ch);
     curl_close($ch);
 
-    $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
-    $tagAssociationsPayload = [
-        "adds" => [
-            [
-              "tagId" => $demandTagId,
-              "creativeId" => $creativeId
-            ]
-          ],
-        "removes" => []
-    ];
+    if (isVideo($type)) {
+        $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+        $tagAssociationsPayload = [
+            "adds" => [
+                [
+                "tagId" => $demandTagId,
+                "creativeId" => $creativeId
+                ]
+            ],
+            "removes" => []
+        ];
 
-    $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+        $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
 
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    curl_setopt($ch, CURLOPT_VERBOSE, false);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
 
-    $result = curl_exec($ch);
-    curl_close($ch);
+        $result = curl_exec($ch);
+        curl_close($ch);
+    }
+
+    if (is_numeric($demandTagId)) {
+        updateDemandTagStatus($demandTagId, $status);
+    }
 
     return $demandTagId;
 }
