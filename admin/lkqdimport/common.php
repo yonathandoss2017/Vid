@@ -2409,11 +2409,16 @@ function getCaps(int $eventId, int $goal): array
         [
             "cap" => $cap,
             "capPeriod" => "daily",
-            "eventId" => $eventId,
-            "eventName" => $eventNames[$eventId],
+            "eventId" => EVENT_IMPRESSION,
+            "eventName" => $eventNames[EVENT_IMPRESSION],
             "timezone" => "UTC"
         ]
     ];
+}
+
+function getFrequencyCapKey($freqCap)
+{
+    return $freqCap ? "any_user_id" : null;
 }
 
 function newOrUpdateDeal(
@@ -2478,7 +2483,7 @@ function newOrUpdateDeal(
                 "frontLoadRatio" => null
             ]
         ],
-        "frequencyCapKey" => "any_user_id",
+        "frequencyCapKey" => getFrequencyCapKey($freqCap),
         "frequencyCapNoUid" => "use_ip",
         "activeTagCount" => null,
         "totalTagCount" => null,

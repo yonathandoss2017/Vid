@@ -530,6 +530,15 @@ function calcPercents($Perc , $Impressions, $Complete){
 										}
 										
 										$Multiplier = (25 - $HourI) / 100;
+										
+										if($Domain == 'independent.co.uk' && $Country == 'United Kingdom'){
+											
+											echo $Date . $Hour . "\n";
+											$Multiplier = (90 - $HourI) / 100;
+											
+										}
+										
+										
 										$Impressions = intval($formatLoads * $Multiplier);
 										
 										$Revenue = $Impressions * 0.0030;
