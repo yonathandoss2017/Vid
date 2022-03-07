@@ -22,7 +22,7 @@ function utf8ize($mixed) {
 
 	$DimensionsSQL = array(
 		'campaign_name' => array(
-			'Name'	=>	"concat(campaign.name, '--',campaign.id) AS CampaignName",
+			'Name'	        =>	"concat(campaign.name, '--',campaign.id) AS CampaignName",
 			'SearchName'	=>	"campaign.name",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"CampaignName",
@@ -31,7 +31,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Campaign Name'
 		),
 		'campaign_id' => array(
-			'Name'	=>	"campaign.id AS CampaignID",
+			'Name'	        =>	"campaign.id AS CampaignID",
 			'SearchName'	=>	"campaign.id",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"CampaignID",
@@ -40,7 +40,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Campaign ID'
 		),
 		'campaign_start_at' => array(
-			'Name'	=>	"campaign.start_at AS CampaignStartAt",
+			'Name'	        =>	"campaign.start_at AS CampaignStartAt",
 			'SearchName'	=>	"campaign.start_at",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"CampaignStartAt",
@@ -49,7 +49,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Campaign Starts At'
 		),
 		'campaign_end_at' => array(
-			'Name'	=>	"campaign.end_at AS CampaignEndAt",
+			'Name'	        =>	"campaign.end_at AS CampaignEndAt",
 			'SearchName'	=>	"campaign.end_at",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"CampaignEndAt",
@@ -58,7 +58,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Campaign Ends At'
 		),
 		'deal_id' => array(
-			'Name'	=>	"campaign.deal_id AS DealID",
+			'Name'	        =>	"campaign.deal_id AS DealID",
 			'SearchName'	=>	"campaign.deal_id",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"DealID",
@@ -67,7 +67,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Deal ID'
 		),
 		'type' => array(
-			'Name'	=>	"REPLACE(REPLACE(campaign.type, '1', 'Deal'), '2', 'Campaing') AS Type",
+			'Name'	        =>	"REPLACE(REPLACE(campaign.type, '1', 'Deal'), '2', 'Campaing') AS Type",
 			'SearchName'	=>	"campaign.type",
 			'InnerJoin'		=> 	array(),
 			'GroupBy'		=>	"Type",
@@ -76,7 +76,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Type'
 		),
 		'agency' => array(
-			'Name'	=>	"agency.name AS Agency",
+			'Name'	        =>	"agency.name AS Agency",
 			'SearchName'	=>	"agency.name",
 			'InnerJoin'		=> 	array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign.agency_id "),
 			'GroupBy'		=>	"Agency",
@@ -85,7 +85,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Agency'
 		),
 		'advertiser' => array(
-			'Name'	=>	"advertiser.name AS Advertiser",
+			'Name'	        =>	"advertiser.name AS Advertiser",
 			'SearchName'	=>	"advertiser.name",
 			'InnerJoin'		=> 	array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign.advertiser_id "),
 			'GroupBy'		=>	"Advertiser",
@@ -94,7 +94,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Advertiser'
 		),
 		'country' => array(
-			'Name'	=>	"country.nice_name AS Country",
+			'Name'	        =>	"country.nice_name AS Country",
 			'SearchName'	=>	"country.id",
 			'InnerJoin'		=> 	array('country' => "INNER JOIN country ON country.id = $ReportsTable.idCountry "),
 			'GroupBy'		=>	"Country",
@@ -103,10 +103,9 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Country'
 		),
 		'sales_vp' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
+			'Name'	        =>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.nick when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.nick, manager.nick) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) else COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) end) AS SalesVP",
 			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%') then manager.id when manager.roles like '%ROLE_COUNTRY_MANAGER%' then COALESCE(manager_head.id, manager.id) when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) else COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) end",
 			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'manager'         => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
 				'manager_head'    => "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				'country_manager' => "LEFT JOIN user as country_manager ON country_manager.id = manager_head.manager_id ",
@@ -118,7 +117,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'VP'
 		),
 		'sales_country_manager' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
+			'Name'      	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.nick when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.nick else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) end) AS SalesCountryManager",
 			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%') then manager.id when manager.roles like '%ROLE_SALES_MANAGER_HEAD%' then manager_head.id else if (manager_head.roles like '%ROLE_COUNTRY_MANAGER%' or manager_head.roles like '%ROLE_SALES_VP%' or manager_head.roles like '%ROLE_COUNTRY_ADMIN%', manager_head.id, country_manager.id) end",
 			'InnerJoin'		=> 	array(
 				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
@@ -131,13 +130,11 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Sales Country Manager'
 		),
 		'sales_manager_head' => array(
-			'Name'	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
+			'Name'      	=>	"(case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.nick else manager_head.nick end) AS SalesManagerHead",
 			'SearchName'	=>	"case when (manager.roles like '%ROLE_ADMIN%' or manager.roles like '%ROLE_SALES_VP%' or manager.roles like '%ROLE_COUNTRY_MANAGER%' or manager.roles like '%ROLE_SALES_MANAGER_HEAD%') then manager.id else manager_head.id end",
 			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'manager' => "LEFT JOIN user as manager ON manager.id = agency.sales_manager_id ",
 				'manager_head' 	=> "LEFT JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
 			'GroupBy'		=>	"SalesManagerHead",
 			'OrderVal'		=>	"SalesManagerHead",
@@ -145,12 +142,10 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Sales Manager Head'
 		),
 		'sales_manager' => array(
-			'Name'	=>	"user.nick AS SalesManager",
+			'Name'	        =>	"user.nick AS SalesManager",
 			'SearchName'	=>	"user.id",
 			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
 				'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
-				//'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
 			),
 			'GroupBy'		=>	"SalesManager",
 			'OrderVal'		=>	"SalesManager",
@@ -158,7 +153,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Sales Manager'
 		),
 		'ssp' => array(
-			'Name'	=> 	"ssp.name AS SSP",
+			'Name'	        => 	"ssp.name AS SSP",
 			'SearchName'	=> 	"$ReportsTable.SSP",
 			'InnerJoin'		=> 	array('ssp' => "INNER JOIN ssp ON ssp.id = $ReportsTable.SSP "),
 			'GroupBy'		=>	"SSP",
@@ -167,7 +162,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'SSP'
 		),
 		'dsp' => array(
-			'Name'	=>	"dsp.name AS DSP",
+			'Name'      	=>	"dsp.name AS DSP",
 			'SearchName'	=> 	"dsp.id",
 			'InnerJoin'		=> 	array('dsp' => "INNER JOIN dsp ON dsp.id = campaign.dsp_id "),
 			'GroupBy'		=>	"DSP",
@@ -176,7 +171,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'DSP'
 		),
 		'purchase_order' => array(
-			'Name'	=>	"purchase_order.name AS PurchaseOrder",
+			'Name'	        =>	"purchase_order.name AS PurchaseOrder",
 			'SearchName'	=>	"purchase_order.name",
 			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrder",
@@ -185,7 +180,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Purchase Order'
 		),
 		'cid' => array(
-			'Name'	=>	"purchase_order.id AS PurchaseOrderId",
+			'Name'	        =>	"purchase_order.id AS PurchaseOrderId",
 			'SearchName'	=>	"purchase_order.cid",
 			'InnerJoin'		=> 	array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
 			'GroupBy'		=>	"PurchaseOrderId",
@@ -194,7 +189,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'CID'
 		),
 		'creativity' => array(
-			'Name'	=>	"creativity.name AS Creativity",
+			'Name'	        =>	"creativity.name AS Creativity",
 			'SearchName'	=>	"creativity.name",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"Creativity",
@@ -203,7 +198,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Creativity'
 		),
 		'creativity_id' => array(
-            'Name' => "creativity.lkqd_id AS CreativityId",
+            'Name'          => "creativity.lkqd_id AS CreativityId",
 			'SearchName'	=>	"creativity.lkqd_id",
 			'InnerJoin'		=> 	array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
 			'GroupBy'		=>	"CreativityId",
@@ -212,7 +207,7 @@ function utf8ize($mixed) {
 			'HeadName'		=> 'Creativity ID'
 		),
         'reporting_view_users' => array(
-            'Name'	=>	"(case when (user.id IN({{ReportingViewUsers}})) then user.nick else 'N/A' end) AS ReportingViewUser",
+            'Name'	        =>	"(case when (user.id IN({{ReportingViewUsers}})) then user.nick else 'N/A' end) AS ReportingViewUser",
             'SearchName'	=>	"user.id",
             'InnerJoin'		=> 	array('user' => "INNER JOIN user ON user.id = agency.sales_manager_id "),
             'GroupBy'		=>	"ReportingViewUser",
@@ -221,7 +216,7 @@ function utf8ize($mixed) {
             'HeadName'		=> 'Reporting View User'
         ),
         'country_viewer' => array(
-            'Name'	=>	"(case when (country.id IN({{CountryViewer}})) then country.nice_name else 'N/A' end) AS CountryViewer",
+            'Name'	        =>	"(case when (country.id IN({{CountryViewer}})) then country.nice_name else 'N/A' end) AS CountryViewer",
             'SearchName'	=>	"country.id",
             'InnerJoin'		=> 	array('country' => "INNER JOIN country ON country.id = reports.idCountry "),
             'GroupBy'		=>	"CountryViewer",
@@ -233,7 +228,7 @@ function utf8ize($mixed) {
 
 	$TimesSQL = array(
 		'monthly' => array(
-			'Name'	=> 	"concat(MONTHNAME($ReportsTable.Date), ' ', YEAR($ReportsTable.Date)) AS Month, concat(YEAR($ReportsTable.Date), MONTH($ReportsTable.Date)) AS MonthN",
+			'Name'	        => 	"concat(MONTHNAME($ReportsTable.Date), ' ', YEAR($ReportsTable.Date)) AS Month, concat(YEAR($ReportsTable.Date), MONTH($ReportsTable.Date)) AS MonthN",
 			'SearchName'	=> 	"",
 			'InnerJoin'		=> 	"",
 			'ShowName'		=> 	"Month",
@@ -241,7 +236,7 @@ function utf8ize($mixed) {
 			'OrderVal'		=>	"MonthN"
 		),
 		'daily' => array(
-			'Name'	=> 	"$ReportsTable.Date AS Date",
+			'Name'	        => 	"$ReportsTable.Date AS Date",
 			'SearchName'	=> 	"",
 			'InnerJoin'		=> 	"",
 			'ShowName'		=> 	"Date",
@@ -249,7 +244,7 @@ function utf8ize($mixed) {
 			'OrderVal'		=>	"Date"
 		),
 		'hourly' => array(
-			'Name'	=> 	"concat(DATE($ReportsTable.Date), ', ', TIME_FORMAT(CONCAT($ReportsTable.Hour,':00:00'), '%l%p')) AS HourO, CONCAT($ReportsTable.Date, ' ' ,LPAD($ReportsTable.Hour,2,'0') , ':00:00') AS HourOrder",
+			'Name'	        => 	"concat(DATE($ReportsTable.Date), ', ', TIME_FORMAT(CONCAT($ReportsTable.Hour,':00:00'), '%l%p')) AS HourO, CONCAT($ReportsTable.Date, ' ' ,LPAD($ReportsTable.Hour,2,'0') , ':00:00') AS HourOrder",
 			'SearchName'	=> 	"",
 			'InnerJoin'		=> 	"",
 			'ShowName'		=> 	"HourO",
@@ -257,7 +252,7 @@ function utf8ize($mixed) {
 			'OrderVal'		=>	"HourOrder"
 		),
 		'overall' => array(
-			'Name'	=> 	"'Overall' AS Overall",
+			'Name'	        => 	"'Overall' AS Overall",
 			'SearchName'	=> 	"",
 			'InnerJoin'		=> 	"",
 			'ShowName'		=> 	"Overall",
@@ -267,7 +262,7 @@ function utf8ize($mixed) {
 	);
 
 	$MetricsSQL = array(
-		'request' 	=> array(
+		'request' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Requests) AS Requests ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Requests), 0, '$Locale') AS Requests ",
 			'Name'		=>	"Requests",
@@ -275,7 +270,7 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Requests"),
 			'NumberF'	=>	true,
 			'HeadName'	=> 'Requests'
-		),
+        ),
 		'impressions' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Impressions) AS Impressions ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Impressions), 0, '$Locale') AS Impressions ",
@@ -283,8 +278,8 @@ function utf8ize($mixed) {
 			'OrderVal' 	=>	"Impressions",
 			'Base' 		=>	array("Impressions"),
 			'NumberF'	=>	true,
-			'HeadName'		=> 'Impressions'
-		),
+			'HeadName'	=> 'Impressions'
+        ),
 		'viewable_impressions' => array(
 			'SQL' 		=>	", SUM($ReportsTable.VImpressions) AS VImpressions ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.VImpressions), 0, '$Locale') AS VImpressions ",
@@ -292,18 +287,18 @@ function utf8ize($mixed) {
 			'OrderVal' 	=>	"VImpressions",
 			'Base' 		=>	array("VImpressions"),
 			'NumberF'	=>	true,
-			'HeadName'		=> 'Viewable Impressions'
-		),
-		'revenue'	=> array(
+			'HeadName'	=> 'Viewable Impressions'
+        ),
+		'revenue' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Revenue) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( SUM($ReportsTable.Revenue), 2, '$Locale') ) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE(SUM($ReportsTable.Revenue), 2), 2, '$Locale')) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
 			'Name'		=>	"Revenue",
 			'OrderVal' 	=>	"RevenueOrder",
 			'Base' 		=>	array("Revenue"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'Revenue'
-		),
-		'bids' 		=> array(
+			'HeadName'	=> 'Revenue'
+        ),
+		'bids' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Bids) AS Bids ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Bids), 0, '$Locale') AS Bids ",
 			'Name'		=>	"Bids",
@@ -311,8 +306,8 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Bids"),
 			'NumberF'	=>	true,
 			'HeadName'	=> 'Bids'
-		),
-		'clicks' 	=> array(
+        ),
+		'clicks' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Clicks) AS Clicks ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Clicks), 0, '$Locale') AS Clicks ",
 			'Name'		=>	"Clicks",
@@ -320,7 +315,7 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Clicks"),
 			'NumberF'	=>	true,
 			'HeadName'	=> 'Clicks'
-		),
+        ),
 		'complete_views' => array(
 			'SQL' 		=>	", SUM($ReportsTable.CompleteV) AS CompleteV ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.CompleteV), 0, '$Locale') AS CompleteV ",
@@ -329,7 +324,7 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("CompleteV"),
 			'NumberF'	=>	true,
 			'HeadName'	=> 'Complete Views'
-		),
+        ),
 		'viewed25' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Complete25) AS Complete25 ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete25), 0, '$Locale') AS Complete25 ",
@@ -338,7 +333,7 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Complete25"),
 			'NumberF'	=>	false,
 			'HeadName'	=> '25% Views'
-		),
+        ),
 		'viewed50' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Complete50) AS Complete50 ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete50), 0, '$Locale') AS Complete50 ",
@@ -347,7 +342,7 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Complete50"),
 			'NumberF'	=>	false,
 			'HeadName'	=> '50% Views'
-		),
+        ),
 		'viewed75' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Complete75) AS Complete75 ",
 			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete75), 0, '$Locale') AS Complete75 ",
@@ -356,137 +351,137 @@ function utf8ize($mixed) {
 			'Base' 		=>	array("Complete75"),
 			'NumberF'	=>	false,
 			'HeadName'	=> '75% Views'
-		),
-		'rebate_cost' 			=> array(
+        ),
+		'rebate_cost' => array(
 			'SQL' 		=>	", SUM($ReportsTable.Rebate) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT(SUM($ReportsTable.Rebate), 2, '$Locale') ) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
+            'SQLCSV'    =>  ", concat('$', FORMAT(TRUNCATE(SUM($ReportsTable.Rebate), 2), 2, '$Locale')) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
 			'Name'		=>	"Rebate",
 			'OrderVal' 	=>	"RebateOrder",
 			'Base' 		=>	array("Rebate"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'Rebate Cost'
-		),
-		'cpm'	=> array(
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.Impressions) * 1000),2) AS CPM ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.Impressions) * 1000), 2, '$Locale') ) AS CPM ",
+			'HeadName'	=> 'Rebate Cost'
+        ),
+		'cpm' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.Impressions) * 1000), 2) AS CPM ",
+            'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.Impressions) * 1000), 2), 2, '$Locale')) AS CPM ",
 			'Name'		=>	"CPM",
 			'OrderVal' 	=>	"CPM",
 			'Base' 		=>	array("Revenue","Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'CPM'
-		),
-		'cpv'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.CompleteV)),2) AS CPV ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.CompleteV)), 2, '$Locale') ) AS CPV ",
+			'HeadName'	=> 'CPM'
+        ),
+		'cpv' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.CompleteV)), 2) AS CPV ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.CompleteV)), 2), 2, '$Locale')) AS CPV ",
 			'Name'		=>	"CPV",
 			'OrderVal' 	=>	"CPV",
 			'Base' 		=>	["Revenue","CompleteV"],
 			'NumberF'	=>	false,
-			'HeadName'		=> 'CPV'
-		],
-		'cpc'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.Clicks)),2) AS CPC ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.Clicks)), 2, '$Locale') ) AS CPC ",
+			'HeadName'	=> 'CPV'
+        ),
+		'cpc' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.Clicks)), 2) AS CPC ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.Clicks)), 2), 2, '$Locale')) AS CPC ",
 			'Name'		=>	"CPC",
 			'OrderVal' 	=>	"CPC",
 			'Base' 		=>	["Revenue","Clicks"],
 			'NumberF'	=>	false,
-			'HeadName'		=> 'CPC'
-		],
-		'vcpm'	=> [
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.VImpressions) * 1000),2) AS vCPM ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.VImpressions) * 1000), 2, '$Locale') ) AS vCPM ",
+			'HeadName'	=> 'CPC'
+        ),
+		'vcpm' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.VImpressions) * 1000), 2) AS vCPM ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE((SUM($ReportsTable.Revenue) / SUM($ReportsTable.VImpressions) * 1000), 2), 2, '$Locale')) AS vCPM ",
 			'Name'		=>	"vCPM",
 			'OrderVal' 	=>	"vCPM",
 			'Base' 		=>	["Revenue","VImpressions"],
 			'NumberF'	=>	false,
-			'HeadName'		=> 'vCPM'
-		],
-		'viewability_percent'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2) AS ViewabilityPercent ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale') , '%') AS ViewabilityPercent ",
+			'HeadName'	=> 'vCPM'
+        ),
+		'viewability_percent' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2) AS ViewabilityPercent ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS ViewabilityPercent ",
 			'Name'		=>	"ViewabilityPercent",
 			'OrderVal' 	=>	"ViewabilityPercent",
 			'Base' 		=>	array("Impressions","VImpressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'Viewability Percent'
-		),
+			'HeadName'	=> 'Viewability Percent'
+        ),
 		'rebate_percent' => array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2, '$Locale') , '%') AS RebatePercent ",
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
 			'Name'		=>	"RebatePercent",
 			'OrderVal' 	=>	"RebatePercent",
 			'Base' 		=>	array("Rebate", "Revenue"),
 			'NumberF'	=>	true,
-			'HeadName'		=> 'Rebate Percent'
-		),
+			'HeadName'	=> 'Rebate Percent'
+        ),
 		'net_revenue' => array(
 			'SQL' 		=>	", (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2, '$Locale') ) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(TRUNCATE((SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2), 2, '$Locale')) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
 			'Name'		=>	"NetRevenue",
 			'OrderVal' 	=>	"NetRevenueOrder",
 			'Base' 		=>	array("Revenue","Rebate"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'Net Revenue'
-		),
-		'ctr' 		=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2) AS CTR ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS CTR ",
+			'HeadName'	=> 'Net Revenue'
+        ),
+		'ctr' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2) AS CTR ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS CTR ",
 			'Name'		=>	"CTR",
 			'OrderVal' 	=>	"CTR",
 			'Base' 		=>	array("Clicks", "Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'CTR'
-		),
-		'vtr'		=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100) ,2) AS VTR ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS VTR ",
+			'HeadName'	=> 'CTR'
+        ),
+		'vtr' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100), 2) AS VTR ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS VTR ",
 			'Name'		=>	"VTR",
 			'OrderVal' 	=>	"VTR",
 			'Base' 		=>	array("CompleteV", "Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'VTR'
-		),
-		'25perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100) ,2) AS FIRST ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS FIRST ",
+			'HeadName'	=> 'VTR'
+        ),
+		'25perc' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100), 2) AS FIRST ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS FIRST ",
 			'Name'		=>	"FIRST",
 			'OrderVal' 	=>	"FIRST",
 			'Base' 		=>	array("Complete25", "Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> '25%'
-		),
-		'50perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100) ,2) AS MID ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS MID ",
+			'HeadName'	=> '25%'
+        ),
+		'50perc' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100), 2) AS MID ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS MID ",
 			'Name'		=>	"MID",
 			'OrderVal' 	=>	"MID",
 			'Base' 		=>	array("Complete50", "Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> '50%'
-		),
-		'75perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100) ,2) AS THIRD ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS THIRD ",
+			'HeadName'	=> '50%'
+        ),
+		'75perc' => array(
+			'SQL' 		=>	", TRUNCATE((SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100), 2) AS THIRD ",
+			'SQLCSV' 	=>	", concat(FORMAT(TRUNCATE((SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100), 2), 2, '$Locale'), ' %') AS THIRD ",
 			'Name'		=>	"THIRD",
 			'OrderVal' 	=>	"THIRD",
 			'Base' 		=>	array("Complete75", "Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> '75%'
-		),
-		'budget_oc'		=> array(
-			'SQL' 		=>	", ROUND( IFNULL( $ReportsTable.Budget, '0' ), 2 ) AS Budget ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( IFNULL( $ReportsTable.Budget, '0' ), 2, '$Locale') ) AS Budget ",
+			'HeadName'	=> '75%'
+        ),
+		'budget_oc' => array(
+			'SQL' 		=>	", TRUNCATE(IFNULL($ReportsTable.Budget, '0'), 2) AS Budget ",
+			'SQLCSV' 	=>	", concat('$', FORMAT(IFNULL($ReportsTable.Budget, '0'), 2, '$Locale')) AS Budget ",
 			'Name'		=>	"Budget",
 			'OrderVal' 	=>	"Budget",
 			'Base' 		=>	array("Revenue","Impressions"),
 			'NumberF'	=>	false,
-			'HeadName'		=> 'Budget',
-			'InnerJoin'		=> 	array(
+			'HeadName'	=> 'Budget',
+			'InnerJoin'	=> 	array(
 				'purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id ",
 				'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
 			),
-		),
+        ),
 	);
 
 function isLocked($Table){
