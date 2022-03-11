@@ -82,14 +82,7 @@
             $Repo = $db2->fetch_array($query);
             $RepId = $Repo['id'];
             $UserId = $Repo['user_id'];
-            //$SOOS = $Repo['show_only_own_stats'];
             $RolesJSON = json_decode($Repo['URoles']);
-
-            /*if(is_array($Roles)){
-                if(in_array('ROLE_ADVERTISER', $Roles)){
-                    $AdvRepo = true;
-                }
-            }*/
 
             $sql = "SELECT Name FROM user WHERE id = '$UserId' LIMIT 1";
             $UserName = $db->getOne($sql);
@@ -118,23 +111,16 @@
             $dbAdvPanelLocal->query($sql);
         } else {
             header('HTTP/1.0 403 Forbidden');
+            echo 'Access denied';
             exit(0);
         }
     }
-
-    //$UserId = 3;
-
-    //$sql = "SELECT roles FROM user WHERE id = $UserId LIMIT 1";
-    //$Roles = $db->getOne($sql);
-
-    //$RolesJSON = json_decode($Roles);
 
     $ReportingViewUsers = '';
     $CountryViewer = '';
 
 	$AdvRep = false;
 	if(in_array('ROLE_ADMIN', $RolesJSON)){
-		//echo 'ADMIN';
 		$PubManFilter = "";
 	}elseif(in_array('ROLE_ADVERTISER', $RolesJSON)){
 		$sql = "SELECT id FROM advertiser WHERE user_id = $UserId LIMIT 1";
@@ -205,7 +191,6 @@
 		}
 	}else{
 		if(in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)){
-			//echo 'HEAD';
 			$PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
 			$sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
 			$queryS = $db2->query($sql);
@@ -216,7 +201,6 @@
 				}
 			}
 		}else{
-			//echo 'SALES';
 			$PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
 		}
 	}
@@ -340,8 +324,7 @@
 	if(isset($_POST['reportType'])){
 		$TypeOK = true;
 		$RepType = $_POST['reportType'];
-		//$RepType = 'overall';
-		
+
 		if($RepType != 'hourly'){
 			$BaseTable = 'reports_resume';
 		}else{
@@ -353,30 +336,11 @@
 		if($RepType == 'overall'){
 			$Overall = true;
 		}
-		
-		
-		//$NewTable = $BaseTable . $StartMonth;
+
 		$NewTable = 'reports';
 		if(checkTableExists($NewTable)){
 			$UnionTables[] = $NewTable;
 		}
-		/*
-		if($StartMonth != $EndMonth){
-			$start = $DateFrom->modify('first day of this month');
-			$end = $DateTo->modify('first day of next month');
-			$interval = DateInterval::createFromDateString('1 month');
-			$period = new DatePeriod($start, $interval, $end);
-			
-			foreach ($period as $dt) {
-				$NewTable = $BaseTable . $dt->format("Ym");
-				if(!in_array($NewTable, $UnionTables)){
-					if(checkTableExists($NewTable)){
-						$UnionTables[] = $NewTable;
-					}
-			    }
-			}
-		}
-		*/
 	}else{
 		$TypeOK = true;
 	}
@@ -387,9 +351,7 @@
 			$CSVResponse = true;
 		}
 	}
-	
-	//print_r($UnionTables);
-	//exit(0);
+
 	if($DatesOK && $TypeOK){
 		if(isset($_POST['Metrics'])){
 			$Metrics = $_POST['Metrics'];
@@ -400,8 +362,7 @@
 			}
 		}
 	}
-	
-	//print_r($_POST);
+
 	if($DimensionsOK){
 		if(isset($_POST['Filters'])){
 			if(is_array($_POST['Filters'])){
@@ -510,9 +471,6 @@
 			}
 		}
 
-		//print_r($Dimensions);
-		//exit(0);
-
 		$SQLWhere = "";
 		foreach($ToFilter as $KInclude => $KFilterVal){
 			foreach($KFilterVal as $KFilter => $FilterVals){
@@ -527,7 +485,6 @@
 							}
 						}
 					}
-					//$SQLInnerJoins .= $DimensionsSQL[$KFilter]['InnerJoin'];
 				}
 				
 				$ThereAreFilters = true;
@@ -655,33 +612,8 @@
 			INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
 			WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $PubManFilter ";
 
-            /*if(count($UnionTables) > 1){
-                $Union = "";
-                $SQLQueryT = "";
-                if($Overall || 1==1){
-                    $SQLMetricsT = str_replace('{ReportsTable}', 'R', $SQLMetrics);
-                    $SQLQueryT = "SELECT '' $SQLMetricsT FROM (";
-                    foreach($UnionTables as $Table){
-                        $SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
-                        $SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoinsTotals);
-                        $SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN supplytag ON supplytag.id = $Table.idTag $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $PubManFilter) ";
-                        $Union = "UNION ALL";
-                    }
-                    $SQLQueryT .= ")  AS R ";
-
-                }else{
-                    foreach($UnionTables as $Table){
-                        $SQLQueryT .= "$Union (" . str_replace('{ReportsTable}', $Table, $SQLSuperQueryT) . ") ";
-                        $Union = "UNION ALL";
-                    }
-                }
-            }else{*/
 			$SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
-			//}
-			
-			//echo $SQLQueryT;
-			//exit(0);
-			
+
 			$Prefix = intval($mem_var->get('total_prefix'));
 			$QueryKeyT = $Prefix . md5($SQLQueryT);
 			$CachedTotalsNF = $mem_var->get($QueryKeyT);
@@ -706,10 +638,8 @@
 							if(array_key_exists($MetricsSQL[$MetricName]['Name'], $Da)){
 							
 								if($MetricsSQL[$MetricName]['NumberF']){
-									//$DataT[$Nd][] = number_format($Da[$MetricsSQL[$MetricName]['Name']], 0, '', ',');
 									$DataT[$Nd][] = $Da[$MetricsSQL[$MetricName]['Name']];
 								}else{
-									
 									$DataT[$Nd][] = $Da[$MetricsSQL[$MetricName]['Name']];
 								}
 								
@@ -742,30 +672,8 @@
 		INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
 		WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter ";
 
-		/*
-		if(count($UnionTables) > 1){
-			$Union = "";
-			$SQLQueryT = "";
-
-			$SQLMetricsT = str_replace('{ReportsTable}', 'R', $SQLMetrics);
-			$SQLQueryT = "SELECT '' $SQLMetricsT FROM (";
-			foreach($UnionTables as $Table){
-				$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
-				$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-				$SQLQueryT .= "$Union (SELECT '' $SQLBasesTo FROM $Table INNER JOIN campaign ON campaign.id = $Table.idCampaing $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere) ";
-				$Union = "UNION ALL";
-			}    
-			$SQLQueryT .= ")  AS R ";
-				
-		}else{
-		*/
 		$SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
-		//}
-		//echo $SQLQueryT;
-		//exit(0);
-		
-		
-		
+
 		$Prefix = intval($mem_var->get('total_prefix'));
 		$QueryKeyT = $Prefix . md5($SQLQueryT);
 		$CachedTotals = $mem_var->get($QueryKeyT);
@@ -775,8 +683,7 @@
 			if($IncludeTime){
 				$DataT[$Nd][] = "";
 			}
-			
-			
+
 			$SuperQueryT = $db->query($SQLQueryT);
 			if($SuperQueryT && $db->num_rows($SuperQueryT) > 0){
 				while($Da = $db->fetch_array($SuperQueryT)){
@@ -790,15 +697,11 @@
 						
 						if(is_array($Da)){
 							if(array_key_exists($MetricsSQL[$MetricName]['Name'], $Da)){
-							
 								if($MetricsSQL[$MetricName]['NumberF']){
-									//$DataT[$Nd][] = number_format($Da[$MetricsSQL[$MetricName]['Name']], 0, '', ',');
 									$DataT[$Nd][] = $Da[$MetricsSQL[$MetricName]['Name']];
 								}else{
-									
 									$DataT[$Nd][] = $Da[$MetricsSQL[$MetricName]['Name']];
 								}
-								
 							}else{
 								break;
 							}
@@ -823,43 +726,16 @@
 		//CALCULA EL RESTO DE LA TABLA
         $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
 		$SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
-		/*
-		if(count($UnionTables) > 1){
-			$Union = "";
-			$SQLQuery = "";
-			if($Overall){
-				$SQLMetrics = str_replace('{ReportsTable}', 'R', $SQLMetrics);
-				$SQLQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensionsOverall $SQLMetrics FROM (";
-				foreach($UnionTables as $Table){
-					$SQLBasesTo = str_replace('{ReportsTable}', $Table, $SQLBases);
-					$SQLInnerJoinsTo = str_replace('{ReportsTable}', $Table, $SQLInnerJoins);
-					$SQLQuery .= "$Union (SELECT $SQLDimensions $SQLBasesTo FROM $Table INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing $SQLInnerJoinsTo WHERE $Table.Date BETWEEN '$DFrom' AND '$DTo' $SQLWhere) ";
-					$Union = "UNION ALL";
-				}    
-				$SQLQuery .= ")  AS R $SQLGroups";
-				
-			}else{
-				foreach($UnionTables as $Table){
-					if($Union != ""){
-						$SQLSuperQuery = str_replace('SQL_CALC_FOUND_ROWS', '', $SQLSuperQuery);
-					}
-					$SQLQuery .= "$Union (" . str_replace('{ReportsTable}', $Table, $SQLSuperQuery) . ") ";
-					$Union = "UNION ALL";
-				}
-			}
-		}else{
-		*/
-			$SQLQuery = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQuery);
-		//}
-		
+
+        $SQLQuery = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQuery);
+
 		if($OrderParam != ""){
 			$SQLQuery .= " ORDER BY $OrderParam";
 			if($Start !== false || $Length !== false){
 				$SQLQuery .= " LIMIT $Start, $Length";
 			}
 		}
-		//echo $SQLQuery;
-		//exit(0);
+
 		$QueryKey = md5($SQLQuery);
 		$CachedReport = $mem_var->get('report_prefix_' . $QueryKey);
 		
@@ -906,13 +782,12 @@
 						$MetricName = trim($MetricName);
 						$MetricSName = $MetricsSQL[$MetricName]['Name'];
 						if($MetricsSQL[$MetricName]['NumberF']){
-							//$Data[$Nd][] = number_format($Da[$MetricSName], 0, '', ',');
 							$Data[$Nd][] = $Da[$MetricSName];
 						}else{
 							if (($MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'Complete25' || $MetricSName == 'Complete50' || $MetricSName == 'Complete75') && $Da[$MetricSName] === NULL){
 								$Data[$Nd][] = "-";
 							} elseif (($MetricSName == 'CTR' || $MetricSName == 'VTR' || $MetricSName == 'FIRST' || $MetricSName == 'MID' || $MetricSName == 'THIRD' || $MetricSName == 'RebatePercent' || $MetricSName == 'ViewabilityPercent') && floatval(str_replace('%','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
-								$Data[$Nd][] = '0.00%';
+								$Data[$Nd][] = '0.00 %';
 							} elseif (in_array($MetricSName, ['CPM', 'CPV', 'CPC', 'vCPM', 'Rebate', 'Revenue', 'NetRevenue']) && floatval(str_replace('$','',$Da[$MetricSName])) == 0 && $CSVResponse === true){
 								$Data[$Nd][] = '$0.00';
 							} else {
@@ -935,7 +810,6 @@
 			$Data = $CachedReport['Data'];
 			$CntTotal = $CachedReport['Total'];
 		}
-		//$Data[0]
 	}else{
 		header('HTTP/1.0 404');
 		exit(0);
