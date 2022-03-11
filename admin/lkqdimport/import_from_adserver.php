@@ -92,6 +92,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	$DateDruid1 = new DateTime();
 	$DateDruid1->setTimezone(new DateTimeZone('UTC'));
+	//$DateDruid1->modify("-5 hour");
 	$DateDruid1->modify("-5 hour");
 	
 	$DateDruid2 = new DateTime();
@@ -141,8 +142,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DateESTs2 = $DateEST2->format('Y-m-d');
 	$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs1' AND Hour >= $HourEST1 AND Manual = 0 AND Player = 2";
 	$db->query($sql);
-//	echo $sql;
-//	exit(0);
+	if($DateESTs1 != $DateESTs2){
+		$sql = "DELETE FROM $TablaName WHERE Date = '$DateESTs2' AND Manual = 0 AND Player = 2";
+		$db->query($sql);
+	}
+	//echo $sql;
+	//exit(0);
 	
 	foreach($result as $kres => $res){
 		if($kres >= 1){

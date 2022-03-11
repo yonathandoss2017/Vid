@@ -4,15 +4,17 @@ namespace App\Report\Manager\Advertisers;
 
 class UserManager extends BaseManager
 {
-    public static function getById(int $userId) {
+    public static function getById(int $userId)
+    {
         $userId = static::sanitize($userId);
-        
+
         $sql = "SELECT * FROM user WHERE id = $userId";
 
         return static::getConnection()->getFirst($sql);
     }
 
-    public static function isUserExternalClient(int $userId, string $client) {
+    public static function isUserExternalClient(int $userId, string $client)
+    {
         $userId = static::sanitize($userId);
         $client = static::sanitize($client);
 
@@ -24,7 +26,8 @@ class UserManager extends BaseManager
         return static::getConnection()->getOne($sql);
     }
 
-    public static function getByUsername(string $username) {
+    public static function getByUsername(string $username)
+    {
         $username = static::sanitize($username);
         $sql = "SELECT * FROM user WHERE username = '$username'";
         return static::getConnection()->getFirst($sql);

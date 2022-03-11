@@ -10,7 +10,8 @@ use DateTime;
 use Exception;
 use Rakit\Validation\Validator;
 
-class Controller {
+class Controller
+{
     protected $validator;
 
     public function __construct()
@@ -25,7 +26,8 @@ class Controller {
         'DELETE',
     ];
 
-    public function run() {
+    public function run()
+    {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
                 $this->get();
@@ -44,27 +46,33 @@ class Controller {
         }
     }
 
-    public function get() {
+    public function get()
+    {
         return Response::methodNotAllowed();
     }
 
-    public function post() {
+    public function post()
+    {
         return Response::methodNotAllowed();
     }
 
-    public function put() {
+    public function put()
+    {
         return Response::methodNotAllowed();
     }
 
-    public function delete() {
+    public function delete()
+    {
         return Response::methodNotAllowed();
     }
 
-    protected function methodNotImplemented() {
+    protected function methodNotImplemented()
+    {
         throw new \Exception('Method not implemented');
     }
 
-    protected function getRequestPayload() {
+    protected function getRequestPayload()
+    {
         return json_decode(file_get_contents('php://input'), true) ?? $_POST;
     }
 
@@ -72,11 +80,14 @@ class Controller {
      * @return void
      * @throws UnexpectedValueException
      */
-    protected function reviewExtraParams(array $allowedParams, $params) {
+    protected function reviewExtraParams(array $allowedParams, $params)
+    {
         $unAllowedParams = array_diff(array_keys($params), $allowedParams);
-    
+
         if ($unAllowedParams) {
-            throw new \UnexpectedValueException("Request contains invalid properties: " . implode(',', $unAllowedParams));
+            throw new \UnexpectedValueException(
+                "Request contains invalid properties: " . implode(',', $unAllowedParams)
+            );
         }
     }
 
@@ -84,21 +95,23 @@ class Controller {
      * @return void
      * @throws UnexpectedValueException
      */
-    protected function validatePayload(array $rules) {
+    protected function validatePayload(array $rules)
+    {
         $params = $this->getRequestPayload();
         $this->reviewExtraParams(array_keys($rules), $params);
 
         $validation = $this->validator->make($params, $rules);
-    
+
         $validation->validate();
-    
+
         if ($validation->fails()) {
             $errors = $validation->errors()->toArray();
             throw new \UnexpectedValueException(json_encode(compact('errors')));
         }
     }
 
-    protected function getDateTime(string $date, $default = null) {
+    protected function getDateTime(string $date, $default = null)
+    {
         try {
             return new DateTime($date);
         } catch (Exception $ex) {
@@ -110,23 +123,24 @@ class Controller {
      * @return void
      * @throws UnauthorizedException|UnexpectedValueException
      */
-    protected function checkJWTAuthorization($client = 'VMP') {
+    protected function checkJWTAuthorization($client = 'VMP')
+    {
         $jwtAuth = new JWTAuth($_ENV['JWT_VMP_SECRET']);
         $user = $jwtAuth->decodeCurrentRequest();
-    
-        if(!$user || !$user->user_id) {
+
+        if (!$user || !$user->user_id) {
             throw new UnauthorizedException();
         }
 
         $user = UserManager::getById($user->user_id);
 
-        if(!$user) {
+        if (!$user) {
             throw new UnauthorizedException();
         }
-    
+
         $userIsActive = UserManager::isUserExternalClient($user['id'], $client);
-    
-        if(!$userIsActive) {
+
+        if (!$userIsActive) {
             throw new UnauthorizedException();
         }
     }

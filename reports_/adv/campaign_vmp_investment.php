@@ -1,4 +1,5 @@
 <?php
+
 require './../../src/bootstrap.php';
 
 use App\Report\App;
