@@ -1611,6 +1611,7 @@ function getAgenciesData(): array
 
     $response = json_decode($result, true);
 
+    http_response_code(200);
     return $response;
 }
 

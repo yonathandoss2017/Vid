@@ -64,7 +64,7 @@
 			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal';
 
-			// TODO - remove this date for prod
+			// TODO: - remove this date for prod
             $date1 = new DateTime('2021-12-16');
             $date1->add(DateInterval::createFromDateString('yesterday'));
             $Date1 = $date1->format('Y-m-d');
@@ -101,7 +101,7 @@
 			$TPL = 'staging_seguimiento_me_quincenal.html';
 			$RepType = 'Quincenal - Anual';
 
-			// TODO - remove this date for prod
+			// TODO: - remove this date for prod
 			$date1 = new DateTime('2021-12-16');
 			$date1->add(DateInterval::createFromDateString('yesterday'));
 			$Date1 = $date1->format('Y-m-d');

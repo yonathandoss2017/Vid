@@ -56,12 +56,14 @@ $date2->modify('-1 day');
 $Date2 = $date2->format('Y-m-d');
 */
 
+// TODO change campaign_test and reports_deals_test when going to pro
+
 $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 
 $DemandTags = array();
 $ActiveDeals = array();
 $CampaingData = array();
-$sql = "SELECT * FROM campaign WHERE ssp_id = 7 AND status = 1 AND (id = 2355 OR id = 2488 OR id = 2489 OR id = 2170 OR id = 2534 OR id = 2178 OR id = 2135 OR id = 2430 OR id = 2136 OR id = 2352 OR 
+$sql = "SELECT * FROM campaign_test WHERE ssp_id = 7 AND status = 1 AND (id = 2355 OR id = 2488 OR id = 2489 OR id = 2170 OR id = 2534 OR id = 2178 OR id = 2135 OR id = 2430 OR id = 2136 OR id = 2352 OR 
     id = 2351 OR id = 2350 OR id = 2360 OR id = 2016 OR id = 2342 OR id = 2256 OR id = 2153 OR id = 2255 OR id = 2343 OR id = 2533 OR id = 2054 OR id = 2345 OR id = 2133 OR id = 2200 OR id = 2018 OR 
     id = 2101 OR id = 2102 OR id = 2134 OR id = 2166 OR id = 2132 OR id = 2199 OR id = 2210 OR id = 2209 OR id = 2314 OR id = 2308 OR id = 2354 OR id = 2160 OR id = 2554 OR id = 2131 OR id = 2493 OR 
     id = 2089 OR id = 2130 OR id = 2071 OR id = 2348 OR id = 2431 OR id = 2188 OR id = 2206 OR id = 2197 OR id = 2056 OR id = 2179 OR id = 2177 OR id = 2195 OR id = 2287 OR id = 2565 OR id = 2196 OR 
@@ -75,6 +77,7 @@ $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
         $idCamp = $Camp['id'];
+        $salesManagerId = $Camp['sales_manager_id'];
         //$Camp['deal_id'] = "VDMY_CC_10395(1050826-1050825)";
 
         if (strpos($Camp['deal_id'], '-') !== false && strpos($Camp['deal_id'], '(') !== false && strpos($Camp['deal_id'], ')') !== false) {
@@ -204,22 +207,22 @@ if ($db3->num_rows($query) > 0) {
 
                 $CompleteVPerc = 0;
 
-                $sql = "SELECT id FROM reports_deals WHERE idCampaing = $idCamp AND Domain LIKE '$Domain' AND Device LIKE '$Device' AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour'  LIMIT 1";
+                $sql = "SELECT id FROM reports_deals_test WHERE idCampaing = $idCamp AND Domain LIKE '$Domain' AND Device LIKE '$Device' AND idCountry = $idCountry AND Date = '$Date' AND Hour = '$Hour'  LIMIT 1";
                 $idStat = $db->getOne($sql);
 
 
                 if (intval($idStat) == 0) {
-                    $sql = "INSERT INTO reports_deals
-                    (Domain, Device, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
-                    VALUES ('$Domain', '$Device', $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
+                    $sql = "INSERT INTO reports_deals_test
+                    (Domain, Device, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+                    VALUES ('$Domain', '$Device', $idCamp, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', {$idCamp}, {$idCamp}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
                     $db->query($sql);
                     //echo $sql . "\n";
                 } else {
-                    $sql = "SELECT Requests FROM reports_deals WHERE id = $idStat LIMIT 1";
+                    $sql = "SELECT Requests FROM reports_deals_test WHERE id = $idStat LIMIT 1";
                     $HaveRequests = $db->getOne($sql);
 
                     if ($Requests > $HaveRequests) {
-                        $sql = "UPDATE reports_deals SET 
+                        $sql = "UPDATE reports_deals_test SET 
                         Requests = $Requests,
                         Bids = $Bids, 
                         Impressions = $Impressions, 
