@@ -233,7 +233,7 @@ if ($db2->num_rows($query2) > 0) {
 $sql = "SELECT id FROM campaign_test ORDER BY id DESC LIMIT 1";
 $lastCamp = intval($db->getOne($sql));
 
-$sql = "SELECT * FROM campaign WHERE id > $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id > $lastCamp";
 $query2 = $dbDev1->query($sql);
 if ($dbDev1->num_rows($query2) > 0) {
     while ($S = $dbDev1->fetch_array($query2)) {
@@ -262,7 +262,7 @@ if ($dbDev1->num_rows($query2) > 0) {
         $created_at = $S['created_at'];
         $created_by = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'];
-        $salesManagerId = $S['sales_manager_id'];
+        $salesManagerId = $S['purchase_order_sales_manager_id'];
 
         if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
             $dsp_id = 11;
@@ -277,7 +277,7 @@ if ($dbDev1->num_rows($query2) > 0) {
 }
 
 // TODO: changes to move to production campaign update query
-$sql = "SELECT * FROM campaign WHERE id <= $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id  FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
 $query2 = $dbDev1->query($sql);
 if ($dbDev1->num_rows($query2) > 0) {
     while ($S = $dbDev1->fetch_array($query2)) {
@@ -288,9 +288,9 @@ if ($dbDev1->num_rows($query2) > 0) {
         $deal_id = $S['deal_id'];
         $createdBy = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'];
-        $salesManagerId = $S['sales_manager_id'];
+        $salesManagerId = $S['purchase_order_sales_manager_id'];
 
-        $sql = "UPDATE campaign_test SET name = '$name', advertiser_id = '$advertiser_id', agency_id = '$agency_id', deal_id = '$deal_id', created_by = '$createdBy', purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId} WHERE id = '$idC' LIMIT 1 ";
+        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId} WHERE id = {$idC} LIMIT 1";
         $db->query($sql);
     }
 }
@@ -561,6 +561,7 @@ $creativityQuery = $dbDev1->query($sql);
 if ($dbDev1->num_rows($creativityQuery) > 0) {
     while ($creativity = $dbDev1->fetch_array($creativityQuery)) {
         $creativityId = $creativity['id'];
+        $creativityCampaignId = $creativity['campaign_id'];
         $creativitySize = $creativity['size'];
         $creativityImage = $creativity['image'];
         $creativityClickUrl = $creativity['click_url'];
@@ -577,6 +578,7 @@ if ($dbDev1->num_rows($creativityQuery) > 0) {
 UPDATE
     demand_tag
 SET
+    campaign_id = {$creativityCampaignId},
     size = '{$creativitySize}',
     image = '{$creativityImage}',
     click_url = '{$creativityClickUrl}',
