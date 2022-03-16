@@ -294,7 +294,7 @@ $MetricsSQL = array(
     ),
     'revenue' => array(
         'SQL'      => ", SUM($ReportsTable.Revenue) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
-        'SQLCSV'   => ", CONCAT('$', FORMAT(SUM($ReportsTable.Revenue), 2, '$Locale')) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
+        'SQLCSV'   => ", CONCAT('$', FORMAT(ROUND(CAST(SUM($ReportsTable.Revenue) AS DECIMAL(10, 4)), 2), 2, '$Locale')) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
         'Name'     => "Revenue",
         'OrderVal' => "RevenueOrder",
         'Base'     => array("Revenue"),
