@@ -29,4 +29,9 @@ $advPanelLocal = [
     "db" => $_ENV["ADVERTISERS_PANEL_LOCAL_DB"],
 ];
 
+$lkqdCred = [
+    "userId" => $_ENV["LKQD_USER"],
+    "password" => $_ENV["LKQD_PASS"],
+];
+
 date_default_timezone_set('US/Eastern');

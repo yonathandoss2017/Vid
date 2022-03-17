@@ -1,23 +1,31 @@
 <?php
 
 @session_start();
-// Guardamos cualquier error //
 ini_set('display_errors', 0);
 ini_set('memory_limit', '-1');
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-define('CONST', 1);
-require('/var/www/html/login/config.php');
-require('/var/www/html/login/reports_/adv/config.php');
-//require('/var/www/html/login/reports_/adv/config_pre.php');
-require('/var/www/html/login/db.php');
+
+if (file_exists('/var/www/html/login/config.php')) {
+    require('/var/www/html/login/config.php');
+} else {
+    require('../../config_local.php');
+}
+require('../../reports_/adv/config.php');
+require('../../db.php');
+
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-//exit(0);
-
-//$db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
 $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+$cookie_file = '../../admin/lkqdimport/cookie.txt';
+require('../../reports_/adv/common.php');
+require('../../admin/lkqdimport/common_staging.php');
 
-require('/var/www/html/login/reports_/adv/common.php');
-require('/var/www/html/login/admin/lkqdimport/common.php');
+$fromDate = new DateTime(date('Y-m-d', time() - (3600 * 1)));
+$toDate   = new DateTime(date('Y-m-d 23:00'));
+
+synchronizeCampaignsWithNewBudgets();
+$CampaignsIds = syncReport($fromDate, $toDate);
+sanitizeReport($CampaignsIds);
+updateReportCards($db3, $Date);
 
 function calcPercents($Perc, $Impressions, $Complete)
 {
@@ -43,15 +51,176 @@ function calcPercents($Perc, $Impressions, $Complete)
     }
 }
 
-    $Date = date('Y-m-d', time() - (3600 * 1));
-    //exit(0);
-    //$Date = '2021-09-06';
-    //$Hour = date('H');
-    $Hour = 23;
+function calculateBudgetConsumed($idCampaign, $campaignBudget, $revenue) {
+    global $db;
+    
+    if(!$campaignBudget) {
+        return $revenue;
+    }
+    
+    $sql = "SELECT c.budget - sum(budgetConsumed) FROM  campaign_test c, reports_test r WHERE c.id = 6747 AND r.idCampaing = c.id";
+    $availableBudget = $db->getOne($sql);
 
-    $TotalRev = 0;
-    $TotalImp = 0;
-    $TotalImpX = 0;
+    if($availableBudget === 0) {
+        return 0;
+    }
+
+    if(!$availableBudget || $revenue <= $campaignBudget) {
+        return $revenue;
+    }
+
+    return $availableBudget;
+}
+
+function sanitizeReport(array $campaignIds) {
+    if($campaignIds) {
+        sanitizeReportsBudgetConsumed($campaignIds);
+        sanitizeRebate($campaignIds);
+    }
+}
+
+function synchronizeCampaignsWithNewBudgets() {
+    $campaigns = getCampaignsWithNewBudgets();
+    if($campaigns) {
+        foreach($campaigns as $campaign) {
+            restartBudgetConsumed($campaign['idCampaing']);
+            $fromDate = new DateTime(sprintf('%s %s:00', $campaign['date'], $campaign['hour']));
+            $fromDate->modify('+ 1 hour');
+            $toDate   = new DateTime(date('Y-m-d 23:00'));
+            syncReport($fromDate, $toDate, [$campaign['idCampaing']]);
+        }
+    }
+}
+
+function restartBudgetConsumed($campaignId) {
+    global $db;
+    $sql = 'UPDATE reports_test r
+            SET 
+                budgetConsumed = revenue,
+                budgetReached = FALSE
+            WHERE r.idCampaing = %campaign_id%';
+
+    $sql = str_replace("%campaign_id%", $campaignId, $sql);
+    $db->query($sql);
+}
+
+function getCampaignsWithNewBudgets(): array {
+    global $db;
+    $sql = 'SELECT * FROM (
+                SELECT 
+                    r.idCampaing, 
+                    sum(budgetConsumed) AS budgetConsumed,
+                    CONVERT(c.budget, DECIMAL) as budget,
+                    r.date,
+                    r.hour
+                FROM 
+                    reports_test r,
+                    campaign_test c
+                WHERE	
+                    c.id = r.idCampaing
+                    AND r.idCampaing IN (SELECT idCampaing from reports_test where budgetReached = true)
+                GROUP BY 
+                    idCampaing
+            ) AS oudated_report_rows 
+            WHERE
+                budget > budgetConsumed';
+    
+    return $db->getAll($sql) ?? [];
+}
+
+function sanitizeReportsBudgetConsumed(array $campaignIds){
+    global $db;
+    foreach($campaignIds as $campaignId) {
+        /* UPDATE THE FIRST REPORT OVERFLOWED ROW 
+           BASED ON THE CAMPAIGN BUDGET */
+        $sql = '
+        UPDATE reports_test r
+        INNER JOIN (
+            SELECT 
+                min(report_id) as report_id,
+                c.id,
+                c.budget,
+                budget_historic.budgetConsumed,
+                budget_historic.balance,
+                c.budget - (budget_historic.balance - budgetConsumed) as realBudgetConsumed
+            FROM 
+                campaign_test AS c,
+                (
+                SELECT 
+                    r.id as report_id,
+                    r.idCampaing as campaing_id,
+                    r.budgetConsumed,
+                    @b := @b + r.budgetConsumed AS balance
+                FROM
+                (SELECT @b := 0.0) AS dummy 
+                CROSS JOIN reports_test AS r
+                WHERE r.idCampaing = %campaign_id%
+                ORDER BY date, hour
+                ) AS budget_historic
+            WHERE 
+            c.id = budget_historic.campaing_id
+            AND c.ssp_id = 4
+            AND c.status = 1
+            AND c.budget > 0
+            AND budget_historic.balance >= c.budget
+            GROUP BY id
+        ) b ON r.id = b.report_id
+        SET r.budgetConsumed = b.realBudgetConsumed,
+            r.budgetReached  = true';
+
+        $sql = str_replace("%campaign_id%", $campaignId, $sql);
+
+        $db->query($sql);
+                    
+        /* SET consumedBudget TO ZERO FOR THE REST OF REPORT OVERFLOWED ROWS 
+           BASED ON THE CAMPAIGN BUDGET */
+
+        $sql = 'UPDATE reports_test r
+        INNER JOIN (SELECT * FROM (
+            SELECT 
+                r.id AS report_id,
+                r.idCampaing AS campaing_id,
+                r.budgetConsumed,
+                @b := @b + r.budgetConsumed AS balance,
+                c.budget,
+                date,
+                hour
+            FROM
+            (SELECT @b := 0.0) AS dummy 
+            CROSS JOIN reports_test AS r
+            INNER JOIN campaign_test AS c ON c.id = r.idCampaing
+            WHERE 
+                r.idCampaing = %campaign_id%
+                ORDER BY date, hour
+        ) AS report_log WHERE balance > budget) b ON r.id = b.report_id 
+        SET r.budgetConsumed = 0;';
+        
+
+        $sql = str_replace("%campaign_id%", $campaignId, $sql);
+
+        $db->query($sql);
+    }
+}
+
+
+function sanitizeRebate(array $campaignIds) {
+    global $db;
+    $sql = 'UPDATE 
+            reports_test r
+        SET
+            r.rebate = (r.budgetConsumed * r.rebatePercentage)
+        WHERE
+            r.rebatePercentage > 0
+            AND r.idCampaing IN (%campaign_ids%);';
+
+    $sql = str_replace("%campaign_ids%", implode(', ', $campaignIds), $sql);
+    $db->query($sql);
+}
+
+function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array {
+    global $db, $db3;
+    $Date = $fromDate->format('Y-m-d');
+    $Hour = $toDate->format('H');
 
     $Multipliers = array(
         '1056632' => 2,//
@@ -74,49 +243,63 @@ function calcPercents($Perc, $Impressions, $Complete)
         '1066236' => 4,
     );
 
-    /*
-    $date2 = new DateTime($Date1);
-    $date2->modify('-1 day');
-    $Date2 = $date2->format('Y-m-d');
-    */
+    $ActiveDemandTags = [];
+    $ActiveDemandTags2 = [];
+    $CampaignsIds = [];
+    $CampaingData = [];
 
-    $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
+    $filterCampaignSQL = '';
 
-    $DemandTags = array();
-    $ActiveDeals = array();
-    $CampaingData = array();
+    if($filterCampaignIds) {
+        $filterCampaignSQL = ' AND c.id IN ('. implode(',', $filterCampaignIds) .')';
+    };
 
-    $sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id != 1874 AND id != 1875 AND id != 1906 AND id != 2742 AND id != 2646 AND id != 3457 AND id != 3368 AND id != 3367 AND id != 3377 AND id != 3378 AND id != 3374 AND id != 3375 AND id != 3376 AND id != 5085 AND id != 5929";
+    $sql = "SELECT 
+        c.*,
+        dt.demand_tag_id
+    FROM 
+        campaign_test c,
+        demand_tag dt
+    WHERE 
+        dt.campaign_id = c.id
+    AND c.ssp_id = 4 
+    AND c.status = 1
+    AND c.id NOT IN(1874, 1875, 1906, 2742, 2646, 3457, 3368, 3367, 3377, 3378, 3374, 3375, 3376, 5085, 5929)
+    $filterCampaignSQL
+    ";
 
-    //$sql = "SELECT * FROM campaign WHERE id = 4115 OR id = 4116";
+    $results = $db3->query($sql);
 
-    $query = $db3->query($sql);
-    if ($db3->num_rows($query) > 0) {
-        while ($Camp = $db3->fetch_array($query)) {
+    if ($db3->num_rows($results) > 0) {
+        $camps = [];
+
+        while($Camp = $db3->fetch_array($results)) {
             $idCamp = $Camp['id'];
-
-            $ActiveDeals[$idCamp] = $Camp['deal_id'];
-            $DemandTags[] = $Camp['deal_id'];
+            $ActiveDemandTags[$idCamp] = $Camp['demand_tag_id'];
+            $ActiveDemandTags2[$Camp['demand_tag_id']] = $idCamp;
 
             $CampaingData[$idCamp]['DealId'] = $Camp['deal_id'];
             $CampaingData[$idCamp]['Rebate'] = $Camp['rebate'];
             $CampaingData[$idCamp]['Type'] = $Camp['type'];
-            if ($Camp['cpm'] > 0) {
+            $CampaingData[$idCamp]['Budget'] = $Camp['budget'];
+            $CampaingData[$idCamp]['PurchaseOrderId'] = $Camp['purchase_order_id'];
+
+            if (isset($Camp['cpm']) && $Camp['cpm'] > 0) {
                 $CampaingData[$idCamp]['CPM'] = $Camp['cpm'];
             } else {
                 $CampaingData[$idCamp]['CPM'] = 0;
             }
-            if ($Camp['cpv'] > 0) {
+            if (isset($Camp['cpv']) && $Camp['cpv'] > 0) {
                 $CampaingData[$idCamp]['CPV'] = $Camp['cpv'];
             } else {
                 $CampaingData[$idCamp]['CPV'] = 0;
             }
-            if ($Camp['cpc'] > 0) {
+            if (isset($Camp['cpc']) && $Camp['cpc'] > 0) {
                 $CampaingData[$idCamp]['CPC'] = $Camp['cpc'];
             } else {
                 $CampaingData[$idCamp]['CPC'] = 0;
             }
-            if ($Camp['vcpm'] > 0) {
+            if (isset($Camp['vcpm']) && $Camp['vcpm'] > 0) {
                 $CampaingData[$idCamp]['vCPM'] = $Camp['vcpm'];
             } else {
                 $CampaingData[$idCamp]['vCPM'] = 0;
@@ -133,7 +316,7 @@ function calcPercents($Perc, $Impressions, $Complete)
 
             $CampaingData[$idCamp]['Country'] = $countryId;
 
-            if ($Camp['vtr_from'] > 0 && $Camp['vtr_to'] > 0) {
+            if ((isset($Camp['vtr_from']) && $Camp['vtr_from'] > 0) && (isset($Camp['vtr_to']) && $Camp['vtr_to'] > 0)) {
                 $CampaingData[$idCamp]['VTRFrom'] = $Camp['vtr_from'];
                 $CampaingData[$idCamp]['VTRTo'] = $Camp['vtr_to'];
                 $CampaingData[$idCamp]['CVTR'] = true;
@@ -141,8 +324,7 @@ function calcPercents($Perc, $Impressions, $Complete)
                 $CampaingData[$idCamp]['CVTR'] = false;
             }
 
-            if ($Camp['ctr_to'] > 0) {
-                //$Camp['ctr_from'] > 0 &&
+            if (isset($Camp['ctr_to']) && $Camp['ctr_to'] > 0) {
                 $CampaingData[$idCamp]['CTRFrom'] = $Camp['ctr_from'];
                 $CampaingData[$idCamp]['CTRTo'] = $Camp['ctr_to'];
                 $CampaingData[$idCamp]['CCTR'] = true;
@@ -150,7 +332,7 @@ function calcPercents($Perc, $Impressions, $Complete)
                 $CampaingData[$idCamp]['CCTR'] = false;
             }
 
-            if ($Camp['viewability_from'] > 0 && $Camp['viewability_to'] > 0) {
+            if ((isset($Camp['viewability_from']) && $Camp['viewability_from'] > 0) && (isset($Camp['viewability_to']) && $Camp['viewability_to'] > 0)) {
                 $CampaingData[$idCamp]['ViewFrom'] = $Camp['viewability_from'];
                 $CampaingData[$idCamp]['ViewTo'] = $Camp['viewability_to'];
                 $CampaingData[$idCamp]['CView'] = true;
@@ -160,30 +342,13 @@ function calcPercents($Perc, $Impressions, $Complete)
         }
     }
 
-    /*
-    foreach($ActiveDeals as $idDDeal => $DealIID){
-        if($idDDeal <= 235){
-            unset($ActiveDeals[$idDDeal]);
-        }
-    }
-    */
-
-    //print_r($ActiveDeals);
-    //var_dump($ActiveDeals);
-    //exit();
-
-    //$ActiveDeals = array(204 => '1029948', 205 => '1029605', 206 => '1028475');
-    //$ActiveDeals = array(408 => '1038094');
-
-    $ImportData = getAdvertiserDemandReportCSV($Date, $ActiveDeals, 0, $Hour);
+    $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterCampaignIds);
 
     if ($ImportData === false) {
-        //echo "Loggin in... \n\n";
         logIn();
-        $ImportData = getAdvertiserDemandReportCSV($Date, $ActiveDeals, 0, $Hour);
+        $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterCampaignIds);
     }
-    //print_r($ImportData);
-    //exit(0);
+
     $Bids = 0;
 
     if ($ImportData !== false) {
@@ -206,6 +371,7 @@ function calcPercents($Perc, $Impressions, $Complete)
                     if ($Nn == 1) {
                         $TagId = $Line;
                     }
+
                     if ($Nn == 3) {
                         $Requests = takeComa($Line);
                     }
@@ -237,14 +403,11 @@ function calcPercents($Perc, $Impressions, $Complete)
                 $Nn++;
             }
 
-            //exit(0);
             if ($N > 0 && $Last === false) {
-                //echo $Hour . "\n";
-                if (in_array($TagId, $ActiveDeals)) {
-                    //echo $idCampaing . "\n";
-                    //echo $TagId . "\n";
-                    $idCampaing = array_search($TagId, $ActiveDeals);
 
+                if (isset($ActiveDemandTags2[$TagId])) {
+                    $idCampaing = $ActiveDemandTags2[$TagId];
+                    $CampaignsIds[$idCampaing ] = $idCampaing;
                     $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
                     $DealID = $CampaingData[$idCampaing]['DealId'];
                     $idCountry = $CampaingData[$idCampaing]['Country'];
@@ -254,6 +417,8 @@ function calcPercents($Perc, $Impressions, $Complete)
                     $CPC = $CampaingData[$idCampaing]['CPC'];
                     $vCPM = $CampaingData[$idCampaing]['vCPM'];
                     $AgencyId = $CampaingData[$idCampaing]['AgencyId'];
+                    $PurchaseOrderId = $CampaingData[$idCampaing]['PurchaseOrderId'];
+                    $campaignBudget = $CampaingData[$idCampaing]['Budget'];
 
                     $CVTR = $CampaingData[$idCampaing]['CVTR'];
                     $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -283,8 +448,6 @@ function calcPercents($Perc, $Impressions, $Complete)
                             }
                         }
 
-                        //echo "$TagId * $Multi \n";
-
                         $Requests = $Requests * $Multi;
                         $Impressions = $Impressions * $Multi;
                         $VImpressions = $VImpressions * $Multi;
@@ -301,8 +464,6 @@ function calcPercents($Perc, $Impressions, $Complete)
                         $Complete75 = $Complete75 * $Multi;
                     }
 
-                    //print_r($CampaingData[$idCampaing]);
-                    //exit();
                     $CompleteVPerc = 0;
 
                     /*
@@ -314,13 +475,11 @@ function calcPercents($Perc, $Impressions, $Complete)
                     $RandVI6 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video1_75%_completes - Dickens_Prudence_MX_10
                     $RandVI7 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video2_25%_completes
                     */
-
-                    $sql = "SELECT id FROM reports WHERE SSP = 4 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
+                    $sql = "SELECT id FROM reports_test WHERE SSP = 4 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
                     $idStat = $db->getOne($sql);
 
-
                     if (intval($idStat) == 0) {
-                        if ($Type == 2) {
+                        if ($Type == 2) {                            
                             if ($CCTR === true) {
                                 $CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
                                 $CTRTo = $CampaingData[$idCampaing]['CTRTo'] * 100;
@@ -369,16 +528,17 @@ function calcPercents($Perc, $Impressions, $Complete)
                             }
                         }
 
-                        $sql = "INSERT INTO reports
-                        (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
-                        VALUES (4, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
+                        $sql = "INSERT INTO reports_test
+                        (SSP, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
+                        VALUES (4, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
-                        //echo $sql . "\n";
-                    } else {
+                    } 
+                    else 
+                    {
                         if ($Type == 2) {
                             $Impressions = intval($Impressions);
 
-                            $sql = "SELECT Impressions FROM reports WHERE id = $idStat LIMIT 1";
+                            $sql = "SELECT Impressions FROM reports_test WHERE id = $idStat LIMIT 1";
                             $ExistingImpressions = $db->getOne($sql);
 
                             $arD = explode('-', $Date);
@@ -395,7 +555,7 @@ function calcPercents($Perc, $Impressions, $Complete)
                                 }
 
                                 if ($CVTR === true) {
-                                    $sql = "SELECT CompleteVPer FROM reports WHERE id = '$idStat' LIMIT 1";
+                                    $sql = "SELECT CompleteVPer FROM reports_test WHERE id = '$idStat' LIMIT 1";
                                     $CompleteVPerc = $db->getOne($sql);
 
                                     if ($CompleteVPerc > 0) {
@@ -425,21 +585,21 @@ function calcPercents($Perc, $Impressions, $Complete)
                                 if ($CPM > 0) {
                                     $AddRevenue = $NewImpressions * $CPM / 1000;
                                 } elseif ($CPV > 0) {
-                                    $sql = "SELECT CompleteV FROM reports WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT CompleteV FROM reports_test WHERE id = $idStat LIMIT 1";
                                     $ExistingCompleteV = $db->getOne($sql);
 
                                     $NewCompleteV = $CompleteV - $ExistingCompleteV;
 
                                     $AddRevenue = $NewCompleteV * $CPV;
                                 } elseif ($CPC > 0) {
-                                    $sql = "SELECT Clicks FROM reports WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT Clicks FROM reports_test WHERE id = $idStat LIMIT 1";
                                     $ExistingClicks = $db->getOne($sql);
 
                                     $NewClicks = $Clicks - $ExistingClicks;
 
                                     $AddRevenue = $NewClicks * $CPC;
                                 } elseif ($vCPM > 0) {
-                                    $sql = "SELECT VImpressions FROM reports WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT VImpressions FROM reports_test WHERE id = $idStat LIMIT 1";
                                     $ExistingVImpressions = $db->getOne($sql);
 
                                     $NewVImpressions = $VImpressions - $ExistingVImpressions;
@@ -457,11 +617,12 @@ function calcPercents($Perc, $Impressions, $Complete)
 
                                 $Revenue = "Revenue + $AddRevenue";
 
-                                $sql = "UPDATE reports SET 
+                                $sql = "UPDATE reports_test SET 
                                     Requests = $Requests, 
                                     Bids = $Bids, 
                                     Impressions = $Impressions, 
                                     Revenue = $Revenue, 
+                                    budgetConsumed = Revenue,
                                     VImpressions = $VImpressions,
                                     Clicks = $Clicks,
                                     CompleteV = $CompleteV,
@@ -473,17 +634,18 @@ function calcPercents($Perc, $Impressions, $Complete)
                                 WHERE id = '$idStat' LIMIT 1";
 
                                 $db->query($sql);
-
-                                //echo $sql . "\n";
                             } else {
                                 //echo "No New I CPM $CPM \n";
                             }
-                        } else {
-                            $sql = "UPDATE reports SET 
+                        } 
+                        else 
+                        {
+                            $sql = "UPDATE reports_test SET 
                                 Requests = $Requests, 
                                 Bids = $Bids, 
                                 Impressions = $Impressions, 
-                                Revenue = $Revenue, 
+                                Revenue = $Revenue,
+                                budgetConsumed = $Revenue,
                                 VImpressions = $VImpressions,
                                 Clicks = $Clicks,
                                 CompleteV = $CompleteV,
@@ -495,26 +657,13 @@ function calcPercents($Perc, $Impressions, $Complete)
                             WHERE id = '$idStat' LIMIT 1";
 
                             $db->query($sql);
-
-                            //echo $sql . "\n";
                         }
                     }
-
-                    //$db->query($sql);
-                    //echo $sql . "\n";
                 }
             }
             $N++;
         }
-
-        $Subject = 'OK 1';
-        $message = 'Actualizacion realizada.';
     }
 
-    echo $TotalRev;
-    echo " - IMP: " . $TotalImp;
-    echo " - IMPX: " . $TotalImpX;
-
-    $Date = date('Y-m-d', time() - 3600);
-    updateReportCards($db3, $Date);
-    //updateReportCards($db2, $Date);
+    return $CampaignsIds;
+}

@@ -6,7 +6,8 @@
 	$dbhost2="localhost";
 	$dbname2="vidoomy_adv";
 
-    if (in_array("APP_ENV", $_ENV) && $_ENV["APP_ENV"] == 'local') {
+    if ((in_array("APP_ENV", $_ENV) || isset($_ENV["APP_ENV"])) 
+        && $_ENV["APP_ENV"] == 'local') {
         $dbuser2=$_ENV["ADVERTISERS_LOCAL_USER"];
         $dbpass2=$_ENV["ADVERTISERS_LOCAL_PASSWORD"];
         $dbhost2=$_ENV["ADVERTISERS_LOCAL_HOST"];
