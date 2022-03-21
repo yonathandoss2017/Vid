@@ -2011,6 +2011,12 @@ function getDealInfo(int $dealId): array
         return $response->errors;
     }
 
+    if (empty($response['data'])) {
+        http_response_code(404);
+        return [];
+    }
+
+    http_response_code(200);
     return $response['data'];
 }
 

@@ -16,7 +16,8 @@ $pdo = new PDO($conexion, $dbuser2, $dbpass2);
 $userId = 513;
 $sql = <<<SQL
 SELECT
-    cOld.id campaign_id,
+    cOld.id old_campaign_id,
+    cNew.id new_campaign_id,
     cNew.purchase_order_id,
     dt.id creativity_id,
     cNew.rebate new_campaign_rebate,
@@ -32,26 +33,24 @@ LEFT JOIN purchase_order po ON po.id = cNew.purchase_order_id
 LEFT JOIN agency a ON cOld.agency_id = a.id
 WHERE
     cOld.created_by != {$userId}
-    AND dt.id is null
 SQL;
 
 $stmt = $pdo->query($sql);
 $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $totalCampaigns = count($campaigns);
+
 $progress = 1;
 foreach ($campaigns as $campaign) {
-    $campaignId = $campaign['campaign_id'];
-    $purchaseOrderId = $campaign['purchase_order_id'] ?: $campaign['campaign_id'];
-    $creativityId = $campaign['creativity_id'] ?: $campaign['campaign_id'];
+    $oldCampaignId = $campaign['old_campaign_id'];
+    $newCampaignId = $campaign['new_campaign_id'] ?: $campaign['old_campaign_id'];
+    $purchaseOrderId = $campaign['purchase_order_id'] ?: $campaign['old_campaign_id'];
+    $creativityId = $campaign['creativity_id'] ?: $campaign['old_campaign_id'];
     $rebate = $campaign['new_campaign_rebate'] ?: $campaign['old_campaign_rebate'];
     $oldCampaignRebate = $campaign['old_campaign_rebate'];
     $salesManagerId = $campaign['purchase_order_sales_manager_id']
         ?: $campaign['old_campaign_sales_manager_id']
         ?: $campaign['agency_sales_manager_id'];
-
-    var_dump($campaignId, $purchaseOrderId, $creativityId, $rebate, $oldCampaignRebate, $salesManagerId);
-    die();
 
     $subSql = <<<SQL
 UPDATE
@@ -61,11 +60,11 @@ SET
     idPurchaseOrder = {$purchaseOrderId},
     budgetConsumed = revenue,
     rebatePercentage = {$rebate},
-    idSalesManager = {$salesManagerId}
+    idSalesManager = {$salesManagerId},
+    idCampaing = {$newCampaignId}
 WHERE
-    idCampaing = {$campaignId}
+    idCampaing = {$oldCampaignId}
 SQL;
-    // TODO update idCampaign with the id of the new created campaign
 
     echo "Processing campaign {$progress} of {$totalCampaigns}\n";
     $stmt = $pdo->prepare($subSql);

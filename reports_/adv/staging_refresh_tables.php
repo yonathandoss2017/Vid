@@ -229,7 +229,7 @@ if ($db2->num_rows($query2) > 0) {
 }
 
 // Campaign_test Section
-// TODO: remove this when going to prod
+// TODO remove this when going to prod
 $sql = "SELECT id FROM campaign_test ORDER BY id DESC LIMIT 1";
 $lastCamp = intval($db->getOne($sql));
 
@@ -263,6 +263,7 @@ if ($dbDev1->num_rows($query2) > 0) {
         $created_by = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'];
         $salesManagerId = $S['purchase_order_sales_manager_id'];
+        $budget = $S['budget'];
 
         if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
             $dsp_id = 11;
@@ -270,13 +271,13 @@ if ($dbDev1->num_rows($query2) > 0) {
 
         $deleted = $S['deleted'];
 
-        $sql = "INSERT INTO campaign_test (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted, created_by, purchase_order_id, sales_manager_id)
-        VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted', '$created_by', {$purchaseOrderId}, {$salesManagerId})";
+        $sql = "INSERT INTO campaign_test (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted, created_by, purchase_order_id, sales_manager_id, budget)
+        VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted', '$created_by', {$purchaseOrderId}, {$salesManagerId}, {$budget})";
         $db->query($sql);
     }
 }
 
-// TODO: changes to move to production campaign update query
+// TODO changes to move to production campaign update query
 $sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id  FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
 $query2 = $dbDev1->query($sql);
 if ($dbDev1->num_rows($query2) > 0) {
@@ -289,8 +290,9 @@ if ($dbDev1->num_rows($query2) > 0) {
         $createdBy = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'];
         $salesManagerId = $S['purchase_order_sales_manager_id'];
+        $budget = $S['budget'];
 
-        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId} WHERE id = {$idC} LIMIT 1";
+        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget} WHERE id = {$idC} LIMIT 1";
         $db->query($sql);
     }
 }
