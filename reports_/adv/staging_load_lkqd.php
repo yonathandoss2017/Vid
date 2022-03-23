@@ -19,7 +19,7 @@ $cookie_file = '../../admin/lkqdimport/cookie.txt';
 require('../../reports_/adv/common.php');
 require('../../admin/lkqdimport/common_staging.php');
 
-$fromDate = new DateTime(date('Y-m-d', time() - (3600 * 1)));
+$fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
 synchronizeCampaignsWithNewBudgets();
@@ -58,7 +58,7 @@ function calculateBudgetConsumed($idCampaign, $campaignBudget, $revenue) {
         return $revenue;
     }
     
-    $sql = "SELECT c.budget - sum(budgetConsumed) FROM  campaign_test c, reports_test r WHERE c.id = 6747 AND r.idCampaing = c.id";
+    $sql = "SELECT c.budget - sum(budgetConsumed) FROM  campaign c, reports_test r WHERE c.id = $idCampaign AND r.idCampaing = c.id";
     $availableBudget = $db->getOne($sql);
 
     if($availableBudget === 0) {
@@ -74,6 +74,7 @@ function calculateBudgetConsumed($idCampaign, $campaignBudget, $revenue) {
 
 function sanitizeReport(array $campaignIds) {
     if($campaignIds) {
+        //synchronizeCampaignsWithNewBudgets();
         sanitizeReportsBudgetConsumed($campaignIds);
         sanitizeRebate($campaignIds);
     }
@@ -87,7 +88,7 @@ function synchronizeCampaignsWithNewBudgets() {
             $fromDate = new DateTime(sprintf('%s %s:00', $campaign['date'], $campaign['hour']));
             $fromDate->modify('+ 1 hour');
             $toDate   = new DateTime(date('Y-m-d 23:00'));
-            syncReport($fromDate, $toDate, [$campaign['idCampaing']]);
+            syncReport($fromDate, $toDate, [$campaign['deal_id']]);
         }
     }
 }
@@ -108,14 +109,15 @@ function getCampaignsWithNewBudgets(): array {
     global $db;
     $sql = 'SELECT * FROM (
                 SELECT 
-                    r.idCampaing, 
+                    r.idCampaing,
+                    c.deal_id,
                     sum(budgetConsumed) AS budgetConsumed,
                     CONVERT(c.budget, DECIMAL) as budget,
                     r.date,
                     r.hour
                 FROM 
                     reports_test r,
-                    campaign_test c
+                    campaign c
                 WHERE	
                     c.id = r.idCampaing
                     AND r.idCampaing IN (SELECT idCampaing from reports_test where budgetReached = true)
@@ -133,71 +135,68 @@ function sanitizeReportsBudgetConsumed(array $campaignIds){
     foreach($campaignIds as $campaignId) {
         /* UPDATE THE FIRST REPORT OVERFLOWED ROW 
            BASED ON THE CAMPAIGN BUDGET */
-        $sql = '
-        UPDATE reports_test r
-        INNER JOIN (
-            SELECT 
-                min(report_id) as report_id,
-                c.id,
-                c.budget,
-                budget_historic.budgetConsumed,
-                budget_historic.balance,
-                c.budget - (budget_historic.balance - budgetConsumed) as realBudgetConsumed
-            FROM 
-                campaign_test AS c,
-                (
-                SELECT 
-                    r.id as report_id,
-                    r.idCampaing as campaing_id,
-                    r.budgetConsumed,
-                    @b := @b + r.budgetConsumed AS balance
-                FROM
-                (SELECT @b := 0.0) AS dummy 
-                CROSS JOIN reports_test AS r
-                WHERE r.idCampaing = %campaign_id%
-                ORDER BY date, hour
-                ) AS budget_historic
-            WHERE 
-            c.id = budget_historic.campaing_id
-            AND c.ssp_id = 4
-            AND c.status = 1
-            AND c.budget > 0
-            AND budget_historic.balance >= c.budget
-            GROUP BY id
-        ) b ON r.id = b.report_id
-        SET r.budgetConsumed = b.realBudgetConsumed,
-            r.budgetReached  = true';
+        $sql = 'UPDATE reports_test r
+                    INNER JOIN (
+                        SELECT 
+                            report_id,
+                            c.id,
+                            c.budget,
+                            budget_historic.budgetConsumed,
+                            budget_historic.balance,
+                            c.budget - (budget_historic.balance - budgetConsumed) as realBudgetConsumed,
+                            budget_historic.date,
+                            budget_historic.hour
+                        FROM 
+                            campaign AS c,
+                            (
+                            SELECT 
+                                r.id as report_id,
+                                r.idCampaing as campaing_id,
+                                r.budgetConsumed,
+                                r.date,
+                                r.hour,
+                                @b := @b + CAST(r.budgetConsumed AS DECIMAL(10,5)) AS balance
+                            FROM
+                            (SELECT @b := 0.0) AS dummy 
+                            CROSS JOIN reports_test AS r
+                            WHERE r.idCampaing = %campaign_id%
+                            ORDER BY date, hour ASC
+                            ) AS budget_historic
+                        WHERE 
+                        c.id = budget_historic.campaing_id
+                        AND c.ssp_id = 4
+                        AND c.status = 1
+                        AND c.budget > 0
+                        AND budget_historic.balance >= c.budget
+                        GROUP BY id
+                        ORDER BY date, hour ASC
+                    ) b ON r.id = b.report_id
+                    SET r.budgetConsumed = b.realBudgetConsumed,
+                        r.budgetReached  = true';
 
         $sql = str_replace("%campaign_id%", $campaignId, $sql);
-
         $db->query($sql);
-                    
-        /* SET consumedBudget TO ZERO FOR THE REST OF REPORT OVERFLOWED ROWS 
-           BASED ON THE CAMPAIGN BUDGET */
 
         $sql = 'UPDATE reports_test r
-        INNER JOIN (SELECT * FROM (
-            SELECT 
-                r.id AS report_id,
-                r.idCampaing AS campaing_id,
-                r.budgetConsumed,
-                @b := @b + r.budgetConsumed AS balance,
-                c.budget,
-                date,
-                hour
-            FROM
-            (SELECT @b := 0.0) AS dummy 
-            CROSS JOIN reports_test AS r
-            INNER JOIN campaign_test AS c ON c.id = r.idCampaing
-            WHERE 
-                r.idCampaing = %campaign_id%
-                ORDER BY date, hour
-        ) AS report_log WHERE balance > budget) b ON r.id = b.report_id 
-        SET r.budgetConsumed = 0;';
-        
-
+                INNER JOIN (SELECT * FROM (
+                    SELECT 
+                        r.id AS report_id,
+                        r.idCampaing AS campaing_id,
+                        r.budgetConsumed,
+                        @b := @b + CAST(r.budgetConsumed AS DECIMAL(10,5)) AS balance,
+                        c.budget,
+                        date,
+                        hour
+                    FROM
+                    (SELECT @b := 0.0) AS dummy 
+                    CROSS JOIN reports_test AS r
+                    INNER JOIN campaign AS c ON c.id = r.idCampaing
+                    WHERE 
+                        r.idCampaing = %campaign_id%
+                        ORDER BY date, hour
+                ) AS report_log WHERE balance > budget) b ON r.id = b.report_id 
+                SET r.budgetConsumed = 0';        
         $sql = str_replace("%campaign_id%", $campaignId, $sql);
-
         $db->query($sql);
     }
 }
@@ -247,25 +246,32 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
     $ActiveDemandTags2 = [];
     $CampaignsIds = [];
     $CampaingData = [];
+    $avoidCreativitiesIds = $_ENV['LOAD_LKQD_AVOID_CREATIVITIES_IDS'] ?? [];
 
     $filterCampaignSQL = '';
+    $avoidCreativitiesIdsSQL = '';
+    
+    if($avoidCreativitiesIds) {
+        $avoidCreativitiesIdsSQL = " AND dt.id NOT IN ($avoidCreativitiesIds)";
+    }
 
     if($filterCampaignIds) {
         $filterCampaignSQL = ' AND c.id IN ('. implode(',', $filterCampaignIds) .')';
     };
 
     $sql = "SELECT 
-        c.*,
-        dt.demand_tag_id
-    FROM 
-        campaign_test c,
-        demand_tag dt
-    WHERE 
-        dt.campaign_id = c.id
-    AND c.ssp_id = 4 
-    AND c.status = 1
-    AND c.id NOT IN(1874, 1875, 1906, 2742, 2646, 3457, 3368, 3367, 3377, 3378, 3374, 3375, 3376, 5085, 5929)
-    $filterCampaignSQL
+                c.*,
+                dt.demand_tag_id
+            FROM 
+                campaign c,
+                creativity dt
+            WHERE 
+                dt.campaign_id = c.id
+            AND dt.demand_tag_id IS NOT NULL
+            AND c.ssp_id = 4 
+            AND c.status = 1
+            $avoidCreativitiesIdsSQL
+            $filterCampaignSQL
     ";
 
     $results = $db3->query($sql);
@@ -368,6 +374,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                             break;
                         }
                     }
+
                     if ($Nn == 1) {
                         $TagId = $Line;
                     }
@@ -479,7 +486,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                     $idStat = $db->getOne($sql);
 
                     if (intval($idStat) == 0) {
-                        if ($Type == 2) {                            
+                        if ($Type == 2) {
                             if ($CCTR === true) {
                                 $CTRFrom = $CampaingData[$idCampaing]['CTRFrom'] * 100;
                                 $CTRTo = $CampaingData[$idCampaing]['CTRTo'] * 100;
@@ -530,7 +537,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 
                         $sql = "INSERT INTO reports_test
                         (SSP, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
-                        VALUES (4, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
+                        VALUES (4, $PurchaseOrderId, $idCampaing, (SELECT id from creativity where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
                     } 
                     else 
