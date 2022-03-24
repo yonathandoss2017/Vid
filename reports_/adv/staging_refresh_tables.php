@@ -293,6 +293,8 @@ if ($dbDev1->num_rows($query2) > 0) {
         $budget = $S['budget'];
 
         $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget} WHERE id = {$idC} LIMIT 1";
+        print_r($sql);
+        die();
         $db->query($sql);
     }
 }

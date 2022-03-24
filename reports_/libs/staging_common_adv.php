@@ -1,4 +1,5 @@
 <?php
+
 function safe_json_encode($value, $options = 0, $depth = 512)
 {
     $encoded = json_encode($value, $options, $depth);

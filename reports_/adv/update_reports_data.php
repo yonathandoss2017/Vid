@@ -60,8 +60,7 @@ SET
     idPurchaseOrder = {$purchaseOrderId},
     budgetConsumed = revenue,
     rebatePercentage = {$rebate},
-    idSalesManager = {$salesManagerId},
-    idCampaing = {$newCampaignId}
+    idSalesManager = {$salesManagerId}
 WHERE
     idCampaing = {$oldCampaignId}
 SQL;
