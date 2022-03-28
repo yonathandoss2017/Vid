@@ -4,6 +4,7 @@
 ini_set('display_errors', 0);
 ini_set('memory_limit', '-1');
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+define('CONST', 1);
 
 if (file_exists('/var/www/html/login/config.php')) {
     require('/var/www/html/login/config.php');
@@ -25,7 +26,7 @@ $toDate   = new DateTime(date('Y-m-d 23:00'));
 synchronizeCampaignsWithNewBudgets();
 $CampaignsIds = syncReport($fromDate, $toDate);
 sanitizeReport($CampaignsIds);
-updateReportCards($db3, $Date);
+updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
 {
@@ -261,12 +262,15 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 
     $sql = "SELECT 
                 c.*,
-                dt.demand_tag_id
+                dt.demand_tag_id,
+                po.sales_manager_id
             FROM 
                 campaign c,
-                creativity dt
+                creativity dt,
+                purchase_order po
             WHERE 
                 dt.campaign_id = c.id
+            AND po.id = c.purchase_order_id
             AND dt.demand_tag_id IS NOT NULL
             AND c.ssp_id = 4 
             AND c.status = 1
@@ -289,6 +293,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             $CampaingData[$idCamp]['Type'] = $Camp['type'];
             $CampaingData[$idCamp]['Budget'] = $Camp['budget'];
             $CampaingData[$idCamp]['PurchaseOrderId'] = $Camp['purchase_order_id'];
+            $CampaingData[$idCamp]['SalesManagerId'] = $Camp['sales_manager_id'];
 
             if (isset($Camp['cpm']) && $Camp['cpm'] > 0) {
                 $CampaingData[$idCamp]['CPM'] = $Camp['cpm'];
@@ -426,6 +431,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                     $AgencyId = $CampaingData[$idCampaing]['AgencyId'];
                     $PurchaseOrderId = $CampaingData[$idCampaing]['PurchaseOrderId'];
                     $campaignBudget = $CampaingData[$idCampaing]['Budget'];
+                    $salesManagerId = $CampaingData[$idCampaing]['SalesManagerId'];
 
                     $CVTR = $CampaingData[$idCampaing]['CVTR'];
                     $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -482,7 +488,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                     $RandVI6 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video1_75%_completes - Dickens_Prudence_MX_10
                     $RandVI7 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video2_25%_completes
                     */
-                    $sql = "SELECT id FROM reports_test WHERE SSP = 4 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
+                    $sql = "SELECT id FROM reports_test WHERE SSP = 4 AND idCreativity = (SELECT id from creativity where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1) AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
                     $idStat = $db->getOne($sql);
 
                     if (intval($idStat) == 0) {
@@ -536,8 +542,8 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                         }
 
                         $sql = "INSERT INTO reports_test
-                        (SSP, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
-                        VALUES (4, $PurchaseOrderId, $idCampaing, (SELECT id from creativity where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
+                        (SSP, idSalesManager, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
+                        VALUES (4, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from creativity where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
                     } 
                     else 
