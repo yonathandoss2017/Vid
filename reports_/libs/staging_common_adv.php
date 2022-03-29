@@ -176,7 +176,7 @@ $DimensionsSQL = array(
     ),
     'purchase_order' => array(
         'Name'       => "purchase_order.name AS PurchaseOrderName",
-        'SearchName' => "purchase_order.id",
+        'SearchName' => "purchase_order.name",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderName",
         'OrderVal'   => "PurchaseOrderName",
@@ -184,7 +184,7 @@ $DimensionsSQL = array(
         'HeadName'   => 'Purchase Order'
     ),
     'cid' => array(
-        'Name'       => "purchase_order.id AS PurchaseOrderId",
+        'Name'       => "purchase_order.cid AS PurchaseOrderId",
         'SearchName' => "purchase_order.cid",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderId",
