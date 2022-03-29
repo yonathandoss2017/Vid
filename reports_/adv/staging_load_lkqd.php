@@ -20,6 +20,7 @@ $cookie_file = '../../admin/lkqdimport/cookie.txt';
 require('../../reports_/adv/common.php');
 require('../../admin/lkqdimport/common_staging.php');
 
+// TODO change back campaign and reports table name when goint to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
@@ -172,7 +173,6 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
                         WHERE 
                         c.id = budget_historic.campaing_id
                         AND c.ssp_id = 4
-                        AND c.status = 1
                         AND c.budget > 0
                         AND budget_historic.balance >= c.budget
                         GROUP BY id
@@ -286,7 +286,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             $filterCampaignSQL
     ";
 
-    $results = $db3->query($sql);
+    $results = $db->query($sql);
 
     if ($db3->num_rows($results) > 0) {
         $camps = [];
@@ -426,7 +426,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             if ($N > 0 && $Last === false) {
                 if (isset($ActiveDemandTags2[$TagId])) {
                     $idCampaing = $ActiveDemandTags2[$TagId];
-                    $CampaignsIds[$idCampaing ] = $idCampaing;
+                    $CampaignsIds[$idCampaing] = $idCampaing;
                     $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
                     $DealID = $CampaingData[$idCampaing]['DealId'];
                     $idCountry = $CampaingData[$idCampaing]['Country'];
@@ -550,7 +550,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 
                         $sql = "INSERT INTO reports_test
                         (SSP, idSalesManager, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
-                        VALUES (4, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from creativity where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
+                        VALUES (4, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
                     } else {
                         if ($Type == 2) {
