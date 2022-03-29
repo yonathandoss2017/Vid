@@ -15,7 +15,7 @@ require('../../reports_/adv/config.php');
 require('../../db.php');
 
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+$db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 $cookie_file = '../../admin/lkqdimport/cookie.txt';
 require('../../reports_/adv/common.php');
 require('../../admin/lkqdimport/common_staging.php');
@@ -273,8 +273,8 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                 dt.demand_tag_id,
                 po.sales_manager_id
             FROM 
-                campaign_test c,
-                demand_tag dt,
+                campaign c,
+                creativity dt,
                 purchase_order po
             WHERE 
                 dt.campaign_id = c.id
@@ -286,7 +286,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             $filterCampaignSQL
     ";
 
-    $results = $db->query($sql);
+    $results = $db3->query($sql);
 
     if ($db3->num_rows($results) > 0) {
         $camps = [];
