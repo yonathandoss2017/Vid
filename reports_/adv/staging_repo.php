@@ -126,7 +126,7 @@ if (in_array('ROLE_ADMIN', $RolesJSON)) {
 } elseif (in_array('ROLE_ADVERTISER', $RolesJSON)) {
     $sql = "SELECT id FROM advertiser WHERE user_id = $UserId LIMIT 1";
     $AdvID = $db2->getOne($sql);
-    $PubManFilter = " AND campaign.advertiser_id = $AdvID AND {ReportsTable}.Impressions > 0 ";
+    $PubManFilter = " AND campaign_test.advertiser_id = $AdvID AND {ReportsTable}.Impressions > 0 ";
 
     $AdvRep = true;
 
@@ -146,11 +146,11 @@ if (in_array('ROLE_ADMIN', $RolesJSON)) {
         $OrC = "";
         while ($U = $db2->fetch_array($queryS)) {
             $idC = $U['campaign_id'];
-            $PubManFilter .= $OrC . "campaign.id = '$idC'";
+            $PubManFilter .= $OrC . "campaign_test.id = '$idC'";
             $OrC = " OR ";
         }
     } else {
-        $PubManFilter = " AND (campaign.id = 0 ";
+        $PubManFilter = " AND (campaign_test.id = 0 ";
     }
 } elseif (in_array('ROLE_ACCOUNT_MANAGER', $RolesJSON)) {
     $sql = "SELECT * FROM account_manager_campaigns WHERE user_id = '$UserId'";
@@ -160,11 +160,11 @@ if (in_array('ROLE_ADMIN', $RolesJSON)) {
         $OrC = "";
         while ($U = $db2->fetch_array($queryS)) {
             $idC = $U['campaign_id'];
-            $PubManFilter .= $OrC . "campaign.id = '$idC'";
+            $PubManFilter .= $OrC . "campaign_test.id = '$idC'";
             $OrC = " OR ";
         }
     } else {
-        $PubManFilter = " AND (campaign.id = 0";
+        $PubManFilter = " AND (campaign_test.id = 0";
     }
 } elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
     $PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
@@ -222,7 +222,7 @@ if (isset($_POST['Dimensions'])) {
             if ($ReportingViewUsers !== '') {
                 if ($PubManFilter === "") {
                     $PubManFilter = $PubManFilter . "AND (";
-                } elseif ($PubManFilter === " AND (campaign.id = 0") {
+                } elseif ($PubManFilter === " AND (campaign_test.id = 0") {
                     $PubManFilter = "AND (";
                 } else {
                     $PubManFilter = $PubManFilter . " OR ";
@@ -242,12 +242,12 @@ if (isset($_POST['Dimensions'])) {
             if ($CountryViewer !== '') {
                 if ($PubManFilter === "") {
                     $PubManFilter = $PubManFilter . "AND (";
-                } elseif ($PubManFilter === " AND (campaign.id = 0") {
+                } elseif ($PubManFilter === " AND (campaign_test.id = 0") {
                     $PubManFilter = "AND (";
                 } else {
                     $PubManFilter = $PubManFilter . " OR ";
                 }
-                $PubManFilter .= "reports.idCountry IN ($CountryViewer) ";
+                $PubManFilter .= "{ReportsTable}.idCountry IN ($CountryViewer) ";
             }
         }
     }
@@ -303,9 +303,9 @@ if (isset($_POST['PDate'])) {
             if ($StartHour >= 0 || $EndHour <= 23) {
                 $ForceHourTable = true;
                 if ($DTo != $DFrom) {
-                    $AddHourRange = " AND (((reports.Date >= '$DFrom' AND reports.Date < '$DTo') AND reports.Hour >= $StartHour) OR ((reports.Date > '$DFrom' AND reports.Date <= '$DTo') AND reports.Hour <= $EndHour))";
+                    $AddHourRange = " AND ((({ReportsTable}.Date >= '$DFrom' AND {ReportsTable}.Date < '$DTo') AND {ReportsTable}.Hour >= $StartHour) OR (({ReportsTable}.Date > '$DFrom' AND {ReportsTable}.Date <= '$DTo') AND {ReportsTable}.Hour <= $EndHour))";
                 } else {
-                    $AddHourRange = " AND (reports.Hour >= $StartHour AND reports.Hour <= $EndHour)";
+                    $AddHourRange = " AND ({ReportsTable}.Hour >= $StartHour AND {ReportsTable}.Hour <= $EndHour)";
                 }
             }
         }
@@ -329,7 +329,8 @@ if (isset($_POST['reportType'])) {
     if ($RepType != 'hourly') {
         $BaseTable = 'reports_resume';
     } else {
-        $BaseTable = 'reports';
+        // TODO change back to reports
+        $BaseTable = 'reports_test';
     }
     if ($RepType != 'overall' || count($Dimensions) == 0) {
         $IncludeTime = true;
@@ -337,8 +338,8 @@ if (isset($_POST['reportType'])) {
     if ($RepType == 'overall') {
         $Overall = true;
     }
-
-    $NewTable = 'reports';
+    // TODO change back to reports
+    $NewTable = 'reports_test';
     if (checkTableExists($NewTable)) {
         $UnionTables[] = $NewTable;
     }
@@ -613,8 +614,9 @@ if ($DimensionsOK) {
     $Nd = 0;
     if ($ThereAreFilters) {
         $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
-        INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-        INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoinsTotals
+        INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing 
+        INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id 
+        INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoinsTotals
         WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $PubManFilter ";
 
         $SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
@@ -670,8 +672,9 @@ if ($DimensionsOK) {
 
     //CALCULA LOS TOTALES CON FILTROS
     $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
-    INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing 
-    INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins
+    INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing 
+    INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id 
+    INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoins
     WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter ";
 
     $SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
@@ -725,8 +728,8 @@ if ($DimensionsOK) {
 
     $Nd = 0;
     //CALCULA EL RESTO DE LA TABLA
-    $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", reports.SSP AS idSSP" : "";
-    $SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign ON campaign.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
+    $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", {ReportsTable}.SSP AS idSSP" : "";
+    $SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
 
     $SQLQuery = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQuery);
 

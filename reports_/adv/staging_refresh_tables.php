@@ -263,7 +263,7 @@ if ($dbDev1->num_rows($query2) > 0) {
         $created_by = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'];
         $salesManagerId = $S['purchase_order_sales_manager_id'];
-        $budget = $S['budget'];
+        $budget = $S['budget'] ?? 0;
 
         if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
             $dsp_id = 11;
@@ -278,7 +278,7 @@ if ($dbDev1->num_rows($query2) > 0) {
 }
 
 // TODO changes to move to production campaign update query
-$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id  FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id  FROM campaign c LEFT JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
 $query2 = $dbDev1->query($sql);
 if ($dbDev1->num_rows($query2) > 0) {
     while ($S = $dbDev1->fetch_array($query2)) {
@@ -288,13 +288,12 @@ if ($dbDev1->num_rows($query2) > 0) {
         $agency_id = $S['agency_id'];
         $deal_id = $S['deal_id'];
         $createdBy = $S['created_by'];
-        $purchaseOrderId = $S['purchase_order_id'];
-        $salesManagerId = $S['purchase_order_sales_manager_id'];
-        $budget = $S['budget'];
+        $purchaseOrderId = $S['purchase_order_id'] ?? "NULL";
+        $salesManagerId = $S['purchase_order_sales_manager_id'] ?? "NULL";
+        $rebate = $S['rebate'] ?? 0;
+        $budget = $S['budget'] ?? 0;
 
-        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget} WHERE id = {$idC} LIMIT 1";
-        print_r($sql);
-        die();
+        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget}, rebate = {$rebate} WHERE id = {$idC} LIMIT 1";
         $db->query($sql);
     }
 }
