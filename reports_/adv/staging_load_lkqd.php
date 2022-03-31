@@ -361,7 +361,6 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             AND dt.demand_tag_id IS NOT NULL
             AND c.ssp_id = 4 
             AND c.status = 1
-            -- AND c.id = 9064
             $avoidCreativitiesIdsSQL
             $filterCampaignSQL
     ";
