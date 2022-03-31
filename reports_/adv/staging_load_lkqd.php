@@ -10,16 +10,18 @@ define('DEBUG', true);
 if (file_exists('/var/www/html/login/config.php')) {
     require('/var/www/html/login/config.php');
 } else {
-    require('../../config_local.php');
+    require('./../../config_local.php');
 }
-require('../../reports_/adv/config.php');
-require('../../db.php');
+require('./../../reports_/adv/config.php');
+require('./../../db.php');
 
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
+//$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 $db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
-$cookie_file = '../../admin/lkqdimport/cookie.txt';
-require('../../reports_/adv/common.php');
-require('../../admin/lkqdimport/common_staging.php');
+$campaignBudgets = [];
+$cookie_file = './../../admin/lkqdimport/cookie.txt';
+require('./../../reports_/adv/common.php');
+require('./../../admin/lkqdimport/common_staging.php');
 
 // TODO: change back campaign and reports table name when going to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
@@ -59,27 +61,50 @@ function calcPercents($Perc, $Impressions, $Complete)
 
 function getCampaignAvailableBudget($idCampaign) {
     global $db;
+    global $campaignBudgets;
 
-    $sql = "SELECT available_budget FROM campaign_budget_info cbi WHERE cbi.campaign_id = $idCampaign";
-    
-    $budget = $db->getOne($sql);
+    if(!$campaignBudgets) {
+        $sql = "SELECT campaign_id, budget, budget_consumed, available_budget FROM campaign_budget_info";
+        $allBudgets = $db->getAll($sql);
 
-    if($budget === null) {
-        $sql = "SELECT budget FROM campaign_test c WHERE c.id = $idCampaign";
-        $budget = $db->getOne($sql) ?? 0;
+        if($allBudgets) {
+            $campaignBudgets = array_column($allBudgets, null, 'campaign_id');
+        }
     }
-    
-    return $budget;
+
+    if(!isset($campaignBudgets[$idCampaign])) {
+        return 0;
+    }
+
+    $campaignBudget = $campaignBudgets[$idCampaign];
+
+    if($campaignBudget['budget_consumed'] <= 0 ) {
+        return $campaignBudget['budget'];
+    }
+
+    return $campaignBudget['available_budget'] <= 0 ? 0 : $campaignBudget['available_budget'];
+}
+
+function updateCampaignBudget($idCampaign, $value) {
+    global $campaignBudgets;
+
+    if(!isset($campaignBudgets[$idCampaign]) || 
+        $campaignBudgets[$idCampaign]['available_budget'] <= 0) {
+        return;
+    }
+
+    $campaignBudgets[$idCampaign]['budget_consumed'] += $value;
+    $campaignBudgets[$idCampaign]['available_budget'] -= $value;
 }
 
 function synchronizeCampaignsWithBudgetOverflow($campaignIds) {
     $time =  microtime(true);
-    debug('Start <b>synchronizeCampaignsWithBudgetOverflow</b>');
+    debug('Start: synchronizeCampaignsWithBudgetOverflow');
     if($campaignIds) {
         sanitizeReportsBudgetConsumed($campaignIds);
         sanitizeRebate($campaignIds);
     }
-    debug('Finish <b>synchronizeCampaignsWithBudgetOverflow</b>');
+    debug('Finish: synchronizeCampaignsWithBudgetOverflow');
     debugTime($time);
 }
 
@@ -117,7 +142,7 @@ function debug($message) {
         echo($message);
     }
 
-    echo '<br/>';
+    echo PHP_EOL;
 }
 
 function debugTime($time) {
@@ -125,7 +150,8 @@ function debugTime($time) {
         return;
     }
 
-    echo '<b>Total Execution Time:</b> '. ( number_format(microtime(true) - $time, 2)) .' Sec <br/><hr>';
+    echo "\e[0;32mTotal Execution Time: \e[0m". ( number_format(microtime(true) - $time, 2)) .' Sec '
+         . PHP_EOL . '--------------------------------------------------------' . PHP_EOL;
 }
 
 function synchronizeCampaignsWithNewBudget() {
@@ -277,7 +303,7 @@ function sanitizeRebate(array $campaignIds)
 
 function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array {
     $time =  microtime(true);
-    debug('Start: <b/>syncReport</b>');
+    debug('Start: syncReport');
     
     global $db, $db3;
     $Date = $fromDate->format('Y-m-d');
@@ -335,6 +361,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             AND dt.demand_tag_id IS NOT NULL
             AND c.ssp_id = 4 
             AND c.status = 1
+            -- AND c.id = 9064
             $avoidCreativitiesIdsSQL
             $filterCampaignSQL
     ";
@@ -617,6 +644,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                         (SSP, budgetReached, idSalesManager, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
                         VALUES (4, $budgetReached, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$budgetConsumed', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
+                        updateCampaignBudget($idCampaing, $budgetConsumed);
                     } else {
                         if ($Type == 2) {
                             $Impressions = intval($Impressions);
@@ -738,6 +766,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                     budgetReached = $budgetReached
                                 WHERE id = '$idStat' LIMIT 1";
                                 $db->query($sql);
+                                updateCampaignBudget($idCampaing, $budgetConsumed);
                             } else {
                                 //echo "No New I CPM $CPM \n";
                             }
@@ -779,6 +808,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                             WHERE id = '$idStat' LIMIT 1";
 
                             $db->query($sql);
+                            updateCampaignBudget($idCampaing, $budgetConsumed);
                         }
                     }
                 }
@@ -787,7 +817,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
         }
     }
 
-    debug('Finish: <b>syncReport</b>');
+    debug('Finish: syncReport');
     debugTime($time);
 
     return $CampaignsIds;
