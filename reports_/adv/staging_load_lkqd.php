@@ -21,7 +21,7 @@ $cookie_file = '../../admin/lkqdimport/cookie.txt';
 require('../../reports_/adv/common.php');
 require('../../admin/lkqdimport/common_staging.php');
 
-// TODO change back campaign and reports table name when goint to prod
+// TODO: change back campaign and reports table name when going to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
@@ -30,6 +30,7 @@ $campaignIds = getCampaignsIdsWithBudgetOverflow();
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
 $campaignIds = syncReport($fromDate, $toDate);
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
+// TODO: Uncomment the next line 
 //updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
