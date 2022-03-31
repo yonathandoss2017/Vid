@@ -63,11 +63,11 @@ Class SQL {
 		$row = $this->fetchRow($result);
 		return $row[0];
 	}
-	function getAll($sql) {
+	function getAll($sql, $column = null) {
 		$result = $this->query($sql);
 		$results = [];
 		while ($data = mysqli_fetch_assoc($result)) {
-			$results[] = $data;
+			$results[] = $column ? $data[$column] : $data;
 		}
 
 		return $results;
