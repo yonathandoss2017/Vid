@@ -30,7 +30,7 @@ $campaignIds = getCampaignsIdsWithBudgetOverflow();
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
 $campaignIds = syncReport($fromDate, $toDate);
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
-// TODO: Uncomment the next line 
+// TODO: Uncomment the next line
 //updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
@@ -57,25 +57,27 @@ function calcPercents($Perc, $Impressions, $Complete)
     }
 }
 
-function getCampaignAvailableBudget($idCampaign) {
+function getCampaignAvailableBudget($idCampaign)
+{
     global $db;
 
     $sql = "SELECT available_budget FROM campaign_budget_info cbi WHERE cbi.campaign_id = $idCampaign";
-    
+
     $budget = $db->getOne($sql);
 
-    if($budget === null) {
+    if ($budget === null) {
         $sql = "SELECT budget FROM campaign_test c WHERE c.id = $idCampaign";
         $budget = $db->getOne($sql) ?? 0;
     }
-    
+
     return $budget;
 }
 
-function synchronizeCampaignsWithBudgetOverflow($campaignIds) {
+function synchronizeCampaignsWithBudgetOverflow($campaignIds)
+{
     $time =  microtime(true);
     debug('Start <b>synchronizeCampaignsWithBudgetOverflow</b>');
-    if($campaignIds) {
+    if ($campaignIds) {
         sanitizeReportsBudgetConsumed($campaignIds);
         sanitizeRebate($campaignIds);
     }
@@ -83,7 +85,8 @@ function synchronizeCampaignsWithBudgetOverflow($campaignIds) {
     debugTime($time);
 }
 
-function getCampaignsIdsWithBudgetOverflow(): array {
+function getCampaignsIdsWithBudgetOverflow(): array
+{
     global $db;
     $sql = 'SELECT 
                 c.id
@@ -98,44 +101,48 @@ function getCampaignsIdsWithBudgetOverflow(): array {
     return $campaignIds;
 }
 
-function dd(... $messages) {
-    foreach($messages as $message) {
+function dd(...$messages)
+{
+    foreach ($messages as $message) {
         debug($message);
     }
 
     exit();
 }
 
-function debug($message) {
-    if(! DEBUG){
+function debug($message)
+{
+    if (! DEBUG) {
         return;
     }
 
-    if(is_array($message)) {
+    if (is_array($message)) {
         var_dump($message);
-    }else {
+    } else {
         echo($message);
     }
 
     echo '<br/>';
 }
 
-function debugTime($time) {
-    if(! DEBUG){
+function debugTime($time)
+{
+    if (!DEBUG) {
         return;
     }
 
-    echo '<b>Total Execution Time:</b> '. ( number_format(microtime(true) - $time, 2)) .' Sec <br/><hr>';
+    echo '<b>Total Execution Time:</b> ' . ( number_format(microtime(true) - $time, 2)) . ' Sec <br/><hr>';
 }
 
-function synchronizeCampaignsWithNewBudget() {
+function synchronizeCampaignsWithNewBudget()
+{
     $time =  microtime(true);
     debug('Start synchronizeCampaignsWithNewBudget');
     $campaigns = getCampaignsWithNewBudgets();
     debug(sprintf('Campaigns with new budgets: %s ', sizeof($campaigns)));
 
-    if($campaigns) {
-        foreach($campaigns as $campaign) {
+    if ($campaigns) {
+        foreach ($campaigns as $campaign) {
             restartBudgetConsumed($campaign['idCampaing']);
             $fromDate = new DateTime(sprintf('%s %s:00', $campaign['date'], $campaign['hour']));
             $fromDate->modify('+ 1 hour');
@@ -275,10 +282,11 @@ function sanitizeRebate(array $campaignIds)
     $db->query($sql);
 }
 
-function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array {
+function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array
+{
     $time =  microtime(true);
     debug('Start: <b/>syncReport</b>');
-    
+
     global $db, $db3;
     $Date = $fromDate->format('Y-m-d');
     $Hour = $toDate->format('H');
@@ -598,12 +606,12 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                         $budgetConsumed = $Revenue;
                         $budgetReached = 0;
 
-                        if($Revenue > 0) {
+                        if ($Revenue > 0) {
                             $availableBudget = getCampaignAvailableBudget($idCampaing);
-                            
-                            if($Revenue >= $availableBudget) {
+
+                            if ($Revenue >= $availableBudget) {
                                 $budgetConsumed = $availableBudget;
-                                if($budgetConsumed > 0) {
+                                if ($budgetConsumed > 0) {
                                     $budgetReached = 1;
                                 }
                             }
@@ -703,19 +711,19 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                 $Rebate = "Rebate + $AddRebate";
                                 $budgetReached = "budgetReached";
 
-                                if($AddRevenue > 0) {
+                                if ($AddRevenue > 0) {
                                     $sql = "SELECT Revenue FROM reports_test WHERE id = $idStat";
                                     $newRevenue = $db->getOne($sql) + $AddRevenue;
                                     $budgetConsumed = $newRevenue + $AddRevenue;
                                     $availableBudget = getCampaignAvailableBudget($idCampaing);
-                                    
-                                    if($newRevenue >= $availableBudget) {
+
+                                    if ($newRevenue >= $availableBudget) {
                                         $budgetConsumed = $availableBudget;
-                                        if($budgetConsumed > 0) {
+                                        if ($budgetConsumed > 0) {
                                             $budgetReached = 1;
                                         }
                                     }
-        
+
                                     if ($RebatePercent > 0 && $budgetConsumed > 0) {
                                         $Rebate = $budgetConsumed * $RebatePercent / 100;
                                     }
@@ -741,18 +749,16 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                             } else {
                                 //echo "No New I CPM $CPM \n";
                             }
-                        } 
-                        else 
-                        {
+                        } else {
                             $budgetConsumed = $Revenue;
                             $budgetReached = 0;
 
-                            if($Revenue > 0) {
+                            if ($Revenue > 0) {
                                 $availableBudget = getCampaignAvailableBudget($idCampaing);
-                                
-                                if($Revenue >= $availableBudget) {
+
+                                if ($Revenue >= $availableBudget) {
                                     $budgetConsumed = $availableBudget;
-                                    if($budgetConsumed > 0) {
+                                    if ($budgetConsumed > 0) {
                                         $budgetReached = 1;
                                     }
                                 }
