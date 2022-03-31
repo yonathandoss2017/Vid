@@ -997,7 +997,7 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
                         'label' => 'CTV',
                     ),
                 ),
-            )
+            ),
         ),
 
 
@@ -1013,8 +1013,8 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
-    if($FiltersArray) {
+
+    if ($FiltersArray) {
         $post['filters'][] = [
             'dimension' => 'TAG',
             'operation' => 'include',
@@ -1162,8 +1162,8 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-    
-    if($FiltersArray) {
+
+    if ($FiltersArray) {
         $post['filters'][] = [
             'dimension' => 'TAG',
             'operation' => 'include',
@@ -2053,8 +2053,13 @@ function getTagInfo(int $tagId): array
 
     $response = json_decode($result, true);
 
-    if (!empty($response->errors)) {
-        return $response->errors;
+    if (array_key_exists('errors', $response) && !empty($response['errors'])) {
+        return $response['errors'];
+    }
+
+    if (empty($response)) {
+        http_response_code(404);
+        return [];
     }
 
     http_response_code(200);
@@ -2149,6 +2154,12 @@ function getDealInfo(int $dealId): array
         return $response->errors;
     }
 
+    if (empty($response['data'])) {
+        http_response_code(404);
+        return [];
+    }
+
+    http_response_code(200);
     return $response['data'];
 }
 
