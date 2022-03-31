@@ -16,11 +16,12 @@ require('../../reports_/adv/config.php');
 require('../../db.php');
 
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+$db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 $cookie_file = '../../admin/lkqdimport/cookie.txt';
 require('../../reports_/adv/common.php');
 require('../../admin/lkqdimport/common_staging.php');
 
+// TODO change back campaign and reports table name when goint to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
@@ -147,7 +148,8 @@ function synchronizeCampaignsWithNewBudget() {
     debugTime($time);
 }
 
-function restartBudgetConsumed($campaignId) {
+function restartBudgetConsumed($campaignId)
+{
     global $db;
     $sql = 'UPDATE reports_test r
             SET 
@@ -159,7 +161,8 @@ function restartBudgetConsumed($campaignId) {
     $db->query($sql);
 }
 
-function getCampaignsWithNewBudgets(): array {
+function getCampaignsWithNewBudgets(): array
+{
     global $db;
     $sql = 'SELECT * FROM (
                 SELECT 
@@ -180,14 +183,15 @@ function getCampaignsWithNewBudgets(): array {
             ) AS oudated_report_rows 
             WHERE
                 budget > budgetConsumed';
-    
+
     return $db->getAll($sql) ?? [];
 }
 
-function sanitizeReportsBudgetConsumed(array $campaignIds){
+function sanitizeReportsBudgetConsumed(array $campaignIds)
+{
     global $db;
-    foreach($campaignIds as $campaignId) {
-        /* UPDATE THE FIRST REPORT OVERFLOWED ROW 
+    foreach ($campaignIds as $campaignId) {
+        /* UPDATE THE FIRST REPORT OVERFLOWED ROW
            BASED ON THE CAMPAIGN BUDGET */
         $sql = 'UPDATE reports_test r
                     INNER JOIN (
@@ -248,14 +252,15 @@ function sanitizeReportsBudgetConsumed(array $campaignIds){
                         r.idCampaing = %campaign_id%
                         ORDER BY date, hour
                 ) AS report_log WHERE balance > budget) b ON r.id = b.report_id 
-                SET r.budgetConsumed = 0';        
+                SET r.budgetConsumed = 0';
         $sql = str_replace("%campaign_id%", $campaignId, $sql);
         $db->query($sql);
     }
 }
 
 
-function sanitizeRebate(array $campaignIds) {
+function sanitizeRebate(array $campaignIds)
+{
     global $db;
     $sql = 'UPDATE 
             reports_test r
@@ -306,13 +311,13 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 
     $filterCampaignSQL = '';
     $avoidCreativitiesIdsSQL = '';
-    
-    if($avoidCreativitiesIds) {
+
+    if ($avoidCreativitiesIds) {
         $avoidCreativitiesIdsSQL = " AND dt.id NOT IN ($avoidCreativitiesIds)";
     }
 
-    if($filterCampaignIds) {
-        $filterCampaignSQL = ' AND c.id IN ('. implode(',', $filterCampaignIds) .')';
+    if ($filterCampaignIds) {
+        $filterCampaignSQL = ' AND c.id IN (' . implode(',', $filterCampaignIds) . ')';
     };
 
     $sql = "SELECT 
@@ -338,7 +343,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
     if ($db3->num_rows($results) > 0) {
         $camps = [];
 
-        while($Camp = $db3->fetch_array($results)) {
+        while ($Camp = $db3->fetch_array($results)) {
             $idCamp = $Camp['id'];
             $ActiveDemandTags[$idCamp] = $Camp['demand_tag_id'];
             $ActiveDemandTags2[$Camp['demand_tag_id']] = $idCamp;
@@ -471,10 +476,9 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             }
 
             if ($N > 0 && $Last === false) {
-
                 if (isset($ActiveDemandTags2[$TagId])) {
                     $idCampaing = $ActiveDemandTags2[$TagId];
-                    $CampaignsIds[$idCampaing ] = $idCampaing;
+                    $CampaignsIds[$idCampaing] = $idCampaing;
                     $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
                     $DealID = $CampaingData[$idCampaing]['DealId'];
                     $idCountry = $CampaingData[$idCampaing]['Country'];
@@ -612,9 +616,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                         (SSP, budgetReached, idSalesManager, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
                         VALUES (4, $budgetReached, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$budgetConsumed', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
-                    } 
-                    else 
-                    {
+                    } else {
                         if ($Type == 2) {
                             $Impressions = intval($Impressions);
 

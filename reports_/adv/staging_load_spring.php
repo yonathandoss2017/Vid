@@ -12,6 +12,8 @@ require('/var/www/html/login/db.php');
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
+// TODO change campaign_test and reports_deals_test when going to pro
+
 function csvToJson($fname)
 {
     if (!($fp = fopen($fname, 'r'))) {
@@ -58,7 +60,7 @@ $JsonRel = json_decode(csvToJson('/var/www/html/login/reports_/adv/LKQD_Spring_R
 $IDs = '';
 $Coma = '';
 foreach ($JsonRel as $Rels) {
-    $sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND deal_id = '" . $Rels->LKQD . "' LIMIT 1";
+    $sql = "SELECT * FROM campaign_test WHERE ssp_id = 4 AND status = 1 AND deal_id = '" . $Rels->LKQD . "' LIMIT 1";
     $query = $db3->query($sql);
     if ($db3->num_rows($query) > 0) {
         $Camp = $db3->fetch_array($query);
@@ -89,6 +91,8 @@ foreach ($JsonRel as $Rels) {
         }
         $CampaingData[$idCamp]['Type'] = $Camp['type'];
         $CampaingData[$idCamp]['AgencyId'] = $Camp['agency_id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
+
 
         $countryId = 999;
         $sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCamp' ";
@@ -186,7 +190,7 @@ foreach ($Report as $Record) {
 
     $idCampaing = $Relation[$Record->demand_tag_id]['idCamp'];
 
-    $sql = "SELECT id FROM reports WHERE SSP = 4 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour'";
+    $sql = "SELECT id FROM reports_test WHERE SSP = 4 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour'";
     $idRepRow = $db->getOne($sql);
 
     $Requests = $Record->demand_requests;
@@ -209,6 +213,7 @@ foreach ($Report as $Record) {
     $CPC = $CampaingData[$idCampaing]['CPC'];
     $vCPM = $CampaingData[$idCampaing]['vCPM'];
     $AgencyId = $CampaingData[$idCampaing]['AgencyId'];
+    $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
     $CVTR = $CampaingData[$idCampaing]['CVTR'];
     $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -262,7 +267,7 @@ foreach ($Report as $Record) {
     }
 
     if ($idRepRow > 0) {
-        $sql = "UPDATE reports SET
+        $sql = "UPDATE reports_test SET
             Requests = $Requests, 
             Bids = $Bids, 
             Impressions = $Impressions, 
@@ -276,9 +281,9 @@ foreach ($Report as $Record) {
             Rebate = $Rebate
             WHERE id = $idRepRow LIMIT 1";
     } else {
-        $sql = "INSERT INTO reports
-        (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
-        VALUES (4, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$Hour')";
+        $sql = "INSERT INTO reports_test
+        (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+        VALUES (4, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
     }
 
     echo $sql . "\n";

@@ -8,7 +8,8 @@ require './config.php';
 $conexion = sprintf('mysql:host=%d;dbname=%s', $dbhost2, $dbname2);
 $pdo = new PDO($conexion, $dbuser2, $dbpass2);
 
-if (!isset($_POST['uuid'])
+if (
+    !isset($_POST['uuid'])
     || !isset($_POST['env'])
     || !isset($_POST['from_datetime'])
     || !isset($_POST['to_datetime'])
@@ -32,7 +33,7 @@ $query = $db2->query($sql);
 if($db2->num_rows($query) > 0){
     $Repo = $db2->fetch_array($query);
     $RepId = $Repo['id'];
-    
+
     $sql = "UPDATE report_key SET status = 1 WHERE id = '$RepId' LIMIT 1";
     $db2->query($sql);
 } else {

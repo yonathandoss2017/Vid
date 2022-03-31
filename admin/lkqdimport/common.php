@@ -1611,6 +1611,7 @@ function getAgenciesData(): array
 
     $response = json_decode($result, true);
 
+    http_response_code(200);
     return $response;
 }
 
@@ -1909,8 +1910,13 @@ function getTagInfo(int $tagId): array
 
     $response = json_decode($result, true);
 
-    if (!empty($response->errors)) {
-        return $response->errors;
+    if (array_key_exists('errors', $response) && !empty($response['errors'])) {
+        return $response['errors'];
+    }
+
+    if (empty($response)) {
+        http_response_code(404);
+        return [];
     }
 
     http_response_code(200);
@@ -2005,6 +2011,12 @@ function getDealInfo(int $dealId): array
         return $response->errors;
     }
 
+    if (empty($response['data'])) {
+        http_response_code(404);
+        return [];
+    }
+
+    http_response_code(200);
     return $response['data'];
 }
 

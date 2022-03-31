@@ -22,5 +22,5 @@
 		}
 	}
 	*/
-	newGenerateJS(19101);
+	newGenerateJS(19272);
 	//newGenerateJS(5805);

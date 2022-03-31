@@ -35,6 +35,8 @@ function calcPercents($Perc, $Impressions, $Complete)
     }
 }
 
+// TODO change campaign_test and reports_test when going to pro
+
 $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
 require_once '/var/www/html/login/reports_/adv/ODS-PHP-API-Client/OX_ODS_API.php';
@@ -92,7 +94,7 @@ $Date = date('Y-m-d', time() - 3600 * 24);//
 
 $ActiveDeals = array();
 $CampaingData = array();
-$sql = "SELECT * FROM campaign WHERE ssp_id = 5 AND status = 1";
+$sql = "SELECT * FROM campaign_test WHERE ssp_id = 5 AND status = 1";
 $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
@@ -105,6 +107,7 @@ if ($db3->num_rows($query) > 0) {
         $CampaingData[$idCamp]['Rebate'] = $Camp['rebate'];
         $CampaingData[$idCamp]['Type'] = $Camp['type'];
         $CampaingData[$idCamp]['AgencyId'] = $Camp['agency_id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         if ($Camp['cpm'] > 0) {
             $CampaingData[$idCamp]['CPM'] = $Camp['cpm'];
@@ -227,6 +230,8 @@ foreach ($Data->reportData as $D) {
         $CPM = $CampaingData[$idCampaing]['CPM'];
         $CPV = $CampaingData[$idCampaing]['CPV'];
         $AgencyId = $CampaingData[$idCampaing]['AgencyId'];
+        $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
+
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -234,7 +239,7 @@ foreach ($Data->reportData as $D) {
 
         $CompleteVPerc = 0;
 
-        $sql = "SELECT id FROM reports WHERE SSP = 5 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
+        $sql = "SELECT id FROM reports_test WHERE SSP = 5 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
         $idStat = $db->getOne($sql);
 
         if (intval($idStat) == 0) {
@@ -273,18 +278,18 @@ foreach ($Data->reportData as $D) {
                 $Rebate = 0;
             }
 
-            $sql = "INSERT INTO reports
-            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
-            VALUES (5, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
+            $sql = "INSERT INTO reports_test
+            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+            VALUES (5, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
             $db->query($sql);
             //echo $sql . "\n";
         } else {
             $Impressions = intval($Impressions);
 
-            $sql = "SELECT Impressions FROM reports WHERE id = $idStat LIMIT 1";
+            $sql = "SELECT Impressions FROM reports_test WHERE id = $idStat LIMIT 1";
             $ExistingImpressions = $db->getOne($sql);
 
-            $sql = "SELECT Revenue FROM reports WHERE id = $idStat LIMIT 1";
+            $sql = "SELECT Revenue FROM reports_test WHERE id = $idStat LIMIT 1";
             $ExistingRevenue = $db->getOne($sql);
 
             $DifRev = $Revenue - $ExistingRevenue;
@@ -302,7 +307,7 @@ foreach ($Data->reportData as $D) {
                 }
 
                 if ($CVTR === true) {
-                    $sql = "SELECT CompleteVPer FROM reports WHERE id = '$idStat' LIMIT 1";
+                    $sql = "SELECT CompleteVPer FROM reports_test WHERE id = '$idStat' LIMIT 1";
                     $CompleteVPerc = $db->getOne($sql);
 
                     if ($CompleteVPerc > 0) {
@@ -333,7 +338,7 @@ foreach ($Data->reportData as $D) {
                 if($CPM > 0){
                     $AddRevenue = $NewImpressions * $CPM / 1000;
                 }elseif($CPV > 0){
-                    $sql = "SELECT CompleteV FROM reports WHERE id = $idStat LIMIT 1";
+                    $sql = "SELECT CompleteV FROM reports_test WHERE id = $idStat LIMIT 1";
                     $ExistingCompleteV = $db->getOne($sql);
 
                     $NewCompleteV = $CompleteV - $ExistingCompleteV;
@@ -354,7 +359,7 @@ foreach ($Data->reportData as $D) {
                 }
 
                 $Revenue = "Revenue + $AddRevenue";
-                $sql = "UPDATE reports SET 
+                $sql = "UPDATE reports_test SET 
                     Requests = $Requests, 
                     Bids = $Bids, 
                     Impressions = $Impressions, 

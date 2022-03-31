@@ -531,10 +531,16 @@ function calcPercents($Perc , $Impressions, $Complete){
 										
 										$Multiplier = (25 - $HourI) / 100;
 										
-										if($Domain == 'independent.co.uk' && $Country == 'United Kingdom'){
+										
+										if(($Domain == 'independent.co.uk') && $Country == 'United Kingdom' && ($Date != '2022-03-18' || intval($Hour) >= 14)){
+										
+											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 130 \n";
+											$Multiplier = (130 - $HourI) / 100;
+										
+										}elseif($Domain == 'independent.co.uk' && $Country == 'United Kingdom'){
 											
-											echo $Date . $Hour . "\n";
-											$Multiplier = (90 - $HourI) / 100;
+											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 70 \n";
+											$Multiplier = (70 - $HourI) / 100;
 											
 										}
 										
@@ -709,7 +715,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}
 		
 		echo "Hours Imported - LKQD\n";
-		//exit(0);
+	//	exit(0);
 		
 		
 		/*
