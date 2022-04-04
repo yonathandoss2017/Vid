@@ -59,15 +59,16 @@ function calcPercents($Perc, $Impressions, $Complete)
     }
 }
 
-function getCampaignBudgets($idCampaign){
+function getCampaignBudgets()
+{
     global $db;
     global $campaignBudgets;
 
-    if(!$campaignBudgets) {
+    if (!$campaignBudgets) {
         $sql = "SELECT campaign_id, budget, budget_consumed, available_budget FROM campaign_budget_info";
         $allBudgets = $db->getAll($sql);
 
-        if($allBudgets) {
+        if ($allBudgets) {
             $campaignBudgets = array_column($allBudgets, null, 'campaign_id');
         }
     }
@@ -79,31 +80,34 @@ function campaignHasAvailableBudget($idCampaign)
 {
     $campaignBudgets = getCampaignBudgets($idCampaign);
 
-    return isset($campaignBudgets[$idCampaign]) || $campaignBudgets[$idCampaign]['budget'] > 0;
+    return isset($campaignBudgets[$idCampaign]) && $campaignBudgets[$idCampaign]['budget'] > 0;
 }
 
 function getCampaignAvailableBudget($idCampaign)
 {
     $campaignBudgets = getCampaignBudgets($idCampaign);
 
-    if(!isset($campaignBudgets[$idCampaign])) {
+    if (!isset($campaignBudgets[$idCampaign])) {
         return 0;
     }
 
     $campaignBudget = $campaignBudgets[$idCampaign];
 
-    if($campaignBudget['budget_consumed'] <= 0 ) {
+    if ($campaignBudget['budget_consumed'] <= 0) {
         return $campaignBudget['budget'];
     }
 
     return $campaignBudget['available_budget'] <= 0 ? 0 : $campaignBudget['available_budget'];
 }
 
-function updateCampaignBudget($idCampaign, $value) {
+function updateCampaignBudget($idCampaign, $value)
+{
     global $campaignBudgets;
 
-    if(!isset($campaignBudgets[$idCampaign]) || 
-        $campaignBudgets[$idCampaign]['available_budget'] <= 0) {
+    if (
+        !isset($campaignBudgets[$idCampaign])
+        || $campaignBudgets[$idCampaign]['available_budget'] <= 0
+    ) {
         return;
     }
 
@@ -115,7 +119,7 @@ function synchronizeCampaignsWithBudgetOverflow($campaignIds)
 {
     $time =  microtime(true);
     debug('Start: synchronizeCampaignsWithBudgetOverflow');
-    if($campaignIds) {
+    if ($campaignIds) {
         sanitizeReportsBudgetConsumed($campaignIds);
         sanitizeRebate($campaignIds);
     }
@@ -169,7 +173,7 @@ function debugTime($time)
         return;
     }
 
-    echo "\e[0;32mTotal Execution Time: \e[0m". ( number_format(microtime(true) - $time, 2)) .' Sec '
+    echo "\e[0;32mTotal Execution Time: \e[0m" . ( number_format(microtime(true) - $time, 2)) . ' Sec '
          . PHP_EOL . '--------------------------------------------------------' . PHP_EOL;
 }
 
@@ -326,7 +330,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 {
     $time =  microtime(true);
     debug('Start: syncReport');
-    
+
     global $db, $db3;
     $Date = $fromDate->format('Y-m-d');
     $Hour = $toDate->format('H');
