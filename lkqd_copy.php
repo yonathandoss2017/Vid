@@ -12,15 +12,13 @@
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	$Date = date('Y-m-d', time() - (4800 * 1));
-//	echo $Date = '2022-02-17';
+//	echo $Date = '2022-04-04';
 	$MonthT = date('Ym', time() - (4800 * 1));
 	//$MonthT = '202006';
 	
 	$DateSRate = array();
 	$ArrayCurrency = array();
 
-	//exit(0);
-	// $Date = '2020-07-08';
 
 	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	

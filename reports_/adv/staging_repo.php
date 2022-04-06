@@ -47,7 +47,8 @@ if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_
     require('config.php');
     $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 } elseif ($_POST['env'] == 'int') {
-    $db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
+    // $db2 = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
+    $db2 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 
     require('config.php');
     $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);

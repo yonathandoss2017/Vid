@@ -41,164 +41,49 @@ function calcPercents($Perc , $Impressions, $Complete){
 	
 	
 	//echo $Date = date('Y-m-d', time() - 1200);
-	echo $Date = '2022-04-01';
+	echo $Date = '2022-04-03';
+	$Multi = 1.5;
 		
 	$DateFrom = $Date;
 	$DateTo = $Date;
 	
 	$TablaName = getTableName($Date);
-	$TablaNameResume = getTableNameResume($Date);
-	$TablaNameResume2 = str_replace('_', '', $TablaNameResume);
 	
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	
-	
 	$Nins = 0;
 	$Nis = 0;
 	$Coma = "";
 	$Values = "";
 	
-	$sql = "DELETE FROM $TablaNameResume WHERE Date = '$DateFrom'";
-	$db->query($sql);
 	
-	$sql = "SELECT 
-		idUser, idTag, idSite, Domain, Country, Player, Date, 
-		SUM(Impressions) AS Impressions, 
-	    SUM(Opportunities) AS Opportunities, 
-	    SUM(formatLoads) AS formatLoads, 
-	    SUM(Revenue) AS Revenue,
-	    SUM(RevenueEur) AS RevenueEur,
-	    SUM(Coste) AS Coste,
-	    SUM(CosteEur) AS CosteEur,
-	    ExtraprimaP,
-	    SUM(Extraprima) AS Extraprima,
-	    SUM(Clicks) AS Clicks,
-	    SUM(Wins) AS Wins,
-	    SUM(adStarts) AS adStarts,
-	    SUM(FirstQuartiles) AS FirstQuartiles,
-	    SUM(MidViews) AS MidViews,
-	    SUM(ThirdQuartiles) AS ThirdQuartiles,
-	    SUM(CompletedViews) AS CompletedViews
-    
-    FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 
-    GROUP BY idUser, idTag, idSite, Domain, Country, Player";
+	$sql = "SELECT * FROM $TablaName WHERE Date = '$DateFrom' AND idUser > 0 AND Player = 1";
 	
 	$query = $db->query($sql);
 	while($Da = $db->fetch_array($query)){
 		$Nins++;
 		$Nis++;
-		$idUser = $Da['idUser'];
-		$idTag = $Da['idTag'];
-		$idSite = $Da['idSite'];
-		$idDomain = $Da['Domain'];
-		$idCountry = $Da['Country'];
-		$Player = $Da['Player'];
-		$Impressions = $Da['Impressions'];
-	    $Opportunities = $Da['Opportunities'];
-	    $formatLoads = $Da['formatLoads'];
-	    $Revenue = $Da['Revenue'];
-	    $RevenueEur = $Da['RevenueEur'];
-	    $Coste = $Da['Coste'];
-	    $CosteEur = $Da['CosteEur'];
-	    $ExtraprimaP = $Da['ExtraprimaP'];
-	    $Extraprima = $Da['Extraprima'];
-	    $Clicks = $Da['Clicks'];
-	    $Wins = $Da['Wins'];
-	    $adStarts = $Da['adStarts'];
-	    $FirstQuartiles = $Da['FirstQuartiles'];
-	    $MidViews = $Da['MidViews'];
-	    $ThirdQuartiles = $Da['ThirdQuartiles'];
-	    $CompletedViews = $Da['CompletedViews'];
+		$idRow = $Da['id'];
+		$Impressions = round($Da['Impressions'] * $Multi);
+	    $Opportunities = round($Da['Opportunities'] * $Multi);
+	    $formatLoads = round($Da['formatLoads'] * $Multi);
+	    $Revenue = $Da['Revenue'] * $Multi;
+	    $RevenueEur = $Da['RevenueEur'] * $Multi;
+	    $Coste = $Da['Coste'] * $Multi;
+	    $CosteEur = $Da['CosteEur'] * $Multi;
+	    $Extraprima = $Da['Extraprima'] * $Multi;
+	    $Clicks = round($Da['Clicks'] * $Multi);
+	    $Wins = round($Da['Wins'] * $Multi);
+	    $adStarts = round($Da['adStarts'] * $Multi);
+	    $FirstQuartiles = round($Da['FirstQuartiles'] * $Multi);
+	    $MidViews = round($Da['MidViews'] * $Multi);
+	    $ThirdQuartiles = round($Da['ThirdQuartiles'] * $Multi);
+	    $CompletedViews = round($Da['CompletedViews'] * $Multi);
 	
-		$Values .= "$Coma ('$idUser', '$idTag', '$idSite', '$idDomain', '$idCountry', '$Player', '$Impressions', '$Opportunities', '$formatLoads', '$Revenue', '$RevenueEur', '$Coste', '$CosteEur', '$ExtraprimaP', '$Extraprima', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$DateFrom')";
-		$Coma = ", ";
-		
-		if($Nins > 5000){
-			$sql = "INSERT INTO $TablaNameResume (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, RevenueEur, Coste, CosteEur, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, Date) VALUES $Values ;";	
-			//exit(0);
-			$db->query($sql);
-			$Nins = 0;
-			$Values = "";
-			$Coma = "";
-		}
-	}
-	
-	if($Nins > 1){
-		$sql = "INSERT INTO $TablaNameResume (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, RevenueEur, Coste, CosteEur, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, Date) VALUES $Values ;";			
+		$sql = "UPDATE $TablaName SET Impressions = $Impressions, Opportunities = $Opportunities, formatLoads = $formatLoads, Revenue = '$Revenue', RevenueEur = '$RevenueEur', Coste = '$Coste', CosteEur = '$CosteEur', ExtraprimaP = '$Extraprima', Clicks = $Clicks, Wins = $Wins, adStarts = $adStarts, FirstQuartiles = $FirstQuartiles, MidViews = $MidViews, ThirdQuartiles = $ThirdQuartiles, CompletedViews = $CompletedViews WHERE id = $idRow";
 		$db->query($sql);
-	}
-			
-			
-	$Nins = 0;
-	$Nis = 0;
-	$Coma = "";
-	$Values = "";
-	
-	$timeAdded = time();
-	$lastUpdate = time();
-	
-	$Countries = array();
-	
-	$sql = "DELETE FROM $TablaNameResume2 WHERE date = '$DateFrom'";
-	$db2->query($sql);
-	
-	
-	$sql = "SELECT * FROM $TablaNameResume WHERE Date = '$DateFrom' AND idUser > 0 AND idSite > 0";
-	
-	$query = $db->query($sql);
-	while($Da = $db->fetch_array($query)){
-		$Nins++;
-		$Nis++;
-		$ID = $Da['id'];
-		$idUser = $Da['idUser'];
-		$idTag = $Da['idTag'];
-		$idSite = $Da['idSite'];
-		$idDomain = $Da['Domain'];
-		$idC = $Da['Country'];
-		$Impressions = $Da['Impressions'];
-	    $Opportunities = $Da['Opportunities'];
-	    $formatLoads = $Da['formatLoads'];
-	    $Revenue = $Da['Revenue'];
-	    $Coste = $Da['Coste'];
-	    $ExtraprimaP = $Da['ExtraprimaP'];
-	    $Extraprima = $Da['Extraprima'];
-	    $Clicks = $Da['Clicks'];
-	    $Wins = $Da['Wins'];
-	    $adStarts = $Da['adStarts'];
-	    $FirstQuartiles = $Da['FirstQuartiles'];
-	    $MidViews = $Da['MidViews'];
-	    $ThirdQuartiles = $Da['ThirdQuartiles'];
-	    $CompletedViews = $Da['CompletedViews'];
-		
-		/*
-		if(array_key_exists($idC, $Countries){
-			$idCountry = $Countries[$idC];
-		}else{
-			$sql = "SELECT idVidoomy FROM reports_country_names WHERE id = '$idC' LIMIT 1";
-			$idCountry = $db->getOne($sql);
-			
-			$Countries[$idC] = $idCountry;
-		}
-		*/
-		
-		$idCountry = $Da['Country'];
-		
-		
-		$Values .= "$Coma ('$ID', '$idUser', '$idTag', '$idDomain', '$idCountry', '$Impressions', '$Opportunities', '$Revenue', '$Coste', '$ExtraprimaP', '$Clicks', '$Wins',  '$adStarts', '$FirstQuartiles', '$Extraprima', '$MidViews', '$ThirdQuartiles', '$CompletedViews', '$timeAdded', '$lastUpdate', '$DateFrom', '$idSite', '$formatLoads', '0', '$Player')";
-		$Coma = ", ";
-		
-		if($Nins > 2000){
-			$sql = "INSERT INTO $TablaNameResume2 (id, iduser, id_tag, domain, country, impressions, opportunities, revenue, coste, extra_prima_p, clicks, wins, ad_starts, first_quartiles, extraprima, mid_views, third_quartiles, completed_views, time_added, last_update, date, idsite, formatloads, product, player) VALUES $Values ;";			
-			$db2->query($sql);
-			
-			$Nins = 0;
-			$Values = "";
-			$Coma = "";
-		}
+		//echo $sql . "\n";
+
 	}
 	
-	if($Nins > 1){
-		$sql = "INSERT INTO $TablaNameResume2 (id, iduser, id_tag, domain, country, impressions, opportunities, revenue, coste, extra_prima_p, clicks, wins, ad_starts, first_quartiles, extraprima, mid_views, third_quartiles, completed_views, time_added, last_update, date, idsite, formatloads, product, player) VALUES $Values ;";			
-		$db2->query($sql);
-	}
