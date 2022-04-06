@@ -758,11 +758,11 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
 
                                 if ($AddRevenue > 0 && campaignHasAvailableBudget($idCampaing)) {
                                     $sql = "SELECT Revenue FROM reports_test WHERE id = $idStat";
-                                    $newRevenue = $db->getOne($sql) + $AddRevenue;
-                                    $budgetConsumed = $newRevenue + $AddRevenue;
+                                    $currentRevenue = $db->getOne($sql);
+                                    $budgetConsumed = $currentRevenue + $AddRevenue;
                                     $availableBudget = getCampaignAvailableBudget($idCampaing);
 
-                                    if ($newRevenue >= $availableBudget) {
+                                    if ($budgetConsumed >= $availableBudget) {
                                         $budgetConsumed = $availableBudget;
                                         if ($budgetConsumed > 0) {
                                             $budgetReached = 1;
