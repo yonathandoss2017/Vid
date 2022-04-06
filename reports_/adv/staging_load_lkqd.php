@@ -211,6 +211,15 @@ function restartBudgetConsumed($campaignId)
 function getCampaignsWithNewBudgets(): array
 {
     global $db;
+
+    $sql = 'SELECT idCampaing from reports_test where budgetReached = true';
+
+    $campaignIds = $db->getAll($sql, 'idCampaing') ?? [];
+
+    if(!$campaignIds) {
+        return [];
+    }
+
     $sql = 'SELECT * FROM (
                 SELECT 
                     r.idCampaing,
@@ -224,12 +233,14 @@ function getCampaignsWithNewBudgets(): array
                     campaign_test c
                 WHERE	
                     c.id = r.idCampaing
-                    AND r.idCampaing IN (SELECT idCampaing from reports_test where budgetReached = true)
+                    AND r.idCampaing IN (%campaign_ids%)
                 GROUP BY 
                     idCampaing
             ) AS oudated_report_rows 
             WHERE
                 budget > budgetConsumed';
+
+    $sql = str_replace("%campaign_ids%", implode(',', $campaignIds), $sql);
 
     return $db->getAll($sql) ?? [];
 }
