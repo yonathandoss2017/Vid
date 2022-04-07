@@ -10,18 +10,18 @@ define('DEBUG', true);
 if (file_exists('/var/www/html/login/config.php')) {
     require('/var/www/html/login/config.php');
 } else {
-    require('./../../config_local.php');
+    require('/var/www/html/login/config_local.php');
 }
-require('./../../reports_/adv/config.php');
-require('./../../db.php');
+require('/var/www/html/login/reports_/adv/config.php');
+require('/var/www/html/login/db.php');
 
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
 //$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 $db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 $campaignBudgets = [];
-$cookie_file = './../../admin/lkqdimport/cookie.txt';
-require('./../../reports_/adv/common.php');
-require('./../../admin/lkqdimport/common_staging.php');
+$cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
+require('/var/www/html/login/reports_/adv/common.php');
+require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 
 // TODO: change back campaign and reports table name when going to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
