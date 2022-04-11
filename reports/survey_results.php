@@ -15,24 +15,24 @@
 		
 		
 		if($Q == 4){
-			$Alim = 4;
+			$Alim = 5;
 		}
 		
 		if($Q == 3){
-			$Alim = 4;
+			$Alim = 5;
 		}
 		
 		if($Q == 2){
-			$Alim = 4;
+			$Alim = 3;
 		}
 		
 		if($Q == 1){
-			$Alim = 4;
+			$Alim = 3;
 		}
 		
 		for($A = 1; $A <= $Alim; $A++){
 			
-			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 1 AND Campaign = 24";
+			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 1 AND Campaign = 20";
 			$Cnt = $db->getOne($sql);
 			
 			echo "Respuesta $A: $Cnt \n";

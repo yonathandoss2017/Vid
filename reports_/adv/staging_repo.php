@@ -614,10 +614,11 @@ if ($DimensionsOK) {
     //SI HAY FILTROS, CALCULA LOS TOTALES SIN FILRTOS
     $Nd = 0;
     if ($ThereAreFilters) {
-        $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
-        INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing 
-        INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id 
-        INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoinsTotals
+        $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable}
+        INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing
+        INNER JOIN agency ON campaign_test.agency_id = agency.id
+        LEFT JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id
+        LEFT JOIN agency po_agency ON purchase_order.agency_id = po_agency.id $SQLInnerJoinsTotals
         WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $PubManFilter ";
 
         $SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
@@ -672,10 +673,11 @@ if ($DimensionsOK) {
 
 
     //CALCULA LOS TOTALES CON FILTROS
-    $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable} 
-    INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing 
-    INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id 
-    INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoins
+    $SQLSuperQueryT = "SELECT '' $SQLMetrics FROM {ReportsTable}
+    INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing
+    INNER JOIN agency ON campaign_test.agency_id = agency.id
+    LEFT JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id
+    LEFT JOIN agency po_agency ON purchase_order.agency_id = po_agency.id $SQLInnerJoins
     WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter ";
 
     $SQLQueryT = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQueryT);
@@ -730,7 +732,7 @@ if ($DimensionsOK) {
     $Nd = 0;
     //CALCULA EL RESTO DE LA TABLA
     $idSSP = $ReportingViewUsers === "" && $CountryViewer === "" ? ", {ReportsTable}.SSP AS idSSP" : "";
-    $SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing INNER JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id INNER JOIN agency ON purchase_order.agency_id = agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
+    $SQLSuperQuery = "SELECT SQL_CALC_FOUND_ROWS $SQLDimensions $SQLMetrics $idSSP FROM {ReportsTable} INNER JOIN campaign_test ON campaign_test.id = {ReportsTable}.idCampaing INNER JOIN agency ON campaign_test.agency_id = agency.id LEFT JOIN purchase_order ON purchase_order.id = campaign_test.purchase_order_id LEFT JOIN agency po_agency ON purchase_order.agency_id = po_agency.id $SQLInnerJoins WHERE {ReportsTable}.Date BETWEEN '$DFrom' AND '$DTo' $AddHourRange $SQLWhere $PubManFilter $SQLGroups";
 
     $SQLQuery = str_replace('{ReportsTable}', $UnionTables[0], $SQLSuperQuery);
 

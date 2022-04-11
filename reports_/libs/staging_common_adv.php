@@ -79,15 +79,15 @@ $DimensionsSQL = array(
         'InvalInner' => '',
         'HeadName'   => 'Type'
     ),
-    'agency' => array(
-        'Name'       => "agency.name AS Agency",
+    'agency' => [
+        'Name'       => "COALESCE(po_agency.name, agency.name) AS Agency",
         'SearchName' => "agency.name",
-        'InnerJoin'  => array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign_test.agency_id "),
+        'InnerJoin'  => [],
         'GroupBy'    => "Agency",
         'OrderVal'   => "Agency",
         'InvalInner' => '',
         'HeadName'   => 'Agency'
-    ),
+    ],
     'advertiser' => array(
         'Name'       => "advertiser.name AS Advertiser",
         'SearchName' => "advertiser.name",
@@ -175,8 +175,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'DSP'
     ),
     'purchase_order' => array(
-        'Name'       => "purchase_order.name AS PurchaseOrderName",
-        'SearchName' => "purchase_order.name",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.name ELSE purchase_order.name END) AS PurchaseOrderName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.name ELSE purchase_order.name END",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderName",
         'OrderVal'   => "PurchaseOrderName",
@@ -184,32 +184,32 @@ $DimensionsSQL = array(
         'HeadName'   => 'Purchase Order'
     ),
     'cid' => array(
-        'Name'       => "purchase_order.cid AS PurchaseOrderId",
-        'SearchName' => "purchase_order.cid",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.deal_id ELSE purchase_order.cid END) AS PurchaseOrderId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.deal_id ELSE purchase_order.cid END",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderId",
         'OrderVal'   => "PurchaseOrderId",
         'InvalInner' => '',
         'HeadName'   => 'CID'
     ),
-    'demand_tag' => array(
-        'Name'       => "demand_tag.name AS CreativityName",
-        'SearchName' => "demand_tag.name",
-        'InnerJoin'  => array('creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "),
+    'demand_tag' => [
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.name ELSE demand_tag.name END) AS CreativityName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.name ELSE demand_tag.name END",
+        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityName",
         'OrderVal'   => "CreativityName",
         'InvalInner' => '',
         'HeadName'   => 'Creativity'
-    ),
-    'creativity_id' => array(
-        'Name'       => "demand_tag.demand_tag_id AS CreativityId",
-        'SearchName' => "demand_tag.demand_tag_id",
-        'InnerJoin'  => array('creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "),
+    ],
+    'creativity_id' => [
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.deal_id ELSE demand_tag.demand_tag_id END) AS CreativityId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.deal_id ELSE demand_tag.demand_tag_id END",
+        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityId",
         'OrderVal'   => "CreativityId",
         'InvalInner' => '',
         'HeadName'   => 'Creativity ID'
-    ),
+    ],
     'reporting_view_users' => array(
         'Name'       => "(CASE WHEN (user.id IN({{ReportingViewUsers}})) THEN user.nick ELSE 'N/A' END) AS ReportingViewUser",
         'SearchName' => "user.id",
@@ -302,6 +302,15 @@ $MetricsSQL = array(
         'NumberF'  => false,
         'HeadName' => 'Revenue'
     ),
+    'budget_consumed' => [
+        'SQL'      => ", SUM($ReportsTable.budgetConsumed) AS BConsumed, SUM($ReportsTable.budgetConsumed) AS BConsumedOrder ",
+        'SQLCSV'   => ", CONCAT('$', FORMAT(ROUND(CAST(SUM($ReportsTable.budgetConsumed) AS DECIMAL(10, 4)), 2), 2, '$Locale')) AS BConsumed, SUM($ReportsTable.budgetConsumed) AS BConsumedOrder ",
+        'Name'     => "BConsumed",
+        'OrderVal' => "BConsumedOrder",
+        'Base'     => ["BConsumed"],
+        'NumberF'  => false,
+        'HeadName' => 'Budget Consumed'
+    ],
     'bids' => array(
         'SQL'      => ", SUM($ReportsTable.Bids) AS Bids ",
         'SQLCSV'   => ", FORMAT(SUM($ReportsTable.Bids), 0, '$Locale') AS Bids ",

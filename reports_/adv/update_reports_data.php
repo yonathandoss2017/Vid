@@ -13,7 +13,7 @@ require('/var/www/html/login/reports_/adv/config.php');
 $conexion = sprintf('mysql:host=%d;dbname=%s', $dbhost2, $dbname2);
 $pdo = new PDO($conexion, $dbuser2, $dbpass2);
 
-$userId = 529;
+$userId = 555;
 $sql = <<<SQL
 SELECT
     cOld.id old_campaign_id,
