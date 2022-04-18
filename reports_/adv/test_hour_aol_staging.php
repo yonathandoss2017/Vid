@@ -19,8 +19,6 @@ $Date2 = $date2->format('Y-m-d\TH');
 
 $curl = curl_init();
 
-// TODO change campaign_test and reports_test when going to pro
-
 curl_setopt_array($curl, array(
     CURLOPT_URL => "https://id.b2b.verizonmedia.com/identity/oauth2/access_token",
     CURLOPT_RETURNTRANSFER => true,
@@ -108,7 +106,7 @@ $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pas
 
 $ActiveDeals = array();
 $CampaingData = array();
-$sql = "SELECT * FROM campaign_test WHERE ssp_id = 3 AND status = 1";
+$sql = "SELECT * FROM campaign WHERE ssp_id = 3 AND status = 1";
 $query = $db3->query($sql);
 
 if ($db3->num_rows($query) > 0) {
@@ -185,12 +183,12 @@ foreach ($Decoded->data->blocks as $RepData) {
             $idRep = intval($db->getOne($sql));
 
             if ($idRep > 0) {
-                    $sql = "UPDATE reports_test SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate',  WHERE id = '$idRep' LIMIT 1";
+                    $sql = "UPDATE reports SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', budgetConsumed = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate',  WHERE id = '$idRep' LIMIT 1";
                 /*
                 $sql = "UPDATE reports SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Rebate = '$Rebate' WHERE id = '$idRep' LIMIT 1";
                 */
             } else {
-                $sql = "INSERT INTO reports_test
+                $sql = "INSERT INTO reports
                 (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
                 VALUES (3, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$Rebate', '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
                 /*

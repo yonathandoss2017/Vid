@@ -44,8 +44,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date1 = '2021-01-13';
-	$Date2 = '2021-05-31';
+	$Date1 = '2022-01-01';
+	$Date2 = '2022-03-31';
 	$idCampaing = 2722;
 	
 	/*
@@ -83,7 +83,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	}
 	*/
 		
-	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND id = $idCampaing";
+	$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1";
 	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND (deal_id = '1053196' OR deal_id = '1053199' OR deal_id = '1053198' OR deal_id = '1053197' OR deal_id = '1053200' OR deal_id = '1053203' OR deal_id = '1053202' OR deal_id = '1053201' OR deal_id = '1053204' OR deal_id = '1053207' OR deal_id = '1053206' OR deal_id = '1053205')";
 	//$sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND ($MultiCamp)";
 	$query = $db2->query($sql);

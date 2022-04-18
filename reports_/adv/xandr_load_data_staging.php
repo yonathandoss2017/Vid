@@ -16,8 +16,6 @@ $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pas
 
 require('/var/www/html/login/reports_/adv/common.php');
 
-// TODO change campaign_test and reports_test when going to pro
-
 function calcPercents($Perc, $Impressions, $Complete)
 {
     if ($Perc == 25) {
@@ -173,7 +171,7 @@ $ReportResults = json_decode($JsonReport);
 
 $ActiveDeals = array();
 $CampaingData = array();
-$sql = "SELECT * FROM campaign_test WHERE ssp_id = 6 AND status = 1";
+$sql = "SELECT * FROM campaign WHERE ssp_id = 6 AND status = 1";
 $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
@@ -267,7 +265,8 @@ foreach ($ReportResults as $Row) {
                 Requests = $Requests, 
                 Bids = $Bids, 
                 Impressions = $Impressions, 
-                Revenue = $Revenue, 
+                Revenue = $Revenue,
+                budgetConsumed = $Revenue, 
                 VImpressions = $VImpressions, 
                 Clicks = $Clicks, 
                 CompleteV = $CompleteV, 

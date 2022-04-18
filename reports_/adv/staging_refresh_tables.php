@@ -10,8 +10,6 @@ require('/var/www/html/login/reports_/libs/common_adv.php');
 require('/var/www/html/login/config.php');
 
 $db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
-$dbDev1 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
-$dbStaging = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 require('/var/www/html/login/reports_/adv/config.php');
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
@@ -173,70 +171,10 @@ if ($db2->num_rows($query2) > 0) {
 $sql = "SELECT id FROM campaign ORDER BY id DESC LIMIT 1";
 $lastCamp = intval($db->getOne($sql));
 
-$sql = "SELECT * FROM campaign WHERE id > $lastCamp";
-$query2 = $db2->query($sql);
-if ($db2->num_rows($query2) > 0) {
-    while ($S = $db2->fetch_array($query2)) {
-        $id = $S['id'];
-        $agency_id = $S['agency_id'];
-        $advertiser_id = $S['advertiser_id'];
-        $ssp_id = $S['ssp_id'];
-        $dsp_id = $S['dsp_id'];
-        $name = $S['name'];
-
-        $name = mysqli_real_escape_string($db->link, $name);
-
-        $type = $S['type'];
-        $deal_id = $S['deal_id'];
-        $vtr = $S['vtr'];
-        $viewability = $S['viewability'];
-        $ctr = $S['ctr'];
-        $volume = $S['volume'];
-        $list_type = $S['list_type'];
-        $details = $S['details'];
-        $cpm = $S['cpm'];
-        $start_at = $S['start_at'];
-        $end_at = $S['end_at'];
-        $rebate = $S['rebate'];
-        $status = $S['status'];
-        $created_at = $S['created_at'];
-
-        if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
-            $dsp_id = 11;
-        }
-
-        $deleted = $S['deleted'];
-
-        $sql = "INSERT INTO campaign (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted)
-        VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted')";
-        $db->query($sql);
-    }
-}
-
-$sql = "SELECT * FROM campaign WHERE id <= $lastCamp";
-$query2 = $db2->query($sql);
-if ($db2->num_rows($query2) > 0) {
-    while ($S = $db2->fetch_array($query2)) {
-        $name = $S['name'];
-        $idC = $S['id'];
-        $advertiser_id = $S['advertiser_id'];
-        $agency_id = $S['agency_id'];
-        $deal_id = $S['deal_id'];
-
-        $sql = "UPDATE campaign SET name = '$name', advertiser_id = '$advertiser_id', agency_id = '$agency_id', deal_id = '$deal_id' WHERE id = '$idC' LIMIT 1 ";
-        $db->query($sql);
-    }
-}
-
-// Campaign_test Section
-// TODO remove this when going to prod
-$sql = "SELECT id FROM campaign_test ORDER BY id DESC LIMIT 1";
-$lastCamp = intval($db->getOne($sql));
-
 $sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id > $lastCamp";
-$query2 = $dbDev1->query($sql);
-if ($dbDev1->num_rows($query2) > 0) {
-    while ($S = $dbDev1->fetch_array($query2)) {
+$query2 = $db2->query($sql);
+if ($db2->num_rows($query2) > 0) {
+    while ($S = $db2->fetch_array($query2)) {
         $id = $S['id'];
         $agency_id = $S['agency_id'];
         $advertiser_id = $S['advertiser_id'];
@@ -271,33 +209,33 @@ if ($dbDev1->num_rows($query2) > 0) {
 
         $deleted = $S['deleted'];
 
-        $sql = "INSERT INTO campaign_test (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted, created_by, purchase_order_id, sales_manager_id, budget)
+        $sql = "INSERT INTO campaign (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted, created_by, purchase_order_id, sales_manager_id, budget)
         VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted', '$created_by', {$purchaseOrderId}, {$salesManagerId}, {$budget})";
         $db->query($sql);
     }
 }
 
-// TODO changes to move to production campaign update query
 $sql = "SELECT c.*, po.sales_manager_id po_sales_manager_id, po.advertiser_id po_advertiser_id, po.agency_id po_agency_id  FROM campaign c LEFT JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
-$query2 = $dbDev1->query($sql);
-if ($dbDev1->num_rows($query2) > 0) {
-    while ($S = $dbDev1->fetch_array($query2)) {
+$query2 = $db2->query($sql);
+if ($db2->num_rows($query2) > 0) {
+    while ($S = $db2->fetch_array($query2)) {
         $name = $S['name'];
         $idC = $S['id'];
         $advertiser_id = $S['advertiser_id'] ?? $S['po_advertiser_id'];
         $agency_id = $S['agency_id'] ?? $S['po_agency_id'];
         $deal_id = $S['deal_id'];
+        $type = $S['type'];
         $createdBy = $S['created_by'];
         $purchaseOrderId = $S['purchase_order_id'] ?? "NULL";
         $salesManagerId = $S['po_sales_manager_id'] ?? "NULL";
         $rebate = $S['rebate'] ?? 0;
         $budget = $S['budget'] ?? 0;
 
-        $sql = "UPDATE campaign_test SET name = '{$name}', advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget}, rebate = {$rebate} WHERE id = {$idC} LIMIT 1";
+        $sql = "UPDATE campaign SET name = '{$name}', type = {$type}, advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget}, rebate = {$rebate} WHERE id = {$idC} LIMIT 1";
         $db->query($sql);
     }
 }
-// Campaign_test Section
+
 
 $sql = <<<SQL
 SELECT
@@ -317,9 +255,9 @@ FROM
 WHERE
     id > {$lastPurchaseOrder}
 SQL;
-$purchaseOrderQuery = $dbDev1->query($sql);
-if ($dbDev1->num_rows($purchaseOrderQuery) > 0) {
-    while ($purchaseOrder = $dbDev1->fetch_array($purchaseOrderQuery)) {
+$purchaseOrderQuery = $db2->query($sql);
+if ($db2->num_rows($purchaseOrderQuery) > 0) {
+    while ($purchaseOrder = $db2->fetch_array($purchaseOrderQuery)) {
         $purchaseOrderId = $purchaseOrder['id'];
         $purchaseOrderName = $purchaseOrder['name'];
         $purchaseOrderDocument = $purchaseOrder['document'];
@@ -409,9 +347,9 @@ WHERE
     id <= {$lastPurchaseOrder}
 SQL;
 
-$purchaseOrderQuery = $dbDev1->query($sql);
-if ($dbDev1->num_rows($purchaseOrderQuery) > 0) {
-    while ($purchaseOrder = $dbDev1->fetch_array($purchaseOrderQuery)) {
+$purchaseOrderQuery = $db2->query($sql);
+if ($db2->num_rows($purchaseOrderQuery) > 0) {
+    while ($purchaseOrder = $db2->fetch_array($purchaseOrderQuery)) {
         $purchaseOrderId = $purchaseOrder['id'];
         $purchaseOrderName = $purchaseOrder['name'];
         $purchaseOrderDocument = $purchaseOrder['document'];
@@ -487,9 +425,9 @@ FROM
 WHERE
     id > {$lastDemandTagId}
 SQL;
-$creativityQuery = $dbDev1->query($sql);
-if ($dbDev1->num_rows($creativityQuery) > 0) {
-    while ($creativity = $dbDev1->fetch_array($creativityQuery)) {
+$creativityQuery = $db2->query($sql);
+if ($db2->num_rows($creativityQuery) > 0) {
+    while ($creativity = $db2->fetch_array($creativityQuery)) {
         $creativityId = $creativity['id'];
         $creativityCampaignId = $creativity['campaign_id'] ?: "NULL";
         $creativitySize = $creativity['size'];
@@ -560,9 +498,9 @@ FROM
 WHERE
     id <= {$lastDemandTagId}
 SQL;
-$creativityQuery = $dbDev1->query($sql);
-if ($dbDev1->num_rows($creativityQuery) > 0) {
-    while ($creativity = $dbDev1->fetch_array($creativityQuery)) {
+$creativityQuery = $db2->query($sql);
+if ($db2->num_rows($creativityQuery) > 0) {
+    while ($creativity = $db2->fetch_array($creativityQuery)) {
         $creativityId = $creativity['id'];
         $creativityCampaignId = $creativity['campaign_id'];
         $creativitySize = $creativity['size'];

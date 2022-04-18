@@ -130,7 +130,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	    $Rate = $Rates->rates->USD;
 	    
 	    $sql = "INSERT INTO rates (Date, Rate) VALUES ('$Date', '$Rate')";
-	    $db->query($sql);
+	   // $db->query($sql);
 	}
 	
 	
@@ -178,7 +178,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		
 		$sql = "DELETE FROM $TablaName WHERE Date = '$DateFrom' AND Hour BETWEEN '$HFrom' AND '$HTo' AND Manual = 0 AND Player = 1";
 		///exit(0);
-		$db->query($sql);
+		//$db->query($sql);
 		
 		foreach($ImportData as $DataK => $DataL){
 			$Nn = 0;
@@ -218,6 +218,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 				}
 				$Nn++;
 			}
+			
 			
 			if($N > 0 && $Last === false){
 				$timeAdded = time();
@@ -395,14 +396,33 @@ function calcPercents($Perc , $Impressions, $Complete){
 				}
 				
 				if($inserta == 1){
+					if($Country == 'Turkey'){
+						echo "\n $Domain - ";
+					}
 					if(in_array($Country, $arraySpecialFill)){
+						if($Country == 'Turkey'){
+							echo " IS ON SF - ";
+						}
+						
 						//echo "Is Country $Country - ";
 						if(!in_array($Domain, $BLDomains[$Country])){
 							
-							if(intval($idUser) != 28336){
+							if($Country == 'Turkey'){
+								echo " NOT ON BL - ";
+							}
 							
+							if(intval($idUser) != 28336){
+								
+								if($Country == 'Turkey'){
+									echo " NOT 28336 - ";
+								}
+								
 								//echo "$Domain Not in BL - ";
 								if($formatLoads >= 2){
+									
+									if($Country == 'Turkey'){
+										echo " FLs $formatLoads - ";
+									}
 									
 									if(in_array($Country, $SpecialFill25)){
 										//echo "$Country $Date $Hour \n";
@@ -476,7 +496,15 @@ function calcPercents($Perc , $Impressions, $Complete){
 									}elseif(in_array($Country, $SpecialFill6)){
 										//echo "$Country $Date $Hour \n";
 										
-										if(intval($TagId) % 2 == 0 && $Domain != 'igrus.com'){
+										if($Country == 'Turkey'){
+											echo " ON 6% FILL - ";
+										}
+										
+										if(intval($TagId) % 2 == 0){
+											if($Country == 'Turkey'){
+												echo " Applying type 1 (ONE) - ";
+											}
+											
 											if($Hour >= 10){
 												$HourI = $Hour / 2; 
 												if($HourI >= 10){
@@ -486,6 +514,10 @@ function calcPercents($Perc , $Impressions, $Complete){
 												$HourI = $Hour;
 											}
 										}else{
+											if($Country == 'Turkey'){
+												echo " Applying type 2 (TWO) - ";
+											}
+											
 											if($Hour >= 6){
 												$HourI = $Hour / 3;
 											}else{
@@ -534,12 +566,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 										
 										if(($Domain == 'independent.co.uk') && $Country == 'United Kingdom' && ($Date != '2022-03-18' || intval($Hour) >= 14)){
 										
-											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 130 \n";
+											//echo $Domain . ': ' . $Date . ':' . $Hour . " -> 130 \n";
 											$Multiplier = (130 - $HourI) / 100;
 										
 										}elseif($Domain == 'independent.co.uk' && $Country == 'United Kingdom'){
 											
-											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 70 \n";
+											//echo $Domain . ': ' . $Date . ':' . $Hour . " -> 70 \n";
 											$Multiplier = (70 - $HourI) / 100;
 											
 										}
@@ -560,7 +592,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 										
 									}
 									
-									//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
+									if($Country == 'Turkey'){
+										echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
+									}
+										
+										//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
 								}
 							}
 						}
@@ -630,7 +666,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 						$idDomain = intval($db->getOne($sql));
 						if($idDomain == 0){
 							$sql = "INSERT INTO reports_domain_names (Name) VALUES ('$DomainS')";
-							$db->query($sql);
+							//$db->query($sql);
 							$idDomain = mysqli_insert_id($db->link);
 
 							$sql = "SELECT * FROM report_domain WHERE id = $idDomain";
@@ -661,7 +697,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 						if($idCountry == 0){
 							$sql = "INSERT INTO reports_country_names (Name, Code) VALUES ('$CountryS', '')";
 							
-							$db->query($sql);
+							//$db->query($sql);
 							$idCountry = mysqli_insert_id($db->link);
 						}
 						$CountryArray[$Country] = $idCountry;
@@ -693,7 +729,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 						//exit(0);
 						$sql = "INSERT INTO $TablaName (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, RevenueEur, Coste, CosteEur, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, timeAdded, lastUpdate, Date, Hour) VALUES $Values ;";
 						
-						$db->query($sql);
+						//$db->query($sql);
 						$Coma = "";
 						$Nins = 0;
 						$Values = "";
@@ -711,11 +747,11 @@ function calcPercents($Perc , $Impressions, $Complete){
 		
 		if($Nins > 1){
 			$sql = "INSERT INTO $TablaName (idUser, idTag, idSite, Domain, Country, Player, Impressions, Opportunities, formatLoads, Revenue, Coste, ExtraprimaP, Extraprima, Clicks, Wins, adStarts, FirstQuartiles, MidViews, ThirdQuartiles, CompletedViews, timeAdded, lastUpdate, Date, Hour) VALUES $Values ;";			
-			$db->query($sql);
+			//$db->query($sql);
 		}
 		
 		echo "Hours Imported - LKQD\n";
-	//	exit(0);
+		exit(0);
 		
 		
 		/*

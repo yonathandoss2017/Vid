@@ -42,18 +42,16 @@ function calcPercents($Perc, $Impressions, $Complete)
 
 
 $Date1 = date('Y-m-d', time() - 3600);
-//$Date1 = '2020-08-08';
+//$Date1 = '2022-04-17';
 /*
 $date2 = new DateTime($Date1);
 $date2->modify('-1 day');
 $Date2 = $date2->format('Y-m-d');
 */
 
-// TODO change campaign_test and reports_test when going to pro
-
 //$DateNoSlash2 = date('Ymd', time() - (24 * 3600));
 $DateNoSlash = date('Ymd', time() - 3600);
-//$DateNoSlash = '20200808';
+//$DateNoSlash = '20220417';
 
 $Json = file_get_contents('http://sfx.stickyadstv.com/api/stats/publisher?token=a40f7640279cd9ba87d47c1a74ceefa236c36f5c&group=deal&start=' . $DateNoSlash . '&end=' . $DateNoSlash . '&id=872257');
 
@@ -62,7 +60,7 @@ $Decoded = json_decode($Json);
 //exit(0);
 $ActiveDeals = array();
 $CampaingData = array();
-$sql = "SELECT * FROM campaign_test WHERE ssp_id = 1 AND status = 1";
+$sql = "SELECT * FROM campaign WHERE ssp_id = 1 AND status = 1";
 $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
@@ -149,7 +147,7 @@ foreach ($Decoded->results as $Deal) {
             SUM(Complete25) AS Complete25,
             SUM(Complete50) AS Complete50,
             SUM(Complete75) AS Complete75
-            FROM reports_test WHERE SSP = 1 AND idCampaing = $idCampaing AND Date = '$Date1'";
+            FROM reports WHERE SSP = 1 AND idCampaing = $idCampaing AND Date = '$Date1'";
         $query = $db->query($sql);
         $W = $db->fetch_array($query);
 
@@ -208,7 +206,7 @@ foreach ($Decoded->results as $Deal) {
             $VImpressions = ceil($Impressions * $RandView);
         }
 
-        $sql = "INSERT INTO reports_test
+        $sql = "INSERT INTO reports
         (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
         VALUES (1, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date1', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
 

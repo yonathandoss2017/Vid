@@ -10,9 +10,10 @@ require('/var/www/html/login/config.php');
 require('/var/www/html/login/reports_/adv/config.php');
 require('/var/www/html/login/db.php');
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+// $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+$db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
 
-// TODO change campaign_test and reports_deals_test when going to pro
+// TODO change campaign_test and reports_test when going to pro
 
 function csvToJson($fname)
 {
@@ -60,7 +61,7 @@ $JsonRel = json_decode(csvToJson('/var/www/html/login/reports_/adv/LKQD_Spring_R
 $IDs = '';
 $Coma = '';
 foreach ($JsonRel as $Rels) {
-    $sql = "SELECT * FROM campaign_test WHERE ssp_id = 4 AND status = 1 AND deal_id = '" . $Rels->LKQD . "' LIMIT 1";
+    $sql = "SELECT * FROM campaign WHERE ssp_id = 4 AND status = 1 AND deal_id = '" . $Rels->LKQD . "' LIMIT 1";
     $query = $db3->query($sql);
     if ($db3->num_rows($query) > 0) {
         $Camp = $db3->fetch_array($query);
@@ -271,7 +272,8 @@ foreach ($Report as $Record) {
             Requests = $Requests, 
             Bids = $Bids, 
             Impressions = $Impressions, 
-            Revenue = $Revenue, 
+            Revenue = $Revenue,
+            budgetConsumed = $Revenue, 
             VImpressions = $VImpressions, 
             Clicks = $Clicks, 
             CompleteV = $CompleteV, 

@@ -16,14 +16,13 @@ require('/var/www/html/login/reports_/adv/config.php');
 require('/var/www/html/login/db.php');
 
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
-//$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
-$db3 = new SQL($advDev01['host'], $advDev01['db'], $advDev01['user'], $advDev01['pass']);
+$db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
+
 $campaignBudgets = [];
 $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 require('/var/www/html/login/reports_/adv/common.php');
 require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 
-// TODO: change back campaign and reports table name when going to prod
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
@@ -32,8 +31,7 @@ $campaignIds = getCampaignsIdsWithBudgetOverflow();
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
 $campaignIds = syncReport($fromDate, $toDate);
 synchronizeCampaignsWithBudgetOverflow($campaignIds);
-// TODO: Uncomment the next line
-//updateReportCards($db3, $fromDate->format('Y-m-d'));
+updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
 {
@@ -133,7 +131,7 @@ function getCampaignsIdsWithBudgetOverflow(): array
     $sql = 'SELECT 
                 c.id
             FROM 
-                campaign_test c,
+                campaign c,
                 campaign_budget_info cbi
             WHERE
                 cbi.campaign_id = c.id
@@ -202,7 +200,7 @@ function synchronizeCampaignsWithNewBudget()
 function restartBudgetConsumed($campaignId)
 {
     global $db;
-    $sql = 'UPDATE reports_test r
+    $sql = 'UPDATE reports r
             SET 
                 budgetConsumed = revenue,
                 budgetReached = FALSE
@@ -216,7 +214,7 @@ function getCampaignsWithNewBudgets(): array
 {
     global $db;
 
-    $sql = 'SELECT idCampaing from reports_test where budgetReached = true';
+    $sql = 'SELECT idCampaing from reports where budgetReached = true';
 
     $campaignIds = $db->getAll($sql, 'idCampaing') ?? [];
 
@@ -233,8 +231,8 @@ function getCampaignsWithNewBudgets(): array
                     r.date,
                     r.hour
                 FROM 
-                    reports_test r,
-                    campaign_test c
+                    reports r,
+                    campaign c
                 WHERE	
                     c.id = r.idCampaing
                     AND r.idCampaing IN (%campaign_ids%)
@@ -255,7 +253,7 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
     foreach ($campaignIds as $campaignId) {
         /* UPDATE THE FIRST REPORT OVERFLOWED ROW
            BASED ON THE CAMPAIGN BUDGET */
-        $sql = 'UPDATE reports_test r
+        $sql = 'UPDATE reports r
                     INNER JOIN (
                         SELECT 
                             report_id,
@@ -267,7 +265,7 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
                             budget_historic.date,
                             budget_historic.hour
                         FROM 
-                            campaign_test AS c,
+                            campaign AS c,
                             (
                             SELECT 
                                 r.id as report_id,
@@ -278,7 +276,7 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
                                 @b := CAST(@b + r.budgetConsumed AS DECIMAL(10,5)) AS balance
                             FROM
                             (SELECT @b := 0.0) AS dummy 
-                            CROSS JOIN reports_test AS r
+                            CROSS JOIN reports AS r
                             WHERE r.idCampaing = %campaign_id%
                             ORDER BY date, hour ASC
                             ) AS budget_historic
@@ -296,7 +294,7 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
         $sql = str_replace("%campaign_id%", $campaignId, $sql);
         $db->query($sql);
 
-        $sql = 'UPDATE reports_test r
+        $sql = 'UPDATE reports r
                 INNER JOIN (SELECT * FROM (
                     SELECT 
                         r.id AS report_id,
@@ -308,8 +306,8 @@ function sanitizeReportsBudgetConsumed(array $campaignIds)
                         hour
                     FROM
                     (SELECT @b := 0.0) AS dummy 
-                    CROSS JOIN reports_test AS r
-                    INNER JOIN campaign_test AS c ON c.id = r.idCampaing
+                    CROSS JOIN reports AS r
+                    INNER JOIN campaign AS c ON c.id = r.idCampaing
                     WHERE 
                         r.idCampaing = %campaign_id%
                         AND c.budget > 0
@@ -326,7 +324,7 @@ function sanitizeRebate(array $campaignIds)
 {
     global $db;
     $sql = 'UPDATE 
-            reports_test r
+            reports r
         SET
             r.rebate = CAST(r.budgetConsumed * r.rebatePercentage / 100 AS DECIMAL(10,5))
         WHERE
@@ -611,7 +609,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                     $RandVI6 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video1_75%_completes - Dickens_Prudence_MX_10
                     $RandVI7 = rand(7100,7300)/10000; //MediacaOnline_BR_MOL_Video2_25%_completes
                     */
-                    $sql = "SELECT id FROM reports_test WHERE SSP = 4 AND idCreativity = (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1) AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
+                    $sql = "SELECT id FROM reports WHERE SSP = 4 AND idCreativity = (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1) AND Date = '$Date' AND Hour = '$Hour' LIMIT 1";
                     $idStat = $db->getOne($sql);
 
                     if (intval($idStat) == 0) {
@@ -676,7 +674,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                             }
                         }
 
-                        $sql = "INSERT INTO reports_test
+                        $sql = "INSERT INTO reports
                         (SSP, budgetReached, idSalesManager, idPurchaseOrder, idCampaing, idCreativity, idCountry, Requests, Bids, Impressions, Revenue, budgetConsumed, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, rebatePercentage, Date, Hour) 
                         VALUES (4, $budgetReached, $salesManagerId, $PurchaseOrderId, $idCampaing, (SELECT id from demand_tag where demand_tag_id = '$TagId' ORDER BY ID DESC LIMIT 1), $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$budgetConsumed', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, $RebatePercent, '$Date', '$Hour')";
                         $db->query($sql);
@@ -685,7 +683,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                         if ($Type == 2) {
                             $Impressions = intval($Impressions);
 
-                            $sql = "SELECT Impressions FROM reports_test WHERE id = $idStat LIMIT 1";
+                            $sql = "SELECT Impressions FROM reports WHERE id = $idStat LIMIT 1";
                             $ExistingImpressions = $db->getOne($sql);
 
                             $arD = explode('-', $Date);
@@ -702,7 +700,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                 }
 
                                 if ($CVTR === true) {
-                                    $sql = "SELECT CompleteVPer FROM reports_test WHERE id = '$idStat' LIMIT 1";
+                                    $sql = "SELECT CompleteVPer FROM reports WHERE id = '$idStat' LIMIT 1";
                                     $CompleteVPerc = $db->getOne($sql);
 
                                     if ($CompleteVPerc > 0) {
@@ -732,21 +730,21 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                 if ($CPM > 0) {
                                     $AddRevenue = $NewImpressions * $CPM / 1000;
                                 } elseif ($CPV > 0) {
-                                    $sql = "SELECT CompleteV FROM reports_test WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT CompleteV FROM reports WHERE id = $idStat LIMIT 1";
                                     $ExistingCompleteV = $db->getOne($sql);
 
                                     $NewCompleteV = $CompleteV - $ExistingCompleteV;
 
                                     $AddRevenue = $NewCompleteV * $CPV;
                                 } elseif ($CPC > 0) {
-                                    $sql = "SELECT Clicks FROM reports_test WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT Clicks FROM reports WHERE id = $idStat LIMIT 1";
                                     $ExistingClicks = $db->getOne($sql);
 
                                     $NewClicks = $Clicks - $ExistingClicks;
 
                                     $AddRevenue = $NewClicks * $CPC;
                                 } elseif ($vCPM > 0) {
-                                    $sql = "SELECT VImpressions FROM reports_test WHERE id = $idStat LIMIT 1";
+                                    $sql = "SELECT VImpressions FROM reports WHERE id = $idStat LIMIT 1";
                                     $ExistingVImpressions = $db->getOne($sql);
 
                                     $NewVImpressions = $VImpressions - $ExistingVImpressions;
@@ -768,7 +766,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                 $budgetReached = "budgetReached";
 
                                 if ($AddRevenue > 0 && campaignHasAvailableBudget($idCampaing)) {
-                                    $sql = "SELECT Revenue FROM reports_test WHERE id = $idStat";
+                                    $sql = "SELECT Revenue FROM reports WHERE id = $idStat";
                                     $currentRevenue = $db->getOne($sql);
                                     $budgetConsumed = $currentRevenue + $AddRevenue;
                                     $availableBudget = getCampaignAvailableBudget($idCampaing);
@@ -785,7 +783,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                     }
                                 }
 
-                                $sql = "UPDATE reports_test SET 
+                                $sql = "UPDATE reports SET 
                                     Requests = $Requests, 
                                     Bids = $Bids, 
                                     Impressions = $Impressions, 
@@ -825,7 +823,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
                                 }
                             }
 
-                            $sql = "UPDATE reports_test SET 
+                            $sql = "UPDATE reports SET 
                                 Requests = $Requests, 
                                 Bids = $Bids, 
                                 Impressions = $Impressions, 

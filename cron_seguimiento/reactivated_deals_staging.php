@@ -118,9 +118,9 @@ function sendActivationNotice($Type, $idCampaing, $Today)
         $queryCamp = $db3->query($sql);
         $CampData = $db3->fetch_array($queryCamp);
 
-        $agencyId = $CampData['agency_id'];
+        $purchaseOrderId = $CampData['purchase_order_id'];
 
-        $sql = "SELECT CONCAT(user.name, ' ', user.last_name) AS Name, user.email AS Email, user.manager_id AS HeadID FROM agency INNER JOIN user ON user.id = agency.sales_manager_id WHERE agency.id = $agencyId";
+        $sql = "SELECT CONCAT(user.name, ' ', user.last_name) AS Name, user.email AS Email, user.manager_id AS HeadID FROM purchase_order INNER JOIN user ON user.id = purchase_order.sales_manager_id WHERE purchase_order.id = $purchaseOrderId";
 
         $querySales = $db3->query($sql);
         $SalesData = $db3->fetch_array($querySales);
@@ -230,7 +230,6 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
 
             if (AAL_DEAL_ID == $DealId) {
-                $mail->AddBCC('patricia.palmero@vidoomy.com', 'Patricia Palmero');
                 $mail->AddBCC('ernesto.gonzalez@vidoomy.com', 'Ernesto Gonzalez');
             }
 

@@ -50,7 +50,7 @@ if ($_POST['env'] == 'dev' || (array_key_exists("APP_ENV", $_ENV) && $_ENV["APP_
 
     require('config_pre.php');
     $db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-} elseif ($_POST['env'] == 'prod') {
+} elseif ($_POST['env'] == 'pro') {
     $db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
     require('config.php');

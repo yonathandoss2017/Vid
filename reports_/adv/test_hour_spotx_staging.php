@@ -25,8 +25,6 @@ $date2 = new DateTime($Date1);
 $date2->modify('-1 day');
 $Date2 = $date2->format('Y-m-d');
 
-// TODO change campaign_test and reports_test when going to pro
-
 $curl = curl_init();
 curl_setopt_array($curl, array(
     CURLOPT_URL => "https://publisher-api.spotxchange.com/1.1/token",
@@ -52,12 +50,13 @@ $Token = $Decoded->value->data->access_token;
 
 
 
-$sql = "SELECT * FROM campaign_test WHERE ssp_id = 2 AND status = 1";
+$sql = "SELECT * FROM campaign WHERE ssp_id = 2 AND status = 1";
 $queryC = $db3->query($sql);
 if ($db3->num_rows($queryC) > 0) {
     while ($Camp = $db3->fetch_array($queryC)) {
         //print_r($Camp);
         $idCampaing = $Camp['id'];
+        $idSalesManager = $Camp['sales_manager_id'];
         $RebatePercent = $Camp['rebate'];
         $DealID = $Camp['deal_id'];
 
@@ -129,7 +128,7 @@ if ($db3->num_rows($queryC) > 0) {
                     SUM(VImpressions) AS VImpressions,
                     SUM(Clicks) AS Clicks,
                     SUM(CompleteV) AS CompleteV
-                    FROM reports_test WHERE SSP = 2 AND Date = '$Date' AND idCampaing = '$idCampaing'";
+                    FROM reports WHERE SSP = 2 AND Date = '$Date' AND idCampaing = '$idCampaing'";
 
                 $query2 = $db->query($sql);
                 $W = $db->fetch_array($query2);
@@ -157,19 +156,20 @@ if ($db3->num_rows($queryC) > 0) {
                     $Rebate = 0;
                 }
 
-                $sql = "SELECT id FROM reports_test WHERE SSP = 2 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$HourI' LIMIT 1";//AND idCountry = $idCountry
+                $sql = "SELECT id FROM reports WHERE SSP = 2 AND idCampaing = $idCampaing AND Date = '$Date' AND Hour = '$HourI' LIMIT 1";//AND idCountry = $idCountry
                 $idStat = $db->getOne($sql);
 
                 if (intval($idStat) == 0) {
-                    $sql = "INSERT INTO reports_test
-                    (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour) 
-                    VALUES (2, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', $Rebate, '$Date', '$HourI')";
+                    $sql = "INSERT INTO reports
+                    (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+                    VALUES (2, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', $Rebate, '$Date', '$HourI', $idCampaing, $idCampaing, $Revenue, $RebatePercent, $idSalesManager)";
                 } else {
-                    $sql = "UPDATE reports_test SET 
+                    $sql = "UPDATE reports SET 
                         Requests = Requests + $Requests, 
                         Bids = Bids + $Bids, 
                         Impressions = Impressions + $Impressions, 
-                        Revenue = Revenue + $Revenue, 
+                        Revenue = Revenue + $Revenue,
+                        budgetConsumed = budgetConsumed + $Revenue,
                         VImpressions = VImpressions + $VImpressions,
                         Clicks = Clicks + $Clicks,
                         CompleteV = CompleteV + $CompleteV,

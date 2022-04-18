@@ -79,15 +79,15 @@ $DimensionsSQL = array(
         'InvalInner' => '',
         'HeadName'   => 'Type'
     ),
-    'agency' => array(
-        'Name'       => "agency.name AS Agency",
+    'agency' => [
+        'Name'       => "COALESCE(po_agency.name, agency.name) AS Agency",
         'SearchName' => "agency.name",
-        'InnerJoin'  => array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign.agency_id "),
+        'InnerJoin'  => [],
         'GroupBy'    => "Agency",
         'OrderVal'   => "Agency",
         'InvalInner' => '',
         'HeadName'   => 'Agency'
-    ),
+    ],
     'advertiser' => array(
         'Name'       => "advertiser.name AS Advertiser",
         'SearchName' => "advertiser.name",
@@ -110,7 +110,7 @@ $DimensionsSQL = array(
         'Name'       => "(CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%') THEN manager.nick WHEN manager.roles LIKE '%ROLE_COUNTRY_MANAGER%' THEN COALESCE(manager_head.nick, manager.nick) WHEN manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%' THEN COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick)) ELSE COALESCE(vp.nick, COALESCE(country_manager.nick, COALESCE(manager_head.nick, manager.nick))) END) AS SalesVP",
         'SearchName' => "CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%') THEN manager.id WHEN manager.roles LIKE '%ROLE_COUNTRY_MANAGER%' THEN COALESCE(manager_head.id, manager.id) WHEN manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%' THEN COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id)) ELSE COALESCE(vp.id, COALESCE(country_manager.id, COALESCE(manager_head.id, manager.id))) END",
         'InnerJoin'  => array(
-            'manager'         => "LEFT JOIN user AS manager ON manager.id = agency.sales_manager_id ",
+            'manager'         => "LEFT JOIN user AS manager ON manager.id = $ReportsTable.idSalesManager ",
             'manager_head'    => "LEFT JOIN user AS manager_head ON manager_head.id = manager.manager_id ",
             'country_manager' => "LEFT JOIN user AS country_manager ON country_manager.id = manager_head.manager_id ",
             'vp'              => "LEFT JOIN user AS vp ON vp.id = country_manager.manager_id ",
@@ -124,7 +124,7 @@ $DimensionsSQL = array(
         'Name'       => "(CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%' OR manager.roles LIKE '%ROLE_COUNTRY_MANAGER%') THEN manager.nick WHEN manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%' THEN manager_head.nick ELSE IF (manager_head.roles LIKE '%ROLE_COUNTRY_MANAGER%' OR manager_head.roles LIKE '%ROLE_SALES_VP%' OR manager_head.roles LIKE '%ROLE_COUNTRY_ADMIN%', manager_head.nick, country_manager.nick) END) AS SalesCountryManager",
         'SearchName' => "CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%' OR manager.roles LIKE '%ROLE_COUNTRY_MANAGER%') THEN manager.id WHEN manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%' THEN manager_head.id ELSE IF (manager_head.roles LIKE '%ROLE_COUNTRY_MANAGER%' OR manager_head.roles LIKE '%ROLE_SALES_VP%' OR manager_head.roles LIKE '%ROLE_COUNTRY_ADMIN%', manager_head.id, country_manager.id) END",
         'InnerJoin'  => array(
-            'manager'         => "LEFT JOIN user AS manager ON manager.id = agency.sales_manager_id ",
+            'manager'         => "LEFT JOIN user AS manager ON manager.id = $ReportsTable.idSalesManager ",
             'manager_head'    => "LEFT JOIN user AS manager_head ON manager_head.id = manager.manager_id ",
             'country_manager' => "LEFT JOIN user AS country_manager ON country_manager.id = manager_head.manager_id ",
         ),
@@ -137,7 +137,7 @@ $DimensionsSQL = array(
         'Name'       => "(CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%' OR manager.roles LIKE '%ROLE_COUNTRY_MANAGER%' OR manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%') THEN manager.nick ELSE manager_head.nick END) AS SalesManagerHead",
         'SearchName' => "CASE WHEN (manager.roles LIKE '%ROLE_ADMIN%' OR manager.roles LIKE '%ROLE_SALES_VP%' OR manager.roles LIKE '%ROLE_COUNTRY_MANAGER%' OR manager.roles LIKE '%ROLE_SALES_MANAGER_HEAD%') THEN manager.id ELSE manager_head.id END",
         'InnerJoin'  => array(
-            'manager'      => "LEFT JOIN user AS manager ON manager.id = agency.sales_manager_id ",
+            'manager'      => "LEFT JOIN user AS manager ON manager.id = $ReportsTable.idSalesManager ",
             'manager_head' => "LEFT JOIN user AS manager_head ON manager_head.id = manager.manager_id ",
         ),
         'GroupBy'    => "SalesManagerHead",
@@ -149,7 +149,7 @@ $DimensionsSQL = array(
         'Name'       => "user.nick AS SalesManager",
         'SearchName' => "user.id",
         'InnerJoin'  => array(
-            'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
+            'user' => "INNER JOIN user ON user.id = $ReportsTable.idSalesManager ",
         ),
         'GroupBy'    => "SalesManager",
         'OrderVal'   => "SalesManager",
@@ -175,45 +175,45 @@ $DimensionsSQL = array(
         'HeadName'   => 'DSP'
     ),
     'purchase_order' => array(
-        'Name'       => "purchase_order.name AS PurchaseOrder",
-        'SearchName' => "purchase_order.name",
-        'InnerJoin'  => array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
-        'GroupBy'    => "PurchaseOrder",
-        'OrderVal'   => "PurchaseOrder",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.name ELSE purchase_order.name END) AS PurchaseOrderName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.name ELSE purchase_order.name END",
+        'InnerJoin'  => [],
+        'GroupBy'    => "PurchaseOrderName",
+        'OrderVal'   => "PurchaseOrderName",
         'InvalInner' => '',
         'HeadName'   => 'Purchase Order'
     ),
     'cid' => array(
-        'Name'       => "purchase_order.id AS PurchaseOrderId",
-        'SearchName' => "purchase_order.cid",
-        'InnerJoin'  => array('purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = $ReportsTable.idPurchaseOrder "),
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.deal_id ELSE purchase_order.cid END) AS PurchaseOrderId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.deal_id ELSE purchase_order.cid END",
+        'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderId",
         'OrderVal'   => "PurchaseOrderId",
         'InvalInner' => '',
         'HeadName'   => 'CID'
     ),
-    'creativity' => array(
-        'Name'       => "creativity.name AS Creativity",
-        'SearchName' => "creativity.name",
-        'InnerJoin'  => array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
-        'GroupBy'    => "Creativity",
-        'OrderVal'   => "Creativity",
+    'demand_tag' => [
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END) AS CreativityName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END",
+        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
+        'GroupBy'    => "CreativityName",
+        'OrderVal'   => "CreativityName",
         'InvalInner' => '',
         'HeadName'   => 'Creativity'
-    ),
-    'creativity_id' => array(
-        'Name'       => "creativity.lkqd_id AS CreativityId",
-        'SearchName' => "creativity.lkqd_id",
-        'InnerJoin'  => array('creativity' => "INNER JOIN creativity ON creativity.campaign_id = $ReportsTable.idCreativity "),
+    ],
+    'creativity_id' => [
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END) AS CreativityId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END",
+        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityId",
         'OrderVal'   => "CreativityId",
         'InvalInner' => '',
         'HeadName'   => 'Creativity ID'
-    ),
+    ],
     'reporting_view_users' => array(
         'Name'       => "(CASE WHEN (user.id IN({{ReportingViewUsers}})) THEN user.nick ELSE 'N/A' END) AS ReportingViewUser",
         'SearchName' => "user.id",
-        'InnerJoin'  => array('user' => "INNER JOIN user ON user.id = agency.sales_manager_id "),
+        'InnerJoin'  => array('user' => "INNER JOIN user ON user.id = $ReportsTable.idSalesManager "),
         'GroupBy'    => "ReportingViewUser",
         'OrderVal'   => "ReportingViewUser",
         'InvalInner' => '',
@@ -302,6 +302,15 @@ $MetricsSQL = array(
         'NumberF'  => false,
         'HeadName' => 'Revenue'
     ),
+    'budget_consumed' => [
+        'SQL'      => ", SUM($ReportsTable.budgetConsumed) AS BConsumed, SUM($ReportsTable.budgetConsumed) AS BConsumedOrder ",
+        'SQLCSV'   => ", CONCAT('$', FORMAT(ROUND(CAST(SUM($ReportsTable.budgetConsumed) AS DECIMAL(10, 4)), 2), 2, '$Locale')) AS BConsumed, SUM($ReportsTable.budgetConsumed) AS BConsumedOrder ",
+        'Name'     => "BConsumed",
+        'OrderVal' => "BConsumedOrder",
+        'Base'     => ["BConsumed"],
+        'NumberF'  => false,
+        'HeadName' => 'Budget Consumed'
+    ],
     'bids' => array(
         'SQL'      => ", SUM($ReportsTable.Bids) AS Bids ",
         'SQLCSV'   => ", FORMAT(SUM($ReportsTable.Bids), 0, '$Locale') AS Bids ",
@@ -411,8 +420,8 @@ $MetricsSQL = array(
         'HeadName' => 'Viewability Percent'
     ),
     'rebate_percent' => array(
-        'SQL'      => ", ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
-        'SQLCSV'   => ", CONCAT(FORMAT(ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
+        'SQL'      => ", $ReportsTable.rebatePercentage AS RebatePercent ",
+        'SQLCSV'   => ", CONCAT(FORMAT($ReportsTable.rebatePercentage, 2, '$Locale'), ' %') AS RebatePercent ",
         'Name'     => "RebatePercent",
         'OrderVal' => "RebatePercent",
         'Base'     => array("Rebate", "Revenue"),
@@ -482,7 +491,6 @@ $MetricsSQL = array(
         'NumberF'   => false,
         'HeadName'  => 'Budget',
         'InnerJoin' => array(
-            'purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id ",
             'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
         ),
     ),
@@ -511,7 +519,6 @@ function waitUnlock($Table)
 function getLiveData($Date)
 {
     global $db;
-
     waitUnlock('reports');
 
     $sql = "SELECT

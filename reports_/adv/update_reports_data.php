@@ -13,7 +13,7 @@ require('/var/www/html/login/reports_/adv/config.php');
 $conexion = sprintf('mysql:host=%d;dbname=%s', $dbhost2, $dbname2);
 $pdo = new PDO($conexion, $dbuser2, $dbpass2);
 
-$userId = 555;
+$userId = 563;
 $sql = <<<SQL
 SELECT
     cOld.id old_campaign_id,
@@ -26,9 +26,9 @@ SELECT
     cOld.sales_manager_id old_campaign_sales_manager_id,
     a.sales_manager_id agency_sales_manager_id
 FROM
-    campaign_test cOld
+    campaign cOld
 LEFT JOIN demand_tag dt ON cOld.deal_id = dt.demand_tag_id
-LEFT JOIN campaign_test cNew ON cNew.id = dt.campaign_id
+LEFT JOIN campaign cNew ON cNew.id = dt.campaign_id
 LEFT JOIN purchase_order po ON po.id = cNew.purchase_order_id
 LEFT JOIN agency a ON cOld.agency_id = a.id
 WHERE
@@ -54,7 +54,7 @@ foreach ($campaigns as $campaign) {
 
     $subSql = <<<SQL
 UPDATE
-    reports_test
+    reports
 SET
     idCreativity = {$creativityId},
     idPurchaseOrder = {$purchaseOrderId},

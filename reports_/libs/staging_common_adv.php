@@ -26,8 +26,8 @@ $ReportsTable = '{ReportsTable}';
 
 $DimensionsSQL = array(
     'campaign_name' => array(
-        'Name'       => "CONCAT(campaign_test.name, '--',campaign_test.id) AS CampaignName",
-        'SearchName' => "campaign_test.name",
+        'Name'       => "CONCAT(campaign.name, '--',campaign.id) AS CampaignName",
+        'SearchName' => "campaign.name",
         'InnerJoin'  => array(),
         'GroupBy'    => "CampaignName",
         'OrderVal'   => "CampaignName",
@@ -35,8 +35,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Campaign Name'
     ),
     'campaign_id' => array(
-        'Name'       => "campaign_test.id AS CampaignID",
-        'SearchName' => "campaign_test.id",
+        'Name'       => "campaign.id AS CampaignID",
+        'SearchName' => "campaign.id",
         'InnerJoin'  => array(),
         'GroupBy'    => "CampaignID",
         'OrderVal'   => "CampaignID",
@@ -44,8 +44,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Campaign ID'
     ),
     'campaign_start_at' => array(
-        'Name'       => "campaign_test.start_at AS CampaignStartAt",
-        'SearchName' => "campaign_test.start_at",
+        'Name'       => "campaign.start_at AS CampaignStartAt",
+        'SearchName' => "campaign.start_at",
         'InnerJoin'  => array(),
         'GroupBy'    => "CampaignStartAt",
         'OrderVal'   => "CampaignStartAt",
@@ -53,8 +53,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Campaign Starts At'
     ),
     'campaign_end_at' => array(
-        'Name'       => "campaign_test.end_at AS CampaignEndAt",
-        'SearchName' => "campaign_test.end_at",
+        'Name'       => "campaign.end_at AS CampaignEndAt",
+        'SearchName' => "campaign.end_at",
         'InnerJoin'  => array(),
         'GroupBy'    => "CampaignEndAt",
         'OrderVal'   => "CampaignEndAt",
@@ -62,8 +62,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Campaign Ends At'
     ),
     'deal_id' => array(
-        'Name'       => "campaign_test.deal_id AS DealID",
-        'SearchName' => "campaign_test.deal_id",
+        'Name'       => "campaign.deal_id AS DealID",
+        'SearchName' => "campaign.deal_id",
         'InnerJoin'  => array(),
         'GroupBy'    => "DealID",
         'OrderVal'   => "DealID",
@@ -71,8 +71,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Deal ID'
     ),
     'type' => array(
-        'Name'       => "REPLACE(REPLACE(campaign_test.type, '1', 'Deal'), '2', 'Campaing') AS Type",
-        'SearchName' => "campaign_test.type",
+        'Name'       => "REPLACE(REPLACE(campaign.type, '1', 'Deal'), '2', 'Campaing') AS Type",
+        'SearchName' => "campaign.type",
         'InnerJoin'  => array(),
         'GroupBy'    => "Type",
         'OrderVal'   => "Type",
@@ -91,7 +91,7 @@ $DimensionsSQL = array(
     'advertiser' => array(
         'Name'       => "advertiser.name AS Advertiser",
         'SearchName' => "advertiser.name",
-        'InnerJoin'  => array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign_test.advertiser_id "),
+        'InnerJoin'  => array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign.advertiser_id "),
         'GroupBy'    => "Advertiser",
         'OrderVal'   => "Advertiser",
         'InvalInner' => '',
@@ -168,15 +168,15 @@ $DimensionsSQL = array(
     'dsp' => array(
         'Name'       => "dsp.name AS DSP",
         'SearchName' => "dsp.id",
-        'InnerJoin'  => array('dsp' => "INNER JOIN dsp ON dsp.id = campaign_test.dsp_id "),
+        'InnerJoin'  => array('dsp' => "INNER JOIN dsp ON dsp.id = campaign.dsp_id "),
         'GroupBy'    => "DSP",
         'OrderVal'   => "DSP",
         'InvalInner' => '',
         'HeadName'   => 'DSP'
     ),
     'purchase_order' => array(
-        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.name ELSE purchase_order.name END) AS PurchaseOrderName",
-        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.name ELSE purchase_order.name END",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.name ELSE purchase_order.name END) AS PurchaseOrderName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.name ELSE purchase_order.name END",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderName",
         'OrderVal'   => "PurchaseOrderName",
@@ -184,8 +184,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Purchase Order'
     ),
     'cid' => array(
-        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.deal_id ELSE purchase_order.cid END) AS PurchaseOrderId",
-        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign_test.deal_id ELSE purchase_order.cid END",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.deal_id ELSE purchase_order.cid END) AS PurchaseOrderId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idPurchaseOrder THEN campaign.deal_id ELSE purchase_order.cid END",
         'InnerJoin'  => [],
         'GroupBy'    => "PurchaseOrderId",
         'OrderVal'   => "PurchaseOrderId",
@@ -193,8 +193,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'CID'
     ),
     'demand_tag' => [
-        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.name ELSE demand_tag.name END) AS CreativityName",
-        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.name ELSE demand_tag.name END",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END) AS CreativityName",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END",
         'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityName",
         'OrderVal'   => "CreativityName",
@@ -202,8 +202,8 @@ $DimensionsSQL = array(
         'HeadName'   => 'Creativity'
     ],
     'creativity_id' => [
-        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.deal_id ELSE demand_tag.demand_tag_id END) AS CreativityId",
-        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign_test.deal_id ELSE demand_tag.demand_tag_id END",
+        'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END) AS CreativityId",
+        'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END",
         'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityId",
         'OrderVal'   => "CreativityId",
@@ -420,8 +420,8 @@ $MetricsSQL = array(
         'HeadName' => 'Viewability Percent'
     ),
     'rebate_percent' => array(
-        'SQL'      => ", ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
-        'SQLCSV'   => ", CONCAT(FORMAT(ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
+        'SQL'      => ", $ReportsTable.rebatePercentage AS RebatePercent ",
+        'SQLCSV'   => ", CONCAT(FORMAT($ReportsTable.rebatePercentage, 2, '$Locale'), ' %') AS RebatePercent ",
         'Name'     => "RebatePercent",
         'OrderVal' => "RebatePercent",
         'Base'     => array("Rebate", "Revenue"),
@@ -519,8 +519,7 @@ function waitUnlock($Table)
 function getLiveData($Date)
 {
     global $db;
-    // TODO change back to reports
-    waitUnlock('reports_test');
+    waitUnlock('reports');
 
     $sql = "SELECT
 		ROUND(SUM(Revenue), 2) AS Revenue,
