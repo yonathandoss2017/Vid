@@ -168,42 +168,42 @@ if (in_array('ROLE_ADMIN', $RolesJSON)) {
         $PubManFilter = " AND (campaign.id = 0";
     }
 } elseif (in_array('ROLE_COUNTRY_MANAGER', $RolesJSON)) {
-    $PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
+    $PubManFilter = " AND (reports.idSalesManager = '$UserId'";
     $sql = "SELECT user.id FROM user INNER JOIN user AS manager ON user.manager_id = manager.id WHERE user.manager_id = '$UserId' OR manager.manager_id = '$UserId'";
     $queryS = $db2->query($sql);
     if ($queryS && $db2->num_rows($queryS) > 0) {
         while ($U = $db2->fetch_array($queryS)) {
             $idS = $U['id'];
-            $PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+            $PubManFilter .= " OR reports.idSalesManager = '$idS' ";
         }
     } else {
-        $PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
+        $PubManFilter = " AND (reports.idSalesManager = '$UserId' ";
     }
 } elseif (in_array('ROLE_SALES_VP', $RolesJSON)) {
-    $PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
+    $PubManFilter = " AND (reports.idSalesManager = '$UserId'";
     $sql = "SELECT user.id FROM user LEFT JOIN user AS managerHead ON user.manager_id = managerHead.id LEFT JOIN user AS countryManager ON managerHead.manager_id = countryManager.id WHERE user.manager_id = '$UserId' OR managerHead.manager_id = '$UserId' OR countryManager.manager_id = '$UserId'";
     $queryS = $db2->query($sql);
     if ($queryS && $db2->num_rows($queryS) > 0) {
         while ($U = $db2->fetch_array($queryS)) {
             $idS = $U['id'];
-            $PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+            $PubManFilter .= " OR reports.idSalesManager = '$idS' ";
         }
     } else {
-        $PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
+        $PubManFilter = " AND (reports.idSalesManager = '$UserId' ";
     }
 } else {
     if (in_array('ROLE_SALES_MANAGER_HEAD', $RolesJSON)) {
-        $PubManFilter = " AND (agency.sales_manager_id = '$UserId'";
+        $PubManFilter = " AND (reports.idSalesManager = '$UserId'";
         $sql = "SELECT id FROM user WHERE manager_id = '$UserId'";
         $queryS = $db2->query($sql);
         if ($queryS && $db2->num_rows($queryS) > 0) {
             while ($U = $db2->fetch_array($queryS)) {
                 $idS = $U['id'];
-                $PubManFilter .= " OR agency.sales_manager_id = '$idS' ";
+                $PubManFilter .= " OR reports.idSalesManager = '$idS' ";
             }
         }
     } else {
-        $PubManFilter = " AND (agency.sales_manager_id = '$UserId' ";
+        $PubManFilter = " AND (reports.idSalesManager = '$UserId' ";
     }
 }
 
@@ -228,7 +228,7 @@ if (isset($_POST['Dimensions'])) {
                 } else {
                     $PubManFilter = $PubManFilter . " OR ";
                 }
-                $PubManFilter .= "agency.sales_manager_id IN ($ReportingViewUsers) ";
+                $PubManFilter .= "reports.idSalesManager IN ($ReportingViewUsers) ";
             }
         }
         if ($postDimension === 'country_viewer') {

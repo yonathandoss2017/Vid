@@ -42,7 +42,7 @@ function calcPercents($Perc, $Impressions, $Complete)
 
 
 $Date1 = date('Y-m-d', time() - 3600);
-//$Date1 = '2020-08-08';
+//$Date1 = '2022-04-17';
 /*
 $date2 = new DateTime($Date1);
 $date2->modify('-1 day');
@@ -51,7 +51,7 @@ $Date2 = $date2->format('Y-m-d');
 
 //$DateNoSlash2 = date('Ymd', time() - (24 * 3600));
 $DateNoSlash = date('Ymd', time() - 3600);
-//$DateNoSlash = '20200808';
+//$DateNoSlash = '20220417';
 
 $Json = file_get_contents('http://sfx.stickyadstv.com/api/stats/publisher?token=a40f7640279cd9ba87d47c1a74ceefa236c36f5c&group=deal&start=' . $DateNoSlash . '&end=' . $DateNoSlash . '&id=872257');
 
@@ -65,6 +65,7 @@ $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
         $idCamp = $Camp['id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         $ActiveDeals[$idCamp] = $Camp['deal_id'];
 
@@ -114,6 +115,7 @@ foreach ($Decoded->results as $Deal) {
         $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
         $DealID = $CampaingData[$idCampaing]['DealId'];
         $idCountry = $CampaingData[$idCampaing]['Country'];
+        $salesManagerId = $CampaingData[$idCamp]['sales_manager_id'];
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -206,8 +208,8 @@ foreach ($Decoded->results as $Deal) {
         }
 
         $sql = "INSERT INTO reports
-        (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
-        VALUES (1, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date1', '$Hour')";
+        (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+        VALUES (1, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date1', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
 
         //echo $sql . "\n\n";
         /*

@@ -112,6 +112,7 @@ $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
         $idCamp = $Camp['id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         //echo $idCamp . "\n";
 
@@ -145,6 +146,7 @@ foreach ($Decoded->data->blocks as $RepData) {
             $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
             $DealID = $CampaingData[$idCampaing]['DealId'];
             $idCountry = $CampaingData[$idCampaing]['Country'];
+            $salesManagerId = $CampaingData[$idCamp]['sales_manager_id'];
 
             //echo 'Token: ' . $DResponse->access_token . "\n";
             //echo 'REP ID: ' . $ReportID . "\n";
@@ -182,14 +184,14 @@ foreach ($Decoded->data->blocks as $RepData) {
             $idRep = intval($db->getOne($sql));
 
             if ($idRep > 0) {
-                    $sql = "UPDATE reports SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate' WHERE id = '$idRep' LIMIT 1";
+                    $sql = "UPDATE reports SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', budgetConsumed = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate',  WHERE id = '$idRep' LIMIT 1";
                 /*
                 $sql = "UPDATE reports SET Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', Rebate = '$Rebate' WHERE id = '$idRep' LIMIT 1";
                 */
             } else {
                 $sql = "INSERT INTO reports
-                (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
-                VALUES (3, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$Rebate', '$Date', '$Hour')";
+                (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+                VALUES (3, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$Rebate', '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
                 /*
                 $sql = "INSERT INTO reports
                 (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour)

@@ -65,7 +65,7 @@ $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
         $idCamp = $Camp['id'];
-        $salesManagerId = $Camp['sales_manager_id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         $ActiveDeals[$idCamp] = $Camp['deal_id'];
 
@@ -115,6 +115,7 @@ foreach ($Decoded->results as $Deal) {
         $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
         $DealID = $CampaingData[$idCampaing]['DealId'];
         $idCountry = $CampaingData[$idCampaing]['Country'];
+        $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];

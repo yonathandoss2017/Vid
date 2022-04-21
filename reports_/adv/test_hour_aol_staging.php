@@ -112,7 +112,7 @@ $query = $db3->query($sql);
 if ($db3->num_rows($query) > 0) {
     while ($Camp = $db3->fetch_array($query)) {
         $idCamp = $Camp['id'];
-        $salesManagerId = $Camp['sales_manager_id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         //echo $idCamp . "\n";
 
@@ -146,6 +146,7 @@ foreach ($Decoded->data->blocks as $RepData) {
             $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
             $DealID = $CampaingData[$idCampaing]['DealId'];
             $idCountry = $CampaingData[$idCampaing]['Country'];
+            $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
             //echo 'Token: ' . $DResponse->access_token . "\n";
             //echo 'REP ID: ' . $ReportID . "\n";
