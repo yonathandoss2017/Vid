@@ -23,14 +23,14 @@ $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 require('/var/www/html/login/reports_/adv/common.php');
 require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 
-$fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
+$fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 3)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
-synchronizeCampaignsWithNewBudget();
-$campaignIds = getCampaignsIdsWithBudgetOverflow();
-synchronizeCampaignsWithBudgetOverflow($campaignIds);
+//synchronizeCampaignsWithNewBudget();
+//$campaignIds = getCampaignsIdsWithBudgetOverflow();
+//synchronizeCampaignsWithBudgetOverflow($campaignIds);
 $campaignIds = syncReport($fromDate, $toDate);
-synchronizeCampaignsWithBudgetOverflow($campaignIds);
+//synchronizeCampaignsWithBudgetOverflow($campaignIds);
 updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
@@ -218,7 +218,7 @@ function getCampaignsWithNewBudgets(): array
 
     $campaignIds = $db->getAll($sql, 'idCampaing') ?? [];
 
-    if(!$campaignIds) {
+    if (!$campaignIds) {
         return [];
     }
 
@@ -326,7 +326,7 @@ function sanitizeRebate(array $campaignIds)
     $sql = 'UPDATE 
             reports r
         SET
-            r.rebate = CAST(r.budgetConsumed * r.rebatePercentage / 100 AS DECIMAL(10,5))
+            r.rebate = CAST(r.budgetConsumed * r.rebatePercentage / 100 AS DECIMAL(20,16))
         WHERE
             r.rebatePercentage > 0
             AND r.idCampaing IN (%campaign_ids%);';
@@ -337,6 +337,12 @@ function sanitizeRebate(array $campaignIds)
 
 function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array
 {
+	
+	echo $fromDate->format("Y-m-d H:i:s");
+	echo "\n";
+	echo $toDate->format("Y-m-d H:i:s");
+	echo "\n";
+	
     $time =  microtime(true);
     debug('Start: syncReport');
 

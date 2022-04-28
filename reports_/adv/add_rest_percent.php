@@ -44,8 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2022-03-02';
-	$idCampaing = 7310;
+	$Date = '2022-04-24';
+	$idCampaing = 11837;
+	$idCreativity = 11930;
 	
 	
 	//exit(0);
@@ -111,7 +112,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 		}
 	}
 	
-	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.Date = '$Date'" ;// 
+	$sql = "SELECT reports.* FROM reports WHERE reports.idCampaing = $idCampaing AND reports.idCreativity = $idCreativity AND reports.Date = '$Date'" ;// 
 	//$sql = "SELECT reports.* FROM reports WHERE (reports.idCampaing = 923 OR reports.idCampaing = 924 OR reports.idCampaing = 925 OR reports.idCampaing = 926 OR reports.idCampaing = 927 OR reports.idCampaing = 928 OR reports.idCampaing = 929 OR reports.idCampaing = 930 OR reports.idCampaing = 931 OR reports.idCampaing = 932) AND reports.Date = '$Date'";
 	//echo "$sql\n\n";
 	
@@ -129,7 +130,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 0.50;
+			$PercCh = 0.85;
 			$PercCh2 = $PercCh;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
@@ -193,6 +194,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			}else{
 				$Revenue = $Row['Revenue'] * $PercCh;
 			}
+			$budgetConsumed = $Revenue;
 			
 			//$Rebate = $Row['Rebate'] * $PercCh;
 			$Rebate = $RebatePer * $Revenue / 100;
@@ -200,7 +202,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			$sql = "UPDATE reports SET 
 				Clicks = '$Clicks',
-				Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', VImpressions = '$VImpressions',
+				Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', budgetConsumed = '$budgetConsumed', VImpressions = '$VImpressions',
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
 				WHERE id = $idRow LIMIT 1";
 			

@@ -130,15 +130,6 @@ if (in_array('ROLE_ADMIN', $RolesJSON)) {
     $PubManFilter = " AND campaign.advertiser_id = $AdvID AND {ReportsTable}.Impressions > 0 ";
 
     $AdvRep = true;
-
-    if (isset($_POST['Dimensions'])) {
-        $Dimensions = $_POST['Dimensions'];
-        if (is_array($Dimensions)) {
-            foreach ($_POST['Dimensions'] as $K => $D) {
-                $_POST['Dimensions'][$K] = 'campaign_name';
-            }
-        }
-    }
 } elseif (in_array('ROLE_CAMPAIGN_VIEWER', $RolesJSON)) {
     $sql = "SELECT * FROM campaign_viewer_campaigns WHERE user_id = '$UserId'";
     $queryS = $db2->query($sql);

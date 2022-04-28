@@ -171,7 +171,7 @@ if ($db2->num_rows($query2) > 0) {
 $sql = "SELECT id FROM campaign ORDER BY id DESC LIMIT 1";
 $lastCamp = intval($db->getOne($sql));
 
-$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id FROM campaign c INNER JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id > $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id FROM campaign c LEFT JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id > $lastCamp";
 $query2 = $db2->query($sql);
 if ($db2->num_rows($query2) > 0) {
     while ($S = $db2->fetch_array($query2)) {
@@ -199,8 +199,8 @@ if ($db2->num_rows($query2) > 0) {
         $status = $S['status'];
         $created_at = $S['created_at'];
         $created_by = $S['created_by'];
-        $purchaseOrderId = $S['purchase_order_id'];
-        $salesManagerId = $S['purchase_order_sales_manager_id'];
+        $purchaseOrderId = $S['purchase_order_id'] ?: "NULL";
+        $salesManagerId = $S['purchase_order_sales_manager_id'] ?: $S['sales_manager_id'] ?: "NULL";
         $budget = $S['budget'] ?? 0;
 
         if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
@@ -221,17 +221,61 @@ if ($db2->num_rows($query2) > 0) {
     while ($S = $db2->fetch_array($query2)) {
         $name = $S['name'];
         $idC = $S['id'];
-        $advertiser_id = $S['advertiser_id'] ?? $S['po_advertiser_id'];
-        $agency_id = $S['agency_id'] ?? $S['po_agency_id'];
-        $deal_id = $S['deal_id'];
-        $type = $S['type'];
-        $createdBy = $S['created_by'];
+        $advertiser_id = $S['advertiser_id'] ?: $S['po_advertiser_id'] ?: "NULL";
+        $agency_id = $S['agency_id'] ?: $S['po_agency_id'] ?: "NULL";
+        $deal_id = $S['deal_id'] ?: "NULL";
+        $sspId = $S['ssp_id'] ?: "NULL";
+        $dspId = $S['dsp_id'] ?: 0;
+        $type = $S['type'] ?: "NULL";
+        $createdBy = $S['created_by'] ?: "NULL";
         $purchaseOrderId = $S['purchase_order_id'] ?? "NULL";
-        $salesManagerId = $S['po_sales_manager_id'] ?? "NULL";
+        $salesManagerId = $S['po_sales_manager_id'] ?: $S['sales_manager_id'] ?: "NULL";
         $rebate = $S['rebate'] ?? 0;
         $budget = $S['budget'] ?? 0;
+        $vtr = $S['vtr'] ?: 0;
+        $viewability = $S['viewability'] ?: 0;
+        $ctr = $S['ctr'] ?: 0;
+        $volume = $S['volume'] ?: 0;
+        $details = $S['details'] ?: "NULL";
+        $cpm = $S['cpm'] ?: 0;
+        $createdAt = $S['created_at'] ?: "NULL";
+        $startAt = $S['start_at'] ?: "NULL";
+        $endAt = $S['end_at'] ?: "NULL";
+        $deleted = $S['deleted'] ?: 0;
+        $fromVmp = $S['from_vmp'] ?: 0;
 
-        $sql = "UPDATE campaign SET name = '{$name}', type = {$type}, advertiser_id = {$advertiser_id}, agency_id = {$agency_id}, deal_id = '$deal_id', created_by = {$createdBy}, purchase_order_id = {$purchaseOrderId}, sales_manager_id = {$salesManagerId}, budget = {$budget}, rebate = {$rebate} WHERE id = {$idC} LIMIT 1";
+
+        $sql = <<<SQL
+UPDATE
+    campaign
+SET
+    agency_id = {$agency_id},
+    advertiser_id = {$advertiser_id},
+    ssp_id = {$sspId},
+    dsp_id = {$dspId},
+    name = '{$name}',
+    type = {$type},
+    deal_id = '{$deal_id}',
+    vtr = {$vtr},
+    ctr = {$ctr},
+    volume = {$volume},
+    viewability = {$viewability},
+    details = '{$details}',
+    cpm = {$cpm},
+    start_at = '{$startAt}',
+    end_at = '{$endAt}',
+    rebate = {$rebate},
+    created_at = '{$createdAt}',
+    deleted = {$deleted},
+    from_vmp = {$fromVmp},
+    created_by = {$createdBy},
+    purchase_order_id = {$purchaseOrderId},
+    sales_manager_id = {$salesManagerId},
+    budget = {$budget}
+WHERE
+    id = {$idC} LIMIT 1
+SQL;
+
         $db->query($sql);
     }
 }

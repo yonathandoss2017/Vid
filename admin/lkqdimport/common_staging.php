@@ -937,12 +937,13 @@ function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $e
     }
 }
 
-function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $toDate = null, $demandTags = null) {
+function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $toDate = null, $demandTags = null)
+{
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
     $fileDownloadToken = rand(100000, 999999);
 
-    if(!$toDate) {
+    if (!$toDate) {
         $toDate = $fromDate;
     }
 

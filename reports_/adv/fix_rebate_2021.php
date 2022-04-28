@@ -42,16 +42,18 @@ function calcPercents($Perc, $Impressions, $Complete)
 }
 
 
-$Date1 = '2021-11-01';
-$Date2 = '2021-12-31';
+$Date1 = '2022-04-02';
+$Date2 = '2022-04-24';
 
 
 $DemandTags = array();
 $ActiveDeals = array();
 $CampaingData = array();
+// ids of the campaigns separated by comma
+$campaignIds = "11058";
 
 
-$sql = "SELECT * FROM campaign WHERE id = 5007";
+$sql = "SELECT * FROM campaign WHERE id in ({$campaignIds})";
 $query = $db2->query($sql);
 if ($db2->num_rows($query) > 0) {
     while ($Camp = $db2->fetch_array($query)) {
@@ -112,7 +114,7 @@ if ($db2->num_rows($query) > 0) {
     }
 }
 
-$sql = "SELECT reports.* FROM reports WHERE reports.Date BETWEEN '$Date1' AND '$Date2' AND reports.idCampaing = 5007";
+$sql = "SELECT reports.* FROM reports WHERE reports.Date BETWEEN '$Date1' AND '$Date2' AND reports.idCampaing in ({$campaignIds})";
 $query = $db->query($sql);
 if ($db->num_rows($query) > 0) {
     while ($Row = $db->fetch_array($query)) {

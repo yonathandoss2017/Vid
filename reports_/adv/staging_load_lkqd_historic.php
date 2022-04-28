@@ -23,13 +23,13 @@ $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 require('/var/www/html/login/reports_/adv/common.php');
 require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 
-$fromDate = new DateTime(date('2022-04-18 00:00'));
-$toDate   = new DateTime(date('2022-04-19 23:00'));
+$fromDate = new DateTime(date('2022-04-27 00:00'));
+$toDate   = new DateTime(date('2022-04-27 23:00'));
 
 //synchronizeCampaignsWithNewBudget();
 //$campaignIds = getCampaignsIdsWithBudgetOverflow();
 //synchronizeCampaignsWithBudgetOverflow($campaignIds);
-$campaignIds = syncReport($fromDate, $toDate, [11779]);
+$campaignIds = syncReport($fromDate, $toDate, [11946]);
 //synchronizeCampaignsWithBudgetOverflow($campaignIds);
 //updateReportCards($db3, $fromDate->format('Y-m-d'));
 
@@ -218,7 +218,7 @@ function getCampaignsWithNewBudgets(): array
 
     $campaignIds = $db->getAll($sql, 'idCampaing') ?? [];
 
-    if(!$campaignIds) {
+    if (!$campaignIds) {
         return [];
     }
 
@@ -475,7 +475,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
         }
     }
 
-    $filterCampaignIds = [1071380,1071379];
+    $filterCampaignIds = [1071884];
     $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterCampaignIds);
 
     if ($ImportData === false) {
