@@ -26,11 +26,11 @@ require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 3)));
 $toDate   = new DateTime(date('Y-m-d 23:00'));
 
-//synchronizeCampaignsWithNewBudget();
-//$campaignIds = getCampaignsIdsWithBudgetOverflow();
-//synchronizeCampaignsWithBudgetOverflow($campaignIds);
+synchronizeCampaignsWithNewBudget();
+$campaignIds = getCampaignsIdsWithBudgetOverflow();
+synchronizeCampaignsWithBudgetOverflow($campaignIds);
 $campaignIds = syncReport($fromDate, $toDate);
-//synchronizeCampaignsWithBudgetOverflow($campaignIds);
+synchronizeCampaignsWithBudgetOverflow($campaignIds);
 updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
@@ -185,11 +185,6 @@ function synchronizeCampaignsWithNewBudget()
     if ($campaigns) {
         foreach ($campaigns as $campaign) {
             restartBudgetConsumed($campaign['idCampaing']);
-            $fromDate = new DateTime(sprintf('%s %s:00', $campaign['date'], $campaign['hour']));
-            $fromDate->modify('+ 1 hour');
-            $toDate   = new DateTime(date('Y-m-d 23:00'));
-            debug('syncReport for the campaign: ' . $campaign['idCampaing']);
-            syncReport($fromDate, $toDate, [$campaign['deal_id']]);
         }
     }
 
@@ -337,7 +332,6 @@ function sanitizeRebate(array $campaignIds)
 
 function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array
 {
-	
 	echo $fromDate->format("Y-m-d H:i:s");
 	echo "\n";
 	echo $toDate->format("Y-m-d H:i:s");
@@ -384,8 +378,15 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
         $avoidCreativitiesIdsSQL = " AND dt.id NOT IN ($avoidCreativitiesIds)";
     }
 
+    $filterDemandTagsIds = [];
+
     if ($filterCampaignIds) {
-        $filterCampaignSQL = ' AND c.id IN (' . implode(',', $filterCampaignIds) . ')';
+        $campaignIds = implode(',', $filterCampaignIds);
+        $filterCampaignSQL = ' AND c.id IN (' . $campaignIds . ')';
+        $filterDemandTagsIds = $db3->getAll(
+            "SELECT demand_tag_id FROM creativity dt WHERE campaign_id IN ($campaignIds) AND demand_tag_id IS NOT NULL",
+            'demand_tag_id'
+        );
     };
 
     $sql = "SELECT 
@@ -481,11 +482,11 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
         }
     }
 
-    $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterCampaignIds);
+    $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterDemandTagsIds);
 
     if ($ImportData === false) {
         logIn();
-        $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterCampaignIds);
+        $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, $filterDemandTagsIds);
     }
 
     $Bids = 0;
