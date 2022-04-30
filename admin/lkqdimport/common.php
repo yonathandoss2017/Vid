@@ -2568,7 +2568,6 @@ function newOrUpdateDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('gadiel --- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -3309,154 +3308,154 @@ function getDemandTagPayload(
 /**
  * Creates a new demand tag in LKQD
  */
-function newDemandTag(
-    int $dealId,
-    string $name,
-    string $status,
-    $clickThroughUrl,
-    string $trackingPixels,
-    $creativeId,
-    string $environments,
-    string $countries,
-    int $type,
-    $demandTagUrl
-) {
-    global $cookie_file;
+// function newDemandTag(
+//     int $dealId,
+//     string $name,
+//     string $status,
+//     $clickThroughUrl,
+//     string $trackingPixels,
+//     $creativeId,
+//     string $environments,
+//     string $countries,
+//     int $type,
+//     $demandTagUrl
+// ) {
+//     global $cookie_file;
 
-    $sources = getSources();
-    if (UNAUTHORIZED_PREFIX === $sources) {
-        logIn('newDemandTag function');
-        $sources = getSources();
-    }
-    $envs = json_decode($environments, true);
-    $geoTargetingData = getGeoTargetingData(json_decode($countries, true));
-    $envsArray = getEnvironments($envs);
-    $dealInfo = getDealInfo($dealId);
-    if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
-        logIn('newDemandTag function');
-        $dealInfo = getDealInfo($dealId);
-    }
+//     $sources = getSources();
+//     if (UNAUTHORIZED_PREFIX === $sources) {
+//         logIn('newDemandTag function');
+//         $sources = getSources();
+//     }
+//     $envs = json_decode($environments, true);
+//     $geoTargetingData = getGeoTargetingData(json_decode($countries, true));
+//     $envsArray = getEnvironments($envs);
+//     $dealInfo = getDealInfo($dealId);
+//     if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
+//         logIn('newDemandTag function');
+//         $dealInfo = getDealInfo($dealId);
+//     }
 
-    $filteredSources = array_filter($sources, function ($source) use ($envs) {
-        return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
-    });
+//     $filteredSources = array_filter($sources, function ($source) use ($envs) {
+//         return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
+//     });
 
-    $additions = getAdditions($filteredSources);
-    $pixels = getTrackingPixels($trackingPixels);
+//     $additions = getAdditions($filteredSources);
+//     $pixels = getTrackingPixels($trackingPixels);
 
-    $url = 'https://ui-api.lkqd.com/tags';
+//     $url = 'https://ui-api.lkqd.com/tags';
 
-    $levels = [];
-    for ($j = 1; $j <= 40; $j++) {
-        $levels[] = [
-            "levelNum" => $j,
-            "targetingType" => null,
-            "parameters" => []
-        ];
-    }
+//     $levels = [];
+//     for ($j = 1; $j <= 40; $j++) {
+//         $levels[] = [
+//             "levelNum" => $j,
+//             "targetingType" => null,
+//             "parameters" => []
+//         ];
+//     }
 
-    $payload = getDemandTagPayload(
-        0,
-        $dealInfo,
-        $dealId,
-        $name,
-        $status,
-        $envsArray,
-        $geoTargetingData,
-        $levels,
-        $clickThroughUrl,
-        $additions,
-        $pixels,
-        $type,
-        $demandTagUrl
-    );
+//     $payload = getDemandTagPayload(
+//         0,
+//         $dealInfo,
+//         $dealId,
+//         $name,
+//         $status,
+//         $envsArray,
+//         $geoTargetingData,
+//         $levels,
+//         $clickThroughUrl,
+//         $additions,
+//         $pixels,
+//         $type,
+//         $demandTagUrl
+//     );
 
-    $payloadJson = json_encode($payload);
+//     $payloadJson = json_encode($payload);
 
-    $headers = DEFAULT_HEADER;
-
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    curl_setopt($ch, CURLOPT_VERBOSE, false);
-
-    $result = curl_exec($ch);
-    curl_close($ch);
-
-    $response = json_decode($result, true);
-
-    if (!empty($response['errors'])) {
-        return $response['errors'];
-    }
-
-    $demandTagId = $response['data']['tagId'];
-
-    $addAssociations = getAddAssociations($filteredSources, $demandTagId);
-
-    $updateDbAssociationsUrl = "https://api.lkqd.com/supply-tags/update-db-associations";
-    $updateDbAssociationsPayload = [
-        "removeAssociations" => [],
-        "addAssociations" => $addAssociations,
-        "updateAssociations" => []
-    ];
-
-    $updateDbAssociationsUrlJson = json_encode($updateDbAssociationsPayload);
+//     $headers = DEFAULT_HEADER;
 
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $updateDbAssociationsUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $updateDbAssociationsUrlJson);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-    curl_setopt($ch, CURLOPT_VERBOSE, false);
+//     $ch = curl_init();
+//     curl_setopt($ch, CURLOPT_URL, $url);
+//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+//     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+//     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
-    $result = curl_exec($ch);
-    curl_close($ch);
+//     $result = curl_exec($ch);
+//     curl_close($ch);
 
-    if (isVideo($type)) {
-        $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
-        $tagAssociationsPayload = [
-            "adds" => [
-                [
-                "tagId" => $demandTagId,
-                "creativeId" => $creativeId
-                ]
-            ],
-            "removes" => []
-        ];
+//     $response = json_decode($result, true);
 
-        $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+//     if (!empty($response['errors'])) {
+//         return $response['errors'];
+//     }
+
+//     $demandTagId = $response['data']['tagId'];
+
+//     $addAssociations = getAddAssociations($filteredSources, $demandTagId);
+
+//     $updateDbAssociationsUrl = "https://api.lkqd.com/supply-tags/update-db-associations";
+//     $updateDbAssociationsPayload = [
+//         "removeAssociations" => [],
+//         "addAssociations" => $addAssociations,
+//         "updateAssociations" => []
+//     ];
+
+//     $updateDbAssociationsUrlJson = json_encode($updateDbAssociationsPayload);
 
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
+//     $ch = curl_init();
+//     curl_setopt($ch, CURLOPT_URL, $updateDbAssociationsUrl);
+//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//     curl_setopt($ch, CURLOPT_POSTFIELDS, $updateDbAssociationsUrlJson);
+//     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+//     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
-        $result = curl_exec($ch);
-        curl_close($ch);
-    }
+//     $result = curl_exec($ch);
+//     curl_close($ch);
 
-    if (is_numeric($demandTagId)) {
-        updateDemandTagStatus($demandTagId, $status);
-    }
+//     if (isVideo($type)) {
+//         $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+//         $tagAssociationsPayload = [
+//             "adds" => [
+//                 [
+//                 "tagId" => $demandTagId,
+//                 "creativeId" => $creativeId
+//                 ]
+//             ],
+//             "removes" => []
+//         ];
 
-    return $demandTagId;
-}
+//         $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+
+
+//         $ch = curl_init();
+//         curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
+//         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//         curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
+//         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//         curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//         curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//         curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+//         $result = curl_exec($ch);
+//         curl_close($ch);
+//     }
+
+//     if (is_numeric($demandTagId)) {
+//         updateDemandTagStatus($demandTagId, $status);
+//     }
+
+//     return $demandTagId;
+// }
 
 /**
  * Function to create a demand tag on LKQD
@@ -3472,7 +3471,7 @@ function newDemandTag(
  * @param [type] $demandTagUrl
  * @return void
  */
-function newDemandTag2(
+function newDemandTag(
     int $dealId,
     string $name,
     string $status,

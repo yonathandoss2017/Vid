@@ -118,9 +118,9 @@ function sendActivationNotice($Type, $idCampaing, $Today)
         $queryCamp = $db3->query($sql);
         $CampData = $db3->fetch_array($queryCamp);
 
-        $agencyId = $CampData['agency_id'];
+        $salesManagerId = $CampData['sales_manager_id'];
 
-        $sql = "SELECT CONCAT(user.name, ' ', user.last_name) AS Name, user.email AS Email, user.manager_id AS HeadID FROM agency INNER JOIN user ON user.id = agency.sales_manager_id WHERE agency.id = $agencyId";
+        $sql = "SELECT CONCAT(user.name, ' ', user.last_name) AS Name, user.email AS Email, user.manager_id AS HeadID FROM user WHERE user.id = $salesManagerId";
 
         $querySales = $db3->query($sql);
         $SalesData = $db3->fetch_array($querySales);
