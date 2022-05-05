@@ -25,7 +25,6 @@ $date2 = new DateTime($Date1);
 $date2->modify('-1 day');
 $Date2 = $date2->format('Y-m-d');
 
-
 $curl = curl_init();
 curl_setopt_array($curl, array(
     CURLOPT_URL => "https://publisher-api.spotxchange.com/1.1/token",
@@ -57,6 +56,7 @@ if ($db3->num_rows($queryC) > 0) {
     while ($Camp = $db3->fetch_array($queryC)) {
         //print_r($Camp);
         $idCampaing = $Camp['id'];
+        $idSalesManager = $Camp['sales_manager_id'];
         $RebatePercent = $Camp['rebate'];
         $DealID = $Camp['deal_id'];
 
@@ -161,14 +161,15 @@ if ($db3->num_rows($queryC) > 0) {
 
                 if (intval($idStat) == 0) {
                     $sql = "INSERT INTO reports
-                    (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour) 
-                    VALUES (2, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', $Rebate, '$Date', '$HourI')";
+                    (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+                    VALUES (2, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', $Rebate, '$Date', '$HourI', $idCampaing, $idCampaing, $Revenue, $RebatePercent, $idSalesManager)";
                 } else {
                     $sql = "UPDATE reports SET 
                         Requests = Requests + $Requests, 
                         Bids = Bids + $Bids, 
                         Impressions = Impressions + $Impressions, 
-                        Revenue = Revenue + $Revenue, 
+                        Revenue = Revenue + $Revenue,
+                        budgetConsumed = budgetConsumed + $Revenue,
                         VImpressions = VImpressions + $VImpressions,
                         Clicks = Clicks + $Clicks,
                         CompleteV = CompleteV + $CompleteV,

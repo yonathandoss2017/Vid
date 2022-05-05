@@ -181,6 +181,7 @@ if ($db3->num_rows($query) > 0) {
 
         $CampaingData[$idCamp]['DealId'] = $Camp['deal_id'];
         $CampaingData[$idCamp]['Rebate'] = $Camp['rebate'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         $countryId = 999;
         $sql = "SELECT COUNT(*) FROM campaign_country WHERE campaign_id = '$idCamp' ";
@@ -225,6 +226,7 @@ foreach ($ReportResults as $Row) {
         $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
         $DealID = $CampaingData[$idCampaing]['DealId'];
         $idCountry = $CampaingData[$idCampaing]['Country'];
+        $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -263,7 +265,8 @@ foreach ($ReportResults as $Row) {
                 Requests = $Requests, 
                 Bids = $Bids, 
                 Impressions = $Impressions, 
-                Revenue = $Revenue, 
+                Revenue = $Revenue,
+                budgetConsumed = $Revenue, 
                 VImpressions = $VImpressions, 
                 Clicks = $Clicks, 
                 CompleteV = $CompleteV, 
@@ -274,8 +277,8 @@ foreach ($ReportResults as $Row) {
                 WHERE id = $idRepRow LIMIT 1";
         } else {
             $sql = "INSERT INTO reports
-            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour) 
-            VALUES (6, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$Hour')";
+            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+            VALUES (6, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', $Complete75, '$Rebate', '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
         }
         echo $sql . "\n\n";
         $db->query($sql);

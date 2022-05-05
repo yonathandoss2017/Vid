@@ -420,20 +420,20 @@ $MetricsSQL = array(
         'HeadName' => 'Viewability Percent'
     ),
     'rebate_percent' => array(
-        'SQL'      => ", ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
-        'SQLCSV'   => ", CONCAT(FORMAT(ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
+        'SQL'      => ", ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.budgetConsumed) * 100), 2) AS RebatePercent ",
+        'SQLCSV'   => ", CONCAT(FORMAT(ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.budgetConsumed) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
         'Name'     => "RebatePercent",
         'OrderVal' => "RebatePercent",
-        'Base'     => array("Rebate", "Revenue"),
+        'Base'     => array("Rebate", "budgetConsumed"),
         'NumberF'  => true,
         'HeadName' => 'Rebate Percent'
     ),
     'net_revenue' => array(
-        'SQL'      => ", (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
-        'SQLCSV'   => ", CONCAT('$', FORMAT((SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2, '$Locale')) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'SQL'      => ", (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'SQLCSV'   => ", CONCAT('$', FORMAT((SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)), 2, '$Locale')) AS NetRevenue, (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
         'Name'     => "NetRevenue",
         'OrderVal' => "NetRevenueOrder",
-        'Base'     => array("Revenue", "Rebate"),
+        'Base'     => array("budgetConsumed", "Rebate"),
         'NumberF'  => false,
         'HeadName' => 'Net Revenue'
     ),

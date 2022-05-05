@@ -6,6 +6,15 @@ define('UNAUTHORIZED_PREFIX', 'unauthorized');
 define('EVENT_IMPRESSION', 3);
 define('EVENT_COMPLETE', 7);
 define('EVENT_CLICK', 8);
+define('DEFAULT_HEADER', [
+    'Accept: application/json, text/plain, */*',
+    'Content-Type: application/json;charset=UTF-8',
+    'Origin: https://ui.lkqd.com',
+    'Referer: https://ui.lkqd.com/',
+    'LKQD-Api-Version: 88',
+    'Sec-Fetch-Mode: cors',
+    'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+]);
 
 
 $ExtraP[0] = 27;
@@ -942,11 +951,9 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
     global $sessionId, $cookie_file;
     $uuid = gen_uuid();
     $fileDownloadToken = rand(100000, 999999);
-
     if (!$toDate) {
         $toDate = $fromDate;
     }
-
     $FiltersArray = array();
     foreach ($demandTags as $DT) {
         $FiltersArray[] = array(
@@ -954,7 +961,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
             'value' => $DT
         );
     }
-
     $post = array(
         "whatRequest" => "csv",
         "uuid" => $uuid,
@@ -971,7 +977,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
         "timezone" => "UTC",
         "reportType" => array("TAG"),
         "environmentIds" => array(1, 2, 3, 4),
-
         'filters' => array (
             0 => array (
                 'dimension' => 'ENVIRONMENT',
@@ -1000,8 +1005,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
                 ),
             ),
         ),
-
-
         "metrics" => array("REQUESTS", "IMPRESSIONS", "VIEWABLE_IMPRESSIONS", "COMPLETED_VIEWS", "CLICKS", "REVENUE", "FIRST_QUARTILES", "MIDPOINTS", "THIRD_QUARTILES"),
         'sort' =>
             array (
@@ -1014,7 +1017,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-
     if ($FiltersArray) {
         $post['filters'][] = [
             'dimension' => 'TAG',
@@ -1022,13 +1024,9 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
             'filters' => $FiltersArray
         ];
     }
-
     //print_r($post);
-
     $json = json_encode($post);
-
     $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
-
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1036,7 +1034,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-
     $headers = array();
     $headers[] = 'Authority: ui-api.lkqd.com';
     $headers[] = 'Pragma: no-cache';
@@ -1051,17 +1048,13 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
     $headers[] = 'Accept-Encoding: gzip, deflate, br';
     $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
     $result = curl_exec($ch);
     //echo $result;
-
     if (curl_errno($ch)) {
         return false;
     }
     curl_close($ch);
-
     //echo $result;
-
     if (substr($result, 0, 4) == 'HTTP') {
         return false;
     } else {
@@ -1073,7 +1066,6 @@ function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $t
             $CSVArray[$N] = $LineArray;
             $N++;
         }
-
         return $CSVArray;
     }
 }
@@ -1147,9 +1139,13 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
                         'label' => 'CTV',
                     ),
                 ),
-            )
+            )/*,
+            1 => array(
+                'dimension' => 'TAG',
+                'operation' => 'include',
+                'filters' => $FiltersArray
+            )*/
         ),
-
 
         "metrics" => array("REQUESTS", "IMPRESSIONS", "VIEWABLE_IMPRESSIONS", "COMPLETED_VIEWS", "CLICKS", "REVENUE", "FIRST_QUARTILES", "MIDPOINTS", "THIRD_QUARTILES"),
         'sort' =>
@@ -1163,14 +1159,6 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
         //'limit' => 30,
         'fileDownloadToken' => $fileDownloadToken
     );
-
-    if ($FiltersArray) {
-        $post['filters'][] = [
-            'dimension' => 'TAG',
-            'operation' => 'include',
-            'filters' => $FiltersArray
-        ];
-    }
 
     //print_r($post);
 
@@ -1406,6 +1394,7 @@ function getCreativity(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1474,6 +1463,7 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1523,6 +1513,7 @@ function newCreativity(int $partnerId, string $type, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1575,6 +1566,7 @@ function uploadCreativityVideo(int $creativityId, $file)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- uploadCreativityVideo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1647,6 +1639,7 @@ function getDemandPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDemandPartner -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1694,6 +1687,7 @@ function getTagCreativityId(int $tagId): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getTagCreativityId -- ' . $result);
     curl_close($ch);
 
     $noCreativityFoundMessage = 'No creativity found with the given tag id!';
@@ -1747,6 +1741,7 @@ function getAgenciesData(): array
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getAgenciesData -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1756,6 +1751,7 @@ function getAgenciesData(): array
 
     $response = json_decode($result, true);
 
+    http_response_code(200);
     return $response;
 }
 
@@ -1782,6 +1778,7 @@ function getOrder(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getOrder -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, true);
@@ -1836,6 +1833,7 @@ function newOrder(int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newOrder -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1895,6 +1893,7 @@ function updateOrder(int $orderId, int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateOrder -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1958,6 +1957,7 @@ function newDemandPartner(string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDemandPartner -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result);
@@ -2007,6 +2007,7 @@ function updateDemandPartner(int $demandPartnerId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateDemandPartner -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -2045,6 +2046,7 @@ function getTagInfo(int $tagId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getTagInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2094,6 +2096,7 @@ function getCreativityInfo(int $creativityId): string
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getCreavitityInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2142,6 +2145,7 @@ function getDealInfo(int $dealId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDealInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2176,15 +2180,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
 
     $url = sprintf("https://ui-api.lkqd.com/tags/%d/status", $demandTagId);
 
-    $headers = [
-        'Accept: application/json, text/plain, */*',
-        'Content-Type: application/json;charset=UTF-8',
-        'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
-        'LKQD-Api-Version: 88',
-        'Sec-Fetch-Mode: cors',
-        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    ];
+    $headers = DEFAULT_HEADER;
 
     $payload = ["status" => $status];
     $jsonPayload = json_encode($payload);
@@ -2200,6 +2196,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateDemandTagStatus -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2444,15 +2441,7 @@ function getDeal(int $orderId, string $name)
 
     $URL = 'https://ui-api.lkqd.com/demand/tree';
 
-    $Headers = [
-        'Accept: application/json, text/plain, */*',
-        'Content-Type: application/json;charset=UTF-8',
-        'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
-        'LKQD-Api-Version: 88',
-        'Sec-Fetch-Mode: cors',
-        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    ];
+    $Headers = DEFAULT_HEADER;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
@@ -2462,6 +2451,7 @@ function getDeal(int $orderId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDeal -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2495,15 +2485,7 @@ function getDemandTagId(int $dealId, string $name): string
 
     $URL = 'https://ui-api.lkqd.com/demand/tree';
 
-    $Headers = [
-        'Accept: application/json, text/plain, */*',
-        'Content-Type: application/json;charset=UTF-8',
-        'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
-        'LKQD-Api-Version: 88',
-        'Sec-Fetch-Mode: cors',
-        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    ];
+    $Headers = DEFAULT_HEADER;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $URL);
@@ -2513,6 +2495,7 @@ function getDemandTagId(int $dealId, string $name): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDemandTagId -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2577,7 +2560,52 @@ function getFrequencyCapKey($freqCap)
     return $freqCap ? "any_user_id" : null;
 }
 
-function newOrUpdateDeal(
+function getAppliedRestrictoListsData($dealId)
+{
+    $restricToListData = [
+        "appListType" => null,
+        "appSelectedListType" => null,
+        "appListId" => null,
+        "appListAllowUnknownApps" => 0,
+        "bundleIdListType" => null,
+        "bundleIdListId" => null,
+        "bundleIdListAllowUnknownBundleIds" => 0,
+        "bundleIdListBlockDetectedMismatch" => 0,
+        "creativeGatingListId" => null,
+        "creativeGatingListDescription" => null,
+        "creativeGatingListConditions" => null,
+        "creativeGatingListAllowUnknownCreativeGatingIds" => 0,
+        "deviceIdListType" => null,
+        "deviceIdListId" => null,
+        "deviceIdListAllowUnknownDeviceIds" => 0,
+        "domainListType" => null,
+        "domainListId" => null,
+        "domainListAllowUnknownDomains" => 0,
+        "domainListApplyDetected" => 0,
+        "domainListBlockDetectedMismatch" => 0,
+        "ipListType" => null,
+        "ipListId" => null,
+        "ipListAllowUnknownIps" => 0
+    ];
+
+    if (empty($dealId)) {
+        return $restricToListData;
+    }
+
+    $dealInfo = getDealInfo($dealId);
+    if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
+        logIn('updateCreative function');
+        $dealInfo = getDealInfo($dealId);
+    }
+
+    foreach ($dealInfo['appliedRestrictoListsData'] as $rule => $value) {
+        $restricToListData[$rule] = $value;
+    }
+
+    return $restricToListData;
+}
+
+function newDeal(
     int $orderId,
     string $name,
     string $startDate,
@@ -2597,6 +2625,8 @@ function newOrUpdateDeal(
         "2" => EVENT_CLICK,
         "3" => EVENT_COMPLETE,
     ];
+
+    $eventId = array_key_exists($deliveryPacing, $eventIds) ? $eventIds[$deliveryPacing] : null;
 
     $frequencyCap = [];
 
@@ -2627,11 +2657,11 @@ function newOrUpdateDeal(
         "costRev" => 0,
         "costCpm" => 0,
         "costType" => "none",
-        "caps" => getCaps($eventIds[$deliveryPacing], $goal),
+        "caps" => getCaps($eventId ?: 0, $goal),
         "frequencyCaps" => $frequencyCap,
         "pacings" => [
             [
-                "eventId" => $eventIds[$deliveryPacing],
+                "eventId" => $eventId,
                 "pacingPeriod" => "day",
                 "pacingType" => "throttled-even",
                 "timezone" => "UTC",
@@ -2644,31 +2674,7 @@ function newOrUpdateDeal(
         "activeTagCount" => null,
         "totalTagCount" => null,
         "budget" => null,
-        "appliedRestrictoListsData" => [
-            "appListType" => null,
-            "appSelectedListType" => null,
-            "appListId" => null,
-            "appListAllowUnknownApps" => 0,
-            "bundleIdListType" => null,
-            "bundleIdListId" => null,
-            "bundleIdListAllowUnknownBundleIds" => 0,
-            "bundleIdListBlockDetectedMismatch" => 0,
-            "creativeGatingListId" => null,
-            "creativeGatingListDescription" => null,
-            "creativeGatingListConditions" => null,
-            "creativeGatingListAllowUnknownCreativeGatingIds" => 0,
-            "deviceIdListType" => null,
-            "deviceIdListId" => null,
-            "deviceIdListAllowUnknownDeviceIds" => 0,
-            "domainListType" => null,
-            "domainListId" => null,
-            "domainListAllowUnknownDomains" => 0,
-            "domainListApplyDetected" => 0,
-            "domainListBlockDetectedMismatch" => 0,
-            "ipListType" => null,
-            "ipListId" => null,
-            "ipListAllowUnknownIps" => 0
-        ],
+        "appliedRestrictoListsData" => getAppliedRestrictoListsData($dealId),
         "trackingPixels" => [],
         "pmpSiteId" => null,
         "daypartStatus" => "inactive",
@@ -2706,6 +2712,131 @@ function newOrUpdateDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDeal -- ' . $result);
+    curl_close($ch);
+
+    if (!isLoggedIn($result)) {
+        http_response_code(403);
+        return UNAUTHORIZED_PREFIX;
+    }
+
+    $response = json_decode($result);
+
+    if (!empty($response->errors)) {
+        return json_encode($response->errors);
+    }
+
+    return $response->data->dealId;
+}
+
+function updateDeal(
+    int $orderId,
+    string $name,
+    string $startDate,
+    string $endDate,
+    string $deliveryPacing,
+    int $goal,
+    string $status,
+    int $dealId = null,
+    int $freqCap = null
+) {
+    global $cookie_file;
+
+    $URL = 'https://ui-api.lkqd.com/deals';
+
+    $eventIds = [
+        "1" => EVENT_IMPRESSION,
+        "2" => EVENT_CLICK,
+        "3" => EVENT_COMPLETE,
+    ];
+
+    $eventId = array_key_exists($deliveryPacing, $eventIds) ? $eventIds[$deliveryPacing] : null;
+
+    $frequencyCap = [];
+
+    if ($freqCap) {
+        $frequencyCap = [
+            [
+                "eventId" => 3,
+                "eventName" => "impression",
+                "timePeriod" => "day",
+                "timePeriodCount" => 1,
+                "capCount" => $freqCap
+            ]
+        ];
+    }
+
+    $payload = [
+        "dealId" => $dealId,
+        "orderId" => $orderId,
+        "name" => $name,
+        "dealType" => "normal",
+        "adType" => "video",
+        "status" => $status,
+        "tier" => 1,
+        "weight" => null,
+        "cpm" => 1.5,
+        "cpmType" => "fixed",
+        "cost" => 0,
+        "costRev" => 0,
+        "costCpm" => 0,
+        "costType" => "none",
+        "caps" => getCaps($eventId ?: 0, $goal),
+        "frequencyCaps" => $frequencyCap,
+        "pacings" => [
+            [
+                "eventId" => $eventId,
+                "pacingPeriod" => "day",
+                "pacingType" => "throttled-even",
+                "timezone" => "UTC",
+                "goal" => $goal,
+                "frontLoadRatio" => null
+            ]
+        ],
+        "frequencyCapKey" => getFrequencyCapKey($freqCap),
+        "frequencyCapNoUid" => "use_ip",
+        "activeTagCount" => null,
+        "totalTagCount" => null,
+        "budget" => null,
+        "appliedRestrictoListsData" => getAppliedRestrictoListsData($dealId),
+        "trackingPixels" => [],
+        "pmpSiteId" => null,
+        "daypartStatus" => "inactive",
+        "daypartTimezone" => "America/New_York",
+        "daypartEntries" => [],
+        "startTs" => $startDate . " 00:00:00.0",
+        "endTs" => $endDate . " 23:59:59.0",
+        "customFlightTimeZone" => "UTC"
+    ];
+
+    $payloadJson = json_encode($payload);
+
+    $Headers = [
+        'Authority: ui-api.lkqd.com',
+        'Method: POST',
+        'Path: /deals',
+        'Accept: application/json, text/plain, */*',
+        'Content-Type: application/json;charset=UTF-8',
+        'LKQD-Api-Version: 88',
+        'Origin: https://ui.lkqd.com',
+        'Referer: https://ui.lkqd.com/',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-site',
+        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $URL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+
+    $result = curl_exec($ch);
+    error_log('debug-- updateDeal -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2843,6 +2974,7 @@ function unselectDemandTags(array $tags)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- unselectDemandTag -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -3009,7 +3141,7 @@ function getEnvironments(array $environments): array
 /**
  * Function to build string encoded as LKQD is expecting.
  */
-function getGeoTargetingData(array $countries): string
+function getGeoTargetingData(array $countries, $demandTagId = null): string
 {
     $children = [];
     foreach ($countries as $country) {
@@ -3019,17 +3151,36 @@ function getGeoTargetingData(array $countries): string
         ];
     }
 
+    $childrens = [
+        [
+            "relationshipType" => "or",
+            "children" => $children
+        ]
+    ];
+
+    if ($demandTagId) {
+        $tagInfo = getTagInfo($demandTagId);
+        $targeting = array_key_exists('targeting', $tagInfo) ? $tagInfo['targeting'] : null;
+        $currentGeoTargetingData = !empty($targeting) ? (array_key_exists('geoTargetingData', $targeting) ? $targeting['geoTargetingData'] : null) : null;
+        $currentChildrens = !empty($currentGeoTargetingData) ? $currentGeoTargetingData['children'][0]['children'] : null;
+
+        if (!empty($currentChildrens)) {
+            foreach ($currentChildrens as $index => $currentChild) {
+                if ($index === 0) {
+                    continue;
+                }
+
+                array_push($childrens, $currentChild);
+            }
+        }
+    }
+
     $geoTargetingData = [
         "relationshipType" => "or",
         "children" => [
             [
                 "relationshipType" => "and",
-                "children" => [
-                    [
-                        "relationshipType" => "or",
-                        "children" => $children
-                    ]
-                ]
+                "children" => $childrens,
             ]
         ],
         "_countyNames" => [],
@@ -3060,7 +3211,7 @@ function updateCreative(
         $sources = getSources();
     }
     $envs = json_decode($environments, true);
-    $geoTargetingData = getGeoTargetingData(json_decode($countries, true));
+    $geoTargetingData = getGeoTargetingData(json_decode($countries, true), $demandTagId);
     $envsArray = getEnvironments($envs);
     $dealInfo = getDealInfo($dealId);
     if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
@@ -3075,15 +3226,7 @@ function updateCreative(
     $additions = getAdditions($filteredSources);
     $pixels = getTrackingPixels($trackingPixels);
 
-    $headers = [
-        'Accept: application/json, text/plain, */*',
-        'Content-Type: application/json;charset=UTF-8',
-        'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
-        'LKQD-Api-Version: 88',
-        'Sec-Fetch-Mode: cors',
-        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    ];
+    $headers = DEFAULT_HEADER;
 
     if (isVideo($type)) {
         $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
@@ -3111,6 +3254,7 @@ function updateCreative(
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         $result = curl_exec($ch);
+        error_log('debug-- updateCreative video -- ' . $result);
         curl_close($ch);
     }
 
@@ -3154,6 +3298,7 @@ function updateCreative(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateCreative -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3454,13 +3599,175 @@ function getDemandTagPayload(
 /**
  * Creates a new demand tag in LKQD
  */
+// function newDemandTag(
+//     int $dealId,
+//     string $name,
+//     string $status,
+//     $clickThroughUrl,
+//     string $trackingPixels,
+//     $creativeId,
+//     string $environments,
+//     string $countries,
+//     int $type,
+//     $demandTagUrl
+// ) {
+//     global $cookie_file;
+
+//     $sources = getSources();
+//     if (UNAUTHORIZED_PREFIX === $sources) {
+//         logIn('newDemandTag function');
+//         $sources = getSources();
+//     }
+//     $envs = json_decode($environments, true);
+//     $geoTargetingData = getGeoTargetingData(json_decode($countries, true));
+//     $envsArray = getEnvironments($envs);
+//     $dealInfo = getDealInfo($dealId);
+//     if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
+//         logIn('newDemandTag function');
+//         $dealInfo = getDealInfo($dealId);
+//     }
+
+//     $filteredSources = array_filter($sources, function ($source) use ($envs) {
+//         return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
+//     });
+
+//     $additions = getAdditions($filteredSources);
+//     $pixels = getTrackingPixels($trackingPixels);
+
+//     $url = 'https://ui-api.lkqd.com/tags';
+
+//     $levels = [];
+//     for ($j = 1; $j <= 40; $j++) {
+//         $levels[] = [
+//             "levelNum" => $j,
+//             "targetingType" => null,
+//             "parameters" => []
+//         ];
+//     }
+
+//     $payload = getDemandTagPayload(
+//         0,
+//         $dealInfo,
+//         $dealId,
+//         $name,
+//         $status,
+//         $envsArray,
+//         $geoTargetingData,
+//         $levels,
+//         $clickThroughUrl,
+//         $additions,
+//         $pixels,
+//         $type,
+//         $demandTagUrl
+//     );
+
+//     $payloadJson = json_encode($payload);
+
+//     $headers = DEFAULT_HEADER;
+
+
+//     $ch = curl_init();
+//     curl_setopt($ch, CURLOPT_URL, $url);
+//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//     curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+//     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+//     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//     curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+//     $result = curl_exec($ch);
+//     curl_close($ch);
+
+//     $response = json_decode($result, true);
+
+//     if (!empty($response['errors'])) {
+//         return $response['errors'];
+//     }
+
+//     $demandTagId = $response['data']['tagId'];
+
+//     $addAssociations = getAddAssociations($filteredSources, $demandTagId);
+
+//     $updateDbAssociationsUrl = "https://api.lkqd.com/supply-tags/update-db-associations";
+//     $updateDbAssociationsPayload = [
+//         "removeAssociations" => [],
+//         "addAssociations" => $addAssociations,
+//         "updateAssociations" => []
+//     ];
+
+//     $updateDbAssociationsUrlJson = json_encode($updateDbAssociationsPayload);
+
+
+//     $ch = curl_init();
+//     curl_setopt($ch, CURLOPT_URL, $updateDbAssociationsUrl);
+//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//     curl_setopt($ch, CURLOPT_POSTFIELDS, $updateDbAssociationsUrlJson);
+//     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+//     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//     curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+//     $result = curl_exec($ch);
+//     curl_close($ch);
+
+//     if (isVideo($type)) {
+//         $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+//         $tagAssociationsPayload = [
+//             "adds" => [
+//                 [
+//                 "tagId" => $demandTagId,
+//                 "creativeId" => $creativeId
+//                 ]
+//             ],
+//             "removes" => []
+//         ];
+
+//         $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
+
+
+//         $ch = curl_init();
+//         curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
+//         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//         curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
+//         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//         curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+//         curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+//         curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+//         $result = curl_exec($ch);
+//         curl_close($ch);
+//     }
+
+//     if (is_numeric($demandTagId)) {
+//         updateDemandTagStatus($demandTagId, $status);
+//     }
+
+//     return $demandTagId;
+// }
+
+/**
+ * Function to create a demand tag on LKQD
+ *
+ * @param integer $dealId
+ * @param string $name
+ * @param string $status
+ * @param [type] $clickThroughUrl
+ * @param string $trackingPixels
+ * @param string $environments
+ * @param string $countries
+ * @param integer $type
+ * @param [type] $demandTagUrl
+ * @return void
+ */
 function newDemandTag(
     int $dealId,
     string $name,
     string $status,
     $clickThroughUrl,
     string $trackingPixels,
-    $creativeId,
     string $environments,
     string $countries,
     int $type,
@@ -3478,13 +3785,11 @@ function newDemandTag(
     $envsArray = getEnvironments($envs);
     $dealInfo = getDealInfo($dealId);
     if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
-        logIn('newDemandTag function');
+        logIn('newDemandTag2 function');
         $dealInfo = getDealInfo($dealId);
     }
 
-    $filteredSources = array_filter($sources, function ($source) use ($envs) {
-        return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
-    });
+    $filteredSources = getElegibleSources($sources, $environments);
 
     $additions = getAdditions($filteredSources);
     $pixels = getTrackingPixels($trackingPixels);
@@ -3518,15 +3823,7 @@ function newDemandTag(
 
     $payloadJson = json_encode($payload);
 
-    $headers = [
-        'Accept: application/json, text/plain, */*',
-        'Content-Type: application/json;charset=UTF-8',
-        'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
-        'LKQD-Api-Version: 88',
-        'Sec-Fetch-Mode: cors',
-        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    ];
+    $headers = DEFAULT_HEADER;
 
 
     $ch = curl_init();
@@ -3540,6 +3837,7 @@ function newDemandTag(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDemandTag -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3548,7 +3846,25 @@ function newDemandTag(
         return $response['errors'];
     }
 
-    $demandTagId = $response['data']['tagId'];
+    return $response['data']['tagId'];
+}
+
+/**
+ * Function to select sources with demand floor above 0.2
+ */
+function setSources(int $demandTagId, string $environments)
+{
+    global $cookie_file;
+
+    $headers = DEFAULT_HEADER;
+
+    $sources = getSources();
+    if (UNAUTHORIZED_PREFIX === $sources) {
+        logIn('setSources function');
+        $sources = getSources();
+    }
+
+    $filteredSources = getElegibleSources($sources, $environments);
 
     $addAssociations = getAddAssociations($filteredSources, $demandTagId);
 
@@ -3573,10 +3889,41 @@ function newDemandTag(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getSources -- ' . $result);
     curl_close($ch);
 
-    if (isVideo($type)) {
-        $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
+    $response = json_decode($result, true);
+
+    if (!empty($response['errorId'])) {
+        http_response_code(403);
+        return $response['message'];
+    }
+
+    $selectedSouces = getSourcesByDealId($demandTagId);
+    $sources = json_decode($selectedSouces, true);
+    $associations = $sources['associations'];
+
+    if (empty($associations)) {
+        return 'Select sources failed!';
+    }
+
+    return $response;
+}
+
+/**
+ * Function to associate a video to a demand tag on LKQD
+ *
+ * @param integer $demandTagId
+ * @param integer $creativeId id of the video on LKQD
+ * @return void
+ */
+function associateCreativityToDemandTag(int $demandTagId, int $creativeId)
+{
+    global $cookie_file;
+
+    $headers = DEFAULT_HEADER;
+
+    $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
         $tagAssociationsPayload = [
             "adds" => [
                 [
@@ -3601,14 +3948,36 @@ function newDemandTag(
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         $result = curl_exec($ch);
+        error_log('debug-- associateCreativityToDemandTag -- ' . $result);
         curl_close($ch);
-    }
 
-    if (is_numeric($demandTagId)) {
-        updateDemandTagStatus($demandTagId, $status);
-    }
+        if (!isLoggedIn($result)) {
+            http_response_code(403);
+            return UNAUTHORIZED_PREFIX;
+        }
 
-    return $demandTagId;
+        $currentCreativeId = getTagCreativityId($demandTagId);
+
+        if ($creativeId == $currentCreativeId) {
+            return $result;
+        }
+
+        return 'Associate video to demand tag failed!';
+}
+
+/**
+ * Function to filter sources with demand floor above 0..2
+ *
+ * @param array $sources
+ * @param string $environments
+ * @return array
+ */
+function getElegibleSources(array $sources, string $environments): array
+{
+    $envs = json_decode($environments, true);
+    return array_filter($sources, function ($source) use ($envs) {
+        return $source->cpmFloorDemand >= 0.2 && in_array($source->environmentId, $envs);
+    });
 }
 
 function newSupplyPartner($SPName)

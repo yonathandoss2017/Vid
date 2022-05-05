@@ -858,6 +858,5 @@ if (isset($_POST['csv'])) {
   "recordsTotal": <?php echo $CntTotal; ?>,
   "recordsFiltered": <?php echo $CntTotal; ?>,
   "data": <?php echo safe_json_encode($Data); ?>,
-  "dataT": <?php echo json_encode($DataT); ?>,
-  "SQL": "<?php echo $SQLQuery; ?>"
+  "dataT": <?php echo json_encode($DataT); ?>
 }

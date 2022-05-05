@@ -44,9 +44,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	//$Hour = date('H');
 	//$Hour = 23;
 	
-	$Date = '2022-04-24';
-	$idCampaing = 11837;
-	$idCreativity = 11930;
+	$Date = '2022-05-01';
+	$idCampaing = 11815;
+	$idCreativity = 11888;
 	
 	
 	//exit(0);
@@ -130,7 +130,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			$CPM = $CampaingData[$idCampaing]['CPM'];
 			$CPV = $CampaingData[$idCampaing]['CPV'];
 			
-			$PercCh = 0.85;
+			$PercCh = 8;
 			$PercCh2 = $PercCh;
 			
 			$Requests = intval($Row['Requests'] * $PercCh);
@@ -199,9 +199,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 			//$Rebate = $Row['Rebate'] * $PercCh;
 			$Rebate = $RebatePer * $Revenue / 100;
 			
-			
+			//Clicks = '$Clicks',
 			$sql = "UPDATE reports SET 
-				Clicks = '$Clicks',
+				
 				Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue', budgetConsumed = '$budgetConsumed', VImpressions = '$VImpressions',
 				CompleteV = '$CompleteV', Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
 				WHERE id = $idRow LIMIT 1";

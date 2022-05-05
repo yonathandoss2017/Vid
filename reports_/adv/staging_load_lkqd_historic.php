@@ -23,15 +23,15 @@ $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 require('/var/www/html/login/reports_/adv/common.php');
 require('/var/www/html/login/admin/lkqdimport/common_staging.php');
 
-$fromDate = new DateTime(date('2022-04-27 00:00'));
-$toDate   = new DateTime(date('2022-04-27 23:00'));
+$fromDate = new DateTime(date('2022-04-30 00:00'));
+$toDate   = new DateTime(date('2022-04-30 23:00'));
 
-synchronizeCampaignsWithNewBudget();
-$campaignIds = getCampaignsIdsWithBudgetOverflow();
-synchronizeCampaignsWithBudgetOverflow($campaignIds);
-$campaignIds = syncReport($fromDate, $toDate, [11946]);
-synchronizeCampaignsWithBudgetOverflow($campaignIds);
-updateReportCards($db3, $fromDate->format('Y-m-d'));
+// synchronizeCampaignsWithNewBudget();
+// $campaignIds = getCampaignsIdsWithBudgetOverflow();
+// synchronizeCampaignsWithBudgetOverflow($campaignIds);
+$campaignIds = syncReport($fromDate, $toDate, [11832]);
+// synchronizeCampaignsWithBudgetOverflow($campaignIds);
+// updateReportCards($db3, $fromDate->format('Y-m-d'));
 
 function calcPercents($Perc, $Impressions, $Complete)
 {
@@ -387,7 +387,7 @@ function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = [
             'demand_tag_id'
         );
     };
-
+$filterDemandTagsIds = [1071516];
     $sql = "SELECT 
                 c.*,
                 dt.demand_tag_id,

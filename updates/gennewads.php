@@ -16,7 +16,7 @@
 	$db2 = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	
-	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 19028";
+	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 19681";
 	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 1977";
 /*
 	$sql = "SELECT DISTINCT(idSite) FROM `supplytag` WHERE `Old` = 1";

@@ -16,20 +16,117 @@ $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie2.txt';
 // $pdo = new PDO($conexion, $dbuser2, $dbpass2);
 $db3 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
-$fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
-$toDate   = new DateTime(date('Y-m-d 23:00'));
-$ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, []);
+$sql = <<<SQL
+SELECT
+    id,
+    name,
+    lkqd_id,
+    rebate,
+    payment_terms
+FROM
+    agency
+WHERE
+    name in (SELECT name FROM agency group by name having count(name) > 1)
+ORDER BY name, id
+SQL;
 
-foreach ($ImportData as $index => $tag) {
-    if ($index == 0) {
+$agencies = $db3->getAll($sql);
+
+$agencyId = 0;
+$agencyName = '';
+$agenciesToDelete = [];
+$totalAgencies = count($agencies);
+foreach ($agencies as $index => $agency) {
+    if ($agency['name'] !== $agencyName) {
+        if ($index > 0) {
+            processAgency($agencyId, $agenciesToDelete);
+        }
+
+
+        $agencyId = $agency['id'];
+        $agencyName = $agency['name'];
+        $agenciesToDelete = [];
         continue;
     }
 
-    if ($tag[1] == 1071924) {
-        var_dump($tag);
-        die();
-    }
+    $agenciesToDelete[] = $agency['id'];
 }
+
+processAgency($agencyId, $agenciesToDelete);
+
+function processAgency(int $agencyId, array $agenciesToDelete)
+{
+    transferCampaignsToAgency($agencyId, $agenciesToDelete);
+    transferPurchaseOrdersToAgency($agencyId, $agenciesToDelete);
+    deleteAgency($agenciesToDelete);
+}
+
+function deleteAgency(array $agenciesToDelete)
+{
+    global $db3;
+
+    $agencies = implode(",", $agenciesToDelete);
+    $sql = <<<SQL
+UPDATE
+    agency
+SET
+    deleted = 1
+WHERE
+    id in ({$agencies})
+SQL;
+
+    $db3->query($sql);
+}
+
+function transferPurchaseOrdersToAgency(int $agencyId, array $agenciesToDelete)
+{
+    global $db3;
+
+    $agencies = implode(",", $agenciesToDelete);
+    $sql = <<<SQL
+UPDATE
+    purchase_order
+SET
+    agency_id = {$agencyId}
+WHERE
+    agency_id in ({$agencies})
+SQL;
+
+    $db3->query($sql);
+}
+
+function transferCampaignsToAgency(int $agencyId, array $agenciesToDelete)
+{
+    global $db3;
+
+    $agencies = implode(",", $agenciesToDelete);
+    $sql = <<<SQL
+UPDATE
+    campaign
+SET
+    agency_id = {$agencyId}
+WHERE
+    agency_id in ({$agencies})
+SQL;
+
+    $db3->query($sql);
+}
+
+
+// $fromDate = new DateTime(date('Y-m-d H:00', time() - (3600 * 1)));
+// $toDate   = new DateTime(date('Y-m-d 23:00'));
+// $ImportData = getAdvertiserDemandReportCSVByDateRange($fromDate, $toDate, []);
+
+// foreach ($ImportData as $index => $tag) {
+//     if ($index == 0) {
+//         continue;
+//     }
+
+//     if ($tag[1] == 1071924) {
+//         var_dump($tag);
+//         die();
+//     }
+// }
 // $agencies = getAgenciesData();
 // if (in_array(UNAUTHORIZED_PREFIX, $agencies, true)) {
 //     logIn($name);

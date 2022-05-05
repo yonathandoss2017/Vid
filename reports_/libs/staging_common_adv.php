@@ -420,20 +420,20 @@ $MetricsSQL = array(
         'HeadName' => 'Viewability Percent'
     ),
     'rebate_percent' => array(
-        'SQL'      => ", $ReportsTable.rebatePercentage AS RebatePercent ",
-        'SQLCSV'   => ", CONCAT(FORMAT($ReportsTable.rebatePercentage, 2, '$Locale'), ' %') AS RebatePercent ",
+        'SQL'      => ", ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.budgetConsumed) * 100), 2) AS RebatePercent ",
+        'SQLCSV'   => ", CONCAT(FORMAT(ROUND((SUM($ReportsTable.Rebate) / SUM($ReportsTable.budgetConsumed) * 100), 2), 2, '$Locale'), ' %') AS RebatePercent ",
         'Name'     => "RebatePercent",
         'OrderVal' => "RebatePercent",
-        'Base'     => array("Rebate", "Revenue"),
+        'Base'     => array("Rebate", "budgetConsumed"),
         'NumberF'  => true,
         'HeadName' => 'Rebate Percent'
     ),
     'net_revenue' => array(
-        'SQL'      => ", (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
-        'SQLCSV'   => ", CONCAT('$', FORMAT((SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2, '$Locale')) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'SQL'      => ", (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'SQLCSV'   => ", CONCAT('$', FORMAT((SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)), 2, '$Locale')) AS NetRevenue, (SUM($ReportsTable.budgetConsumed) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
         'Name'     => "NetRevenue",
         'OrderVal' => "NetRevenueOrder",
-        'Base'     => array("Revenue", "Rebate"),
+        'Base'     => array("budgetConsumed", "Rebate"),
         'NumberF'  => false,
         'HeadName' => 'Net Revenue'
     ),
@@ -483,16 +483,14 @@ $MetricsSQL = array(
         'HeadName' => '75%'
     ),
     'budget_oc' => array(
-        'SQL'       => ", ROUND(IFNULL($ReportsTable.Budget, '0'), 2) AS Budget ",
-        'SQLCSV'    => ", CONCAT('$', FORMAT(ROUND(IFNULL($ReportsTable.Budget, '0'), 2), 2, '$Locale')) AS Budget ",
+        'SQL'       => ", ROUND(IFNULL(purchase_order.budget, '0'), 2) AS Budget ",
+        'SQLCSV'    => ", CONCAT('$', FORMAT(ROUND(IFNULL(purchase_order.budget, '0'), 2), 2, '$Locale')) AS Budget ",
         'Name'      => "Budget",
         'OrderVal'  => "Budget",
-        'Base'      => array("Revenue", "Impressions"),
+        'Base'      => ["Budget"],
         'NumberF'   => false,
         'HeadName'  => 'Budget',
-        'InnerJoin' => array(
-            'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
-        ),
+        'InnerJoin' => [],
     ),
 );
 

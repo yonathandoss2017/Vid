@@ -15,6 +15,7 @@ define('DEFAULT_HEADER', [
     'Sec-Fetch-Mode: cors',
     'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
 ]);
+define('STATUS_COMPLETE', 'complete');
 
 
 $ExtraP[0] = 27;
@@ -946,6 +947,130 @@ function getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $e
     }
 }
 
+function getAdvertiserDemandReportCSVByDateRange(DateTime $fromDate, DateTime $toDate = null, $demandTags = null)
+{
+    global $sessionId, $cookie_file;
+    $uuid = gen_uuid();
+    $fileDownloadToken = rand(100000, 999999);
+    if (!$toDate) {
+        $toDate = $fromDate;
+    }
+    $FiltersArray = array();
+    foreach ($demandTags as $DT) {
+        $FiltersArray[] = array(
+            'matchType' => 'id',
+            'value' => $DT
+        );
+    }
+    $post = array(
+        "whatRequest" => "csv",
+        "uuid" => $uuid,
+        "reportFormat" => "CSV",
+        "includeSummary" => false,
+        "dateRangeType" => "TODAY",
+        "startDate" => $fromDate->format('Y-m-d'),
+        "endDate" => $toDate->format('Y-m-d'),
+        "startDateHour" => $fromDate->format('H'),
+        "endDateHour" => $toDate->format('H'),
+        "startHour" => 0,
+        "endHour" => 23,
+        "timeDimension" => "HOURLY",
+        "timezone" => "UTC",
+        "reportType" => array("TAG"),
+        "environmentIds" => array(1, 2, 3, 4),
+        'filters' => array (
+            0 => array (
+                'dimension' => 'ENVIRONMENT',
+                'operation' => 'include',
+                'filters' => array (
+                    0 => array (
+                        'matchType' => 'id',
+                        'value' => '1',
+                        'label' => 'Mobile Web',
+                    ),
+                    1 => array (
+                          'matchType' => 'id',
+                          'value' => '2',
+                        'label' => 'Mobile App',
+                    ),
+                    2 => array (
+                        'matchType' => 'id',
+                        'value' => '3',
+                        'label' => 'Desktop',
+                    ),
+                    3 => array (
+                        'matchType' => 'id',
+                        'value' => '4',
+                        'label' => 'CTV',
+                    ),
+                ),
+            ),
+        ),
+        "metrics" => array("REQUESTS", "IMPRESSIONS", "VIEWABLE_IMPRESSIONS", "COMPLETED_VIEWS", "CLICKS", "REVENUE", "FIRST_QUARTILES", "MIDPOINTS", "THIRD_QUARTILES"),
+        'sort' =>
+            array (
+                0 => array (
+                    'field' => 'REQUESTS',
+                    'order' => 'desc',
+                ),
+            ),
+        'offset' => 0,
+        //'limit' => 30,
+        'fileDownloadToken' => $fileDownloadToken
+    );
+    if ($FiltersArray) {
+        $post['filters'][] = [
+            'dimension' => 'TAG',
+            'operation' => 'include',
+            'filters' => $FiltersArray
+        ];
+    }
+    //print_r($post);
+    $json = json_encode($post);
+    $url = 'https://ui-api.lkqd.com/reports?definition=' . str_replace("America%5C%2FNew_York", "America%2FNew_York", urlencode($json));
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+    $headers = array();
+    $headers[] = 'Authority: ui-api.lkqd.com';
+    $headers[] = 'Pragma: no-cache';
+    $headers[] = 'Cache-Control: no-cache';
+    $headers[] = 'Upgrade-Insecure-Requests: 1';
+    $headers[] = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';
+    $headers[] = 'Sec-Fetch-Mode: nested-navigate';
+    $headers[] = 'Sec-Fetch-User: ?1';
+    $headers[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3';
+    $headers[] = 'Sec-Fetch-Site: same-site';
+    $headers[] = 'Referer: https://ui.lkqd.com/reports';
+    $headers[] = 'Accept-Encoding: gzip, deflate, br';
+    $headers[] = 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ca;q=0.7,pt;q=0.6';
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    //echo $result;
+    if (curl_errno($ch)) {
+        return false;
+    }
+    curl_close($ch);
+    //echo $result;
+    if (substr($result, 0, 4) == 'HTTP') {
+        return false;
+    } else {
+        $N = 0;
+        $CSVArray = array();
+        $LineArray = array();
+        foreach (preg_split("/((\r?\n)|(\r\n?))/", $result) as $line) {
+            $LineArray = str_getcsv($line);
+            $CSVArray[$N] = $LineArray;
+            $N++;
+        }
+        return $CSVArray;
+    }
+}
+
 function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
 {
     global $sessionId, $cookie_file;
@@ -1270,6 +1395,7 @@ function getCreativity(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1338,6 +1464,7 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1387,6 +1514,7 @@ function newCreativity(int $partnerId, string $type, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newCreativity -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1439,6 +1567,7 @@ function uploadCreativityVideo(int $creativityId, $file)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- uploadCreativityVideo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1511,6 +1640,7 @@ function getDemandPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDemandPartner -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1558,6 +1688,7 @@ function getTagCreativityId(int $tagId): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getTagCreativityId -- ' . $result);
     curl_close($ch);
 
     $noCreativityFoundMessage = 'No creativity found with the given tag id!';
@@ -1611,6 +1742,7 @@ function getAgenciesData(): array
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getAgenciesData -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1647,6 +1779,7 @@ function getOrder(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getOrder -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, true);
@@ -1701,6 +1834,7 @@ function newOrder(int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newOrder -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1760,6 +1894,7 @@ function updateOrder(int $orderId, int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateOrder -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1823,6 +1958,7 @@ function newDemandPartner(string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDemandPartner -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result);
@@ -1872,6 +2008,7 @@ function updateDemandPartner(int $demandPartnerId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateDemandPartner -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -1910,6 +2047,7 @@ function getTagInfo(int $tagId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getTagInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1959,6 +2097,7 @@ function getCreativityInfo(int $creativityId): string
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getCreavitityInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2007,6 +2146,7 @@ function getDealInfo(int $dealId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDealInfo -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2057,6 +2197,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateDemandTagStatus -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2311,6 +2452,7 @@ function getDeal(int $orderId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDeal -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2354,6 +2496,7 @@ function getDemandTagId(int $dealId, string $name): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- getDemandTagId -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2463,7 +2606,7 @@ function getAppliedRestrictoListsData($dealId)
     return $restricToListData;
 }
 
-function newOrUpdateDeal(
+function newDeal(
     int $orderId,
     string $name,
     string $startDate,
@@ -2483,6 +2626,8 @@ function newOrUpdateDeal(
         "2" => EVENT_CLICK,
         "3" => EVENT_COMPLETE,
     ];
+
+    $eventId = array_key_exists($deliveryPacing, $eventIds) ? $eventIds[$deliveryPacing] : null;
 
     $frequencyCap = [];
 
@@ -2513,11 +2658,11 @@ function newOrUpdateDeal(
         "costRev" => 0,
         "costCpm" => 0,
         "costType" => "none",
-        "caps" => getCaps($eventIds[$deliveryPacing], $goal),
+        "caps" => getCaps($eventId ?: 0, $goal),
         "frequencyCaps" => $frequencyCap,
         "pacings" => [
             [
-                "eventId" => $eventIds[$deliveryPacing],
+                "eventId" => $eventId,
                 "pacingPeriod" => "day",
                 "pacingType" => "throttled-even",
                 "timezone" => "UTC",
@@ -2568,6 +2713,143 @@ function newOrUpdateDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDeal -- ' . $result);
+    curl_close($ch);
+
+    if (!isLoggedIn($result)) {
+        http_response_code(403);
+        return UNAUTHORIZED_PREFIX;
+    }
+
+    $response = json_decode($result);
+
+    if (!empty($response->errors)) {
+        return json_encode($response->errors);
+    }
+
+    return $response->data->dealId;
+}
+
+function updateDeal(
+    int $orderId,
+    string $name,
+    string $startDate,
+    string $endDate,
+    string $deliveryPacing,
+    int $goal,
+    string $status,
+    int $dealId = null,
+    int $freqCap = null
+) {
+    global $cookie_file;
+
+    $URL = 'https://ui-api.lkqd.com/deals';
+
+    $eventIds = [
+        "1" => EVENT_IMPRESSION,
+        "2" => EVENT_CLICK,
+        "3" => EVENT_COMPLETE,
+    ];
+
+    $eventId = array_key_exists($deliveryPacing, $eventIds) ? $eventIds[$deliveryPacing] : null;
+
+    $frequencyCap = [];
+
+    if ($freqCap) {
+        $frequencyCap = [
+            [
+                "eventId" => 3,
+                "eventName" => "impression",
+                "timePeriod" => "day",
+                "timePeriodCount" => 1,
+                "capCount" => $freqCap
+            ]
+        ];
+    }
+
+    $payload = [
+        "dealId" => $dealId,
+        "orderId" => $orderId,
+        "name" => $name,
+        "dealType" => "normal",
+        "adType" => "video",
+        "status" => $status,
+        "tier" => 1,
+        "weight" => null,
+        "cpm" => 1.5,
+        "cpmType" => "fixed",
+        "cost" => 0,
+        "costRev" => 0,
+        "costCpm" => 0,
+        "costType" => "none",
+        "caps" => getCaps($eventId ?: 0, $goal),
+        "frequencyCaps" => $frequencyCap,
+        "pacings" => [
+            [
+                "eventId" => $eventId,
+                "pacingPeriod" => "day",
+                "pacingType" => "throttled-even",
+                "timezone" => "UTC",
+                "goal" => $goal,
+                "frontLoadRatio" => null
+            ]
+        ],
+        "frequencyCapKey" => getFrequencyCapKey($freqCap),
+        "frequencyCapNoUid" => "use_ip",
+        "activeTagCount" => null,
+        "totalTagCount" => null,
+        "budget" => null,
+        "appliedRestrictoListsData" => getAppliedRestrictoListsData($dealId),
+        "trackingPixels" => [],
+        "pmpSiteId" => null,
+        "daypartStatus" => "inactive",
+        "daypartTimezone" => "America/New_York",
+        "daypartEntries" => [],
+        "startTs" => $startDate . " 00:00:00.0",
+        "endTs" => $endDate . " 23:59:59.0",
+        "customFlightTimeZone" => "UTC"
+    ];
+
+    $dealInfo = getDealInfo($dealId);
+    if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
+        logIn('updateDeal function');
+        $dealInfo = getDealInfo($dealId);
+    }
+
+    $endDataObject = new DateTime($endDate);
+    $currentDate = new DateTime();
+    if (STATUS_COMPLETE === $dealInfo['status'] && $endDataObject < $currentDate) {
+        $payload['status'] = STATUS_COMPLETE;
+    }
+
+    $payloadJson = json_encode($payload);
+
+    $Headers = [
+        'Authority: ui-api.lkqd.com',
+        'Method: POST',
+        'Path: /deals',
+        'Accept: application/json, text/plain, */*',
+        'Content-Type: application/json;charset=UTF-8',
+        'LKQD-Api-Version: 88',
+        'Origin: https://ui.lkqd.com',
+        'Referer: https://ui.lkqd.com/',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-site',
+        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $URL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+
+    $result = curl_exec($ch);
+    error_log('debug-- updateDeal -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2705,6 +2987,7 @@ function unselectDemandTags(array $tags)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- unselectDemandTag -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -2871,7 +3154,7 @@ function getEnvironments(array $environments): array
 /**
  * Function to build string encoded as LKQD is expecting.
  */
-function getGeoTargetingData(array $countries): string
+function getGeoTargetingData(array $countries, $demandTagId = null): string
 {
     $children = [];
     foreach ($countries as $country) {
@@ -2881,17 +3164,36 @@ function getGeoTargetingData(array $countries): string
         ];
     }
 
+    $childrens = [
+        [
+            "relationshipType" => "or",
+            "children" => $children
+        ]
+    ];
+
+    if ($demandTagId) {
+        $tagInfo = getTagInfo($demandTagId);
+        $targeting = array_key_exists('targeting', $tagInfo) ? $tagInfo['targeting'] : null;
+        $currentGeoTargetingData = !empty($targeting) ? (array_key_exists('geoTargetingData', $targeting) ? $targeting['geoTargetingData'] : null) : null;
+        $currentChildrens = !empty($currentGeoTargetingData) ? $currentGeoTargetingData['children'][0]['children'] : null;
+
+        if (!empty($currentChildrens)) {
+            foreach ($currentChildrens as $index => $currentChild) {
+                if ($index === 0) {
+                    continue;
+                }
+
+                array_push($childrens, $currentChild);
+            }
+        }
+    }
+
     $geoTargetingData = [
         "relationshipType" => "or",
         "children" => [
             [
                 "relationshipType" => "and",
-                "children" => [
-                    [
-                        "relationshipType" => "or",
-                        "children" => $children
-                    ]
-                ]
+                "children" => $childrens,
             ]
         ],
         "_countyNames" => [],
@@ -2922,7 +3224,7 @@ function updateCreative(
         $sources = getSources();
     }
     $envs = json_decode($environments, true);
-    $geoTargetingData = getGeoTargetingData(json_decode($countries, true));
+    $geoTargetingData = getGeoTargetingData(json_decode($countries, true), $demandTagId);
     $envsArray = getEnvironments($envs);
     $dealInfo = getDealInfo($dealId);
     if (in_array(UNAUTHORIZED_PREFIX, $dealInfo, true)) {
@@ -2965,6 +3267,7 @@ function updateCreative(
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         $result = curl_exec($ch);
+        error_log('debug-- updateCreative video -- ' . $result);
         curl_close($ch);
     }
 
@@ -3008,6 +3311,7 @@ function updateCreative(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateCreative -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3546,6 +3850,7 @@ function newDemandTag(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- newDemandTag -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3597,6 +3902,7 @@ function setSources(int $demandTagId, string $environments)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getSources -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3604,6 +3910,14 @@ function setSources(int $demandTagId, string $environments)
     if (!empty($response['errorId'])) {
         http_response_code(403);
         return $response['message'];
+    }
+
+    $selectedSouces = getSourcesByDealId($demandTagId);
+    $sources = json_decode($selectedSouces, true);
+    $associations = $sources['associations'];
+
+    if (empty($associations)) {
+        return 'Select sources failed!';
     }
 
     return $response;
@@ -3647,6 +3961,7 @@ function associateCreativityToDemandTag(int $demandTagId, int $creativeId)
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         $result = curl_exec($ch);
+        error_log('debug-- associateCreativityToDemandTag -- ' . $result);
         curl_close($ch);
 
         if (!isLoggedIn($result)) {
@@ -3654,7 +3969,13 @@ function associateCreativityToDemandTag(int $demandTagId, int $creativeId)
             return UNAUTHORIZED_PREFIX;
         }
 
-        return $result;
+        $currentCreativeId = getTagCreativityId($demandTagId);
+
+        if ($creativeId == $currentCreativeId) {
+            return $result;
+        }
+
+        return 'Associate video to demand tag failed!';
 }
 
 /**

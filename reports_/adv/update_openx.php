@@ -105,6 +105,7 @@ if ($db3->num_rows($query) > 0) {
         $CampaingData[$idCamp]['Rebate'] = $Camp['rebate'];
         $CampaingData[$idCamp]['Type'] = $Camp['type'];
         $CampaingData[$idCamp]['AgencyId'] = $Camp['agency_id'];
+        $CampaingData[$idCamp]['sales_manager_id'] = $Camp['sales_manager_id'];
 
         if ($Camp['cpm'] > 0) {
             $CampaingData[$idCamp]['CPM'] = $Camp['cpm'];
@@ -227,6 +228,8 @@ foreach ($Data->reportData as $D) {
         $CPM = $CampaingData[$idCampaing]['CPM'];
         $CPV = $CampaingData[$idCampaing]['CPV'];
         $AgencyId = $CampaingData[$idCampaing]['AgencyId'];
+        $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
+
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];
@@ -274,8 +277,8 @@ foreach ($Data->reportData as $D) {
             }
 
             $sql = "INSERT INTO reports
-            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour) 
-            VALUES (5, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour')";
+            (SSP, idCampaing, idCountry, Requests, Bids, Impressions, Revenue, VImpressions, Clicks, CompleteV, Complete25, Complete50, Complete75, CompleteVPer, Rebate, Date, Hour, idCreativity, idPurchaseOrder, budgetConsumed, rebatePercentage, idSalesManager) 
+            VALUES (5, $idCampaing, $idCountry, '$Requests', '$Bids', '$Impressions', '$Revenue', '$VImpressions', '$Clicks', '$CompleteV', '$Complete25', '$Complete50', '$Complete75', '$CompleteVPerc', $Rebate, '$Date', '$Hour', {$idCampaing}, {$idCampaing}, {$Revenue}, {$RebatePercent}, {$salesManagerId})";
             $db->query($sql);
             //echo $sql . "\n";
         } else {
@@ -354,11 +357,12 @@ foreach ($Data->reportData as $D) {
                 }
 
                 $Revenue = "Revenue + $AddRevenue";
-                $sql = "UPDATE reports SET 
-                    Requests = $Requests, 
-                    Bids = $Bids, 
-                    Impressions = $Impressions, 
-                    Revenue = $Revenue, 
+                $sql = "UPDATE reports SET
+                    Requests = $Requests,
+                    Bids = $Bids,
+                    Impressions = $Impressions,
+                    Revenue = $Revenue,
+                    budgetConsumed = $Revenue,
                     VImpressions = $VImpressions,
                     Clicks = $Clicks,
                     CompleteV = $CompleteV,

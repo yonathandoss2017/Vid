@@ -146,7 +146,7 @@ foreach ($Decoded->data->blocks as $RepData) {
             $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
             $DealID = $CampaingData[$idCampaing]['DealId'];
             $idCountry = $CampaingData[$idCampaing]['Country'];
-            $salesManagerId = $CampaingData[$idCamp]['sales_manager_id'];
+            $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
             //echo 'Token: ' . $DResponse->access_token . "\n";
             //echo 'REP ID: ' . $ReportID . "\n";

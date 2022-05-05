@@ -2,12 +2,14 @@
 
 @session_start();
 define('CONST', 1);
+ini_set('display_errors', 0);
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+
 require('/var/www/html/login/db.php');
 require('/var/www/html/login/reports_/libs/common_adv.php');
 require('/var/www/html/login/config.php');
 
 $db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
-$dbStaging = new SQL($advIntegration['host'], $advIntegration['db'], $advIntegration['user'], $advIntegration['pass']);
 
 require('/var/www/html/login/reports_/adv/config.php');
 $db = new SQL($dbhost2, $dbname2, $dbuser2, $dbpass2);
@@ -169,7 +171,7 @@ if ($db2->num_rows($query2) > 0) {
 $sql = "SELECT id FROM campaign ORDER BY id DESC LIMIT 1";
 $lastCamp = intval($db->getOne($sql));
 
-$sql = "SELECT * FROM campaign WHERE id > $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id purchase_order_sales_manager_id FROM campaign c LEFT JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id > $lastCamp";
 $query2 = $db2->query($sql);
 if ($db2->num_rows($query2) > 0) {
     while ($S = $db2->fetch_array($query2)) {
@@ -196,6 +198,10 @@ if ($db2->num_rows($query2) > 0) {
         $rebate = $S['rebate'];
         $status = $S['status'];
         $created_at = $S['created_at'];
+        $created_by = $S['created_by'];
+        $purchaseOrderId = $S['purchase_order_id'] ?: "NULL";
+        $salesManagerId = $S['purchase_order_sales_manager_id'] ?: $S['sales_manager_id'] ?: "NULL";
+        $budget = $S['budget'] ?? 0;
 
         if (intval($S['dsp_id']) == 0 && intval($S['spotx_dsp_id']) == 9) {
             $dsp_id = 11;
@@ -203,24 +209,378 @@ if ($db2->num_rows($query2) > 0) {
 
         $deleted = $S['deleted'];
 
-        $sql = "INSERT INTO campaign (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted)
-        VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted')";
+        $sql = "INSERT INTO campaign (id, agency_id, advertiser_id, ssp_id, dsp_id, name, type, deal_id, vtr, viewability, ctr, volume, list_type, details, cpm, start_at, end_at, rebate, status, created_at, deleted, created_by, purchase_order_id, sales_manager_id, budget)
+        VALUES ('$id', '$agency_id', '$advertiser_id', '$ssp_id', '$dsp_id', '$name', '$type', '$deal_id', '$vtr', '$viewability', '$ctr', '$volume', '$list_type', '$details', '$cpm', '$start_at', '$end_at', '$rebate', '$status', '$created_at', '$deleted', '$created_by', {$purchaseOrderId}, {$salesManagerId}, {$budget})";
         $db->query($sql);
     }
 }
 
-$sql = "SELECT * FROM campaign WHERE id <= $lastCamp";
+$sql = "SELECT c.*, po.sales_manager_id po_sales_manager_id, po.advertiser_id po_advertiser_id, po.agency_id po_agency_id  FROM campaign c LEFT JOIN purchase_order po ON c.purchase_order_id = po.id WHERE c.id <= $lastCamp";
 $query2 = $db2->query($sql);
 if ($db2->num_rows($query2) > 0) {
     while ($S = $db2->fetch_array($query2)) {
         $name = $S['name'];
         $idC = $S['id'];
-        $advertiser_id = $S['advertiser_id'];
-        $agency_id = $S['agency_id'];
-        $deal_id = $S['deal_id'];
+        $advertiser_id = $S['advertiser_id'] ?: $S['po_advertiser_id'] ?: "NULL";
+        $agency_id = $S['agency_id'] ?: $S['po_agency_id'] ?: "NULL";
+        $deal_id = $S['deal_id'] ?: "NULL";
+        $sspId = $S['ssp_id'] ?: "NULL";
+        $dspId = $S['dsp_id'] ?: 0;
+        $type = $S['type'] ?: "NULL";
+        $createdBy = $S['created_by'] ?: "NULL";
+        $purchaseOrderId = $S['purchase_order_id'] ?? "NULL";
+        $salesManagerId = $S['po_sales_manager_id'] ?: $S['sales_manager_id'] ?: "NULL";
+        $rebate = $S['rebate'] ?? 0;
+        $budget = $S['budget'] ?? 0;
+        $vtr = $S['vtr'] ?: 0;
+        $viewability = $S['viewability'] ?: 0;
+        $ctr = $S['ctr'] ?: 0;
+        $volume = $S['volume'] ?: 0;
+        $details = $S['details'] ?: "NULL";
+        $cpm = $S['cpm'] ?: 0;
+        $createdAt = $S['created_at'] ?: "NULL";
+        $startAt = $S['start_at'] ?: "NULL";
+        $endAt = $S['end_at'] ?: "NULL";
+        $deleted = $S['deleted'] ?: 0;
+        $fromVmp = $S['from_vmp'] ?: 0;
 
-        $sql = "UPDATE campaign SET name = '$name', advertiser_id = '$advertiser_id', agency_id = '$agency_id', deal_id = '$deal_id' WHERE id = '$idC' LIMIT 1 ";
+
+        $sql = <<<SQL
+UPDATE
+    campaign
+SET
+    agency_id = {$agency_id},
+    advertiser_id = {$advertiser_id},
+    ssp_id = {$sspId},
+    dsp_id = {$dspId},
+    name = "{$name}",
+    type = {$type},
+    deal_id = "{$deal_id}",
+    vtr = {$vtr},
+    ctr = {$ctr},
+    volume = {$volume},
+    viewability = {$viewability},
+    details = "{$details}",
+    cpm = {$cpm},
+    start_at = "{$startAt}",
+    end_at = "{$endAt}",
+    rebate = {$rebate},
+    created_at = "{$createdAt}",
+    deleted = {$deleted},
+    from_vmp = {$fromVmp},
+    created_by = {$createdBy},
+    purchase_order_id = {$purchaseOrderId},
+    sales_manager_id = {$salesManagerId},
+    budget = {$budget}
+WHERE
+    id = {$idC} LIMIT 1
+SQL;
+
         $db->query($sql);
+    }
+}
+
+
+$sql = <<<SQL
+SELECT
+    id
+FROM
+    purchase_order
+ORDER BY id
+DESC LIMIT 1
+SQL;
+$lastPurchaseOrder = intval($db->getOne($sql));
+
+$sql = <<<SQL
+SELECT
+    *
+FROM
+    purchase_order
+WHERE
+    id > {$lastPurchaseOrder}
+SQL;
+$purchaseOrderQuery = $db2->query($sql);
+if ($db2->num_rows($purchaseOrderQuery) > 0) {
+    while ($purchaseOrder = $db2->fetch_array($purchaseOrderQuery)) {
+        $purchaseOrderId = $purchaseOrder['id'];
+        $purchaseOrderName = $purchaseOrder['name'];
+        $purchaseOrderDocument = $purchaseOrder['document'];
+        $purchaseOrderBudget = $purchaseOrder['budget'];
+        $purchaseOrderCostType = $purchaseOrder['cost_type'] ?: "NULL";
+        $purchaseOrderCPM = $purchaseOrder['cpm'] ?: "NULL";
+        $purchaseOrderCPV = $purchaseOrder['cpv'] ?: "NULL";
+        $purchaseOrderCPC = $purchaseOrder['cpc'] ?: "NULL";
+        $purchaseOrderVCPM = $purchaseOrder['vcpm'] ?: "NULL";
+        $purchaseOrderStartAt = $purchaseOrder['start_at'];
+        $purchaseOrderEndAt = $purchaseOrder['end_at'];
+        $purchaseOrderCreatedAt = $purchaseOrder['created_at'];
+        $purchaseOrderCreatedBy = $purchaseOrder['created_by'] ?: "NULL";
+        $purchaseOrderModifiedAt = $purchaseOrder['modified_at'];
+        $purchaseOrderModifiedBy = $purchaseOrder['modified_by'] ?: "NULL";
+        $purchaseOrderFileName = $purchaseOrder['file_name'];
+        $purchaseOrderAgencyId = $purchaseOrder['agency_id'] ?: "NULL";
+        $purchaseOrderAdvertiserId = $purchaseOrder['advertiser_id'] ?: "NULL";
+        $purchaseOrderSalesManagerId = $purchaseOrder['sales_manager_id'] ?: "NULL";
+        $purchaseOrderCID = $purchaseOrder['cid'] ?: "NULL";
+        $purchaseOrderRebate = $purchaseOrder['rebate'] ?: "NULL";
+        $purchaseOrderLKQDID = $purchaseOrder['lkqd_id'] ?: "NULL";
+
+        $insertSql = <<<SQL
+INSERT INTO
+    purchase_order
+(
+    id,
+    name,
+    document,
+    budget,
+    cost_type,
+    cpm,
+    cpv,
+    cpc,
+    vcpm,
+    start_at,
+    end_at,
+    created_at,
+    created_by,
+    modified_at,
+    modified_by,
+    `file_name`,
+    agency_id,
+    advertiser_id,
+    sales_manager_id,
+    cid,
+    rebate,
+    lkqd_id
+)
+VALUES (
+    {$purchaseOrderId},
+    "{$purchaseOrderName}",
+    "{$purchaseOrderDocument}",
+    "{$purchaseOrderBudget}",
+    {$purchaseOrderCostType},
+    {$purchaseOrderCPM},
+    {$purchaseOrderCPV},
+    {$purchaseOrderCPC},
+    {$purchaseOrderVCPM},
+    "{$purchaseOrderStartAt}",
+    "{$purchaseOrderEndAt}",
+    "{$purchaseOrderCreatedAt}",
+    {$purchaseOrderCreatedBy},
+    "{$purchaseOrderModifiedAt}",
+    {$purchaseOrderModifiedBy},
+    "{$purchaseOrderFileName}",
+    {$purchaseOrderAgencyId},
+    {$purchaseOrderAdvertiserId},
+    {$purchaseOrderSalesManagerId},
+    {$purchaseOrderCID},
+    {$purchaseOrderRebate},
+    {$purchaseOrderLKQDID}
+)
+SQL;
+
+        $db->query($insertSql);
+    }
+}
+
+$sql = <<<SQL
+SELECT
+    *
+FROM
+    purchase_order
+WHERE
+    id <= {$lastPurchaseOrder}
+SQL;
+
+$purchaseOrderQuery = $db2->query($sql);
+if ($db2->num_rows($purchaseOrderQuery) > 0) {
+    while ($purchaseOrder = $db2->fetch_array($purchaseOrderQuery)) {
+        $purchaseOrderId = $purchaseOrder['id'];
+        $purchaseOrderName = $purchaseOrder['name'];
+        $purchaseOrderDocument = $purchaseOrder['document'];
+        $purchaseOrderBudget = $purchaseOrder['budget'];
+        $purchaseOrderCostType = $purchaseOrder['cost_type'] ?: "NULL";
+        $purchaseOrderCPM = $purchaseOrder['cpm'] ?: "NULL";
+        $purchaseOrderCPV = $purchaseOrder['cpv'] ?: "NULL";
+        $purchaseOrderCPC = $purchaseOrder['cpc'] ?: "NULL";
+        $purchaseOrderVCPM = $purchaseOrder['vcpm'] ?: "NULL";
+        $purchaseOrderStartAt = $purchaseOrder['start_at'];
+        $purchaseOrderEndAt = $purchaseOrder['end_at'];
+        $purchaseOrderCreatedAt = $purchaseOrder['created_at'];
+        $purchaseOrderCreatedBy = $purchaseOrder['created_by'] ?: "NULL";
+        $purchaseOrderModifiedAt = $purchaseOrder['modified_at'];
+        $purchaseOrderModifiedBy = $purchaseOrder['modified_by'] ?: "NULL";
+        $purchaseOrderFileName = $purchaseOrder['file_name'];
+        $purchaseOrderAgencyId = $purchaseOrder['agency_id'] ?: "NULL";
+        $purchaseOrderAdvertiserId = $purchaseOrder['advertiser_id'] ?: "NULL";
+        $purchaseOrderSalesManagerId = $purchaseOrder['sales_manager_id'] ?: "NULL";
+        $purchaseOrderCID = $purchaseOrder['cid'] ?: "NULL";
+        $purchaseOrderRebate = $purchaseOrder['rebate'] ?: "NULL";
+        $purchaseOrderLKQDID = $purchaseOrder['lkqd_id'] ?: "NULL";
+
+        $insertSql = <<<SQL
+UPDATE
+    purchase_order
+SET
+    name = "{$purchaseOrderName}",
+    document = "{$purchaseOrderDocument}",
+    budget = "{$purchaseOrderBudget}",
+    cost_type = {$purchaseOrderCostType},
+    cpm = {$purchaseOrderCPM},
+    cpv = {$purchaseOrderCPV},
+    cpc = {$purchaseOrderCPC},
+    vcpm = {$purchaseOrderVCPM},
+    start_at = "{$purchaseOrderStartAt}",
+    end_at = "{$purchaseOrderEndAt}",
+    created_at = "{$purchaseOrderCreatedAt}",
+    created_by = {$purchaseOrderCreatedBy},
+    modified_at = "{$purchaseOrderModifiedAt}",
+    modified_by = {$purchaseOrderModifiedBy},
+    `file_name` = "{$purchaseOrderFileName}",
+    agency_id = {$purchaseOrderAgencyId},
+    advertiser_id = {$purchaseOrderAdvertiserId},
+    sales_manager_id = {$purchaseOrderSalesManagerId},
+    cid = {$purchaseOrderCID},
+    rebate = {$purchaseOrderRebate},
+    lkqd_id = {$purchaseOrderLKQDID}
+WHERE
+    id = {$purchaseOrderId}
+SQL;
+
+        $db->query($insertSql);
+    }
+}
+
+
+$sql = <<<SQL
+SELECT
+    id
+FROM
+    demand_tag
+ORDER BY id
+DESC LIMIT 1
+SQL;
+$lastDemandTagId = intval($db->getOne($sql));
+
+$sql = <<<SQL
+SELECT
+    *
+FROM
+    creativity
+WHERE
+    id > {$lastDemandTagId}
+SQL;
+$creativityQuery = $db2->query($sql);
+if ($db2->num_rows($creativityQuery) > 0) {
+    while ($creativity = $db2->fetch_array($creativityQuery)) {
+        $creativityId = $creativity['id'];
+        $creativityCampaignId = $creativity['campaign_id'] ?: "NULL";
+        $creativitySize = $creativity['size'];
+        $creativityImage = $creativity['image'];
+        $creativityClickUrl = $creativity['click_url'];
+        $creativityTrackingPixel = $creativity['tracking_pixel'] ?: "NULL";
+        $creativityImpressionPixel = $creativity['impression_pixel'];
+        $creativityClickPixel = $creativity['click_pixel'];
+        $creativityVideo = $creativity['video'];
+        $creativityStatus = $creativity['status'] ?: "NULL";
+        $creativityName = $creativity['name'];
+        $creativityDevice = $creativity['device'] ?: "NULL";
+        $creativityLKQDId = $creativity['lkqd_id'] ?: "NULL";
+        $creativityDemandTagId = $creativity['demand_tag_id'] ?: "NULL";
+        $creativityDemandTagUrl = $creativity['demand_tag_url'];
+        $creativityType = $creativity['type'] ?: "NULL";
+
+        $insertSql = <<<SQL
+INSERT INTO
+    demand_tag
+(
+    id,
+    campaign_id,
+    size,
+    image,
+    click_url,
+    tracking_pixel,
+    impression_pixel,
+    click_pixel,
+    video,
+    status,
+    name,
+    device,
+    lkqd_id,
+    demand_tag_id,
+    demand_tag_url,
+    type
+)
+VALUES (
+    {$creativityId},
+    {$creativityCampaignId},
+    "{$creativitySize}",
+    "{$creativityImage}",
+    "{$creativityClickUrl}",
+    {$creativityTrackingPixel},
+    "{$creativityImpressionPixel}",
+    "{$creativityClickPixel}",
+    "{$creativityVideo}",
+    {$creativityStatus},
+    "{$creativityName}",
+    {$creativityDevice},
+    {$creativityLKQDId},
+    {$creativityDemandTagId},
+    "{$creativityDemandTagUrl}",
+    {$creativityType}
+)
+SQL;
+
+        $db->query($insertSql);
+    }
+}
+
+$sql = <<<SQL
+SELECT
+    *
+FROM
+    creativity
+WHERE
+    id <= {$lastDemandTagId}
+SQL;
+$creativityQuery = $db2->query($sql);
+if ($db2->num_rows($creativityQuery) > 0) {
+    while ($creativity = $db2->fetch_array($creativityQuery)) {
+        $creativityId = $creativity['id'];
+        $creativityCampaignId = $creativity['campaign_id'];
+        $creativitySize = $creativity['size'];
+        $creativityImage = $creativity['image'];
+        $creativityClickUrl = $creativity['click_url'];
+        $creativityVideo = $creativity['video'];
+        $creativityStatus = $creativity['status'] ?: "NULL";
+        $creativityName = $creativity['name'];
+        $creativityDevice = $creativity['device'] ?: "NULL";
+        $creativityLKQDId = $creativity['lkqd_id'] ?: "NULL";
+        $creativityDemandTagId = $creativity['demand_tag_id'] ?: "NULL";
+        $creativityDemandTagUrl = $creativity['demand_tag_url'];
+        $creativityType = $creativity['type'] ?: "NULL";
+
+        $insertSql = <<<SQL
+UPDATE
+    demand_tag
+SET
+    campaign_id = {$creativityCampaignId},
+    size = '{$creativitySize}',
+    image = '{$creativityImage}',
+    click_url = '{$creativityClickUrl}',
+    video = '{$creativityVideo}',
+    status = {$creativityStatus},
+    name = '{$creativityName}',
+    device = {$creativityDevice},
+    lkqd_id = {$creativityLKQDId},
+    demand_tag_id = {$creativityDemandTagId},
+    demand_tag_url = '{$creativityDemandTagUrl}',
+    type = {$creativityType}
+WHERE
+    id = {$creativityId}
+LIMIT 1
+SQL;
+
+        $db->query($insertSql);
     }
 }
 

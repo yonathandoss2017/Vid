@@ -229,7 +229,6 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
 
             if (AAL_DEAL_ID == $DealId) {
-                $mail->AddBCC('patricia.palmero@vidoomy.com', 'Patricia Palmero');
                 $mail->AddBCC('ernesto.gonzalez@vidoomy.com', 'Ernesto Gonzalez');
             }
 

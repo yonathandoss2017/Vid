@@ -115,7 +115,7 @@ foreach ($Decoded->results as $Deal) {
         $RebatePercent = $CampaingData[$idCampaing]['Rebate'];
         $DealID = $CampaingData[$idCampaing]['DealId'];
         $idCountry = $CampaingData[$idCampaing]['Country'];
-        $salesManagerId = $CampaingData[$idCamp]['sales_manager_id'];
+        $salesManagerId = $CampaingData[$idCampaing]['sales_manager_id'];
 
         $CVTR = $CampaingData[$idCampaing]['CVTR'];
         $CCTR = $CampaingData[$idCampaing]['CCTR'];

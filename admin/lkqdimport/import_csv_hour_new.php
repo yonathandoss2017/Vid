@@ -73,8 +73,9 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$SpecialFill25 = array('Jamaica');
 	$SpecialFill12 = array('Belgium', 'Trinidad and Tobago');
 	$SpecialFill6 = array('Turkey');
-	$arraySpecialFillWL = array('Italy', 'Portugal', 'Germany', 'Greece', 'Poland');
+	$arraySpecialFillWL = array('Italy', 'Portugal', 'Germany', 'Greece', 'Poland','India');
 	$arraySpecialFillWL5 = array('Poland');
+	$arraySpecialFillWL10 = array('India');
 	
 	/*
 	$new = '';
@@ -593,6 +594,51 @@ function calcPercents($Perc , $Impressions, $Complete){
 									}
 									
 									$Multiplier = (7.0 - $HourI) / 100;
+									$Impressions = intval($formatLoads * $Multiplier);
+									if($Impressions < 0){
+										$Impressions = 0;
+									}
+									
+									$Revenue = $Impressions * 0.0030;
+									$Coste = $Revenue * 0.4;
+									
+									if ($idSite % 2 == 0){
+										$VTRValue = 720 - $Day + $Month + $Hour;
+									}else{
+										$VTRValue = 720 + $Day - $Hour - $Month;
+									}
+									$VTRValue = $VTRValue / 1000;
+									$CompletedViews = intval($Impressions * $VTRValue);
+									//echo "Impressions: $Impressions Revenue: $Revenue Coste: $Coste CV: $CompletedViews ($VTRValue) (Mutiplier X $Multiplier)";
+								}
+							}
+						}
+						//echo "\n";
+					}elseif(in_array($Country, $arraySpecialFillWL10)){
+						//echo "Is Country $Country - ";
+						if(in_array($Domain, $WLDomains[$Country])){
+							if(intval($idUser) != 28336){
+								//echo "$Domain in WL - ";
+								if($formatLoads >= 2){
+									//echo "$Country $Date $Hour \n";									
+									if(intval($TagId) % 2 == 0){
+										if($Hour >= 10){
+											$HourI = $Hour / 2; 
+											if($HourI >= 10){
+												$HourI = $HourI / 2; 
+											}
+										}else{
+											$HourI = $Hour;
+										}
+									}else{
+										if($Hour >= 6){
+											$HourI = $Hour / 3;
+										}else{
+											$HourI = $Hour;
+										}			
+									}
+									
+									$Multiplier = (17.0 - $HourI) / 100;
 									$Impressions = intval($formatLoads * $Multiplier);
 									if($Impressions < 0){
 										$Impressions = 0;

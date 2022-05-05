@@ -5,7 +5,7 @@
 ini_set('display_errors', 1);
 ini_set('memory_limit', '-1');
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-define('CONST',1);
+define('CONST', 1);
 define('PERCENTAGE_TO_TAKE_INTO_ACCOUNT', 0.3);
 define('PERCENTAGE_100', 100);
 define('IMPRESSIONS_LIMIT_VTR', 6667);
@@ -54,7 +54,7 @@ if (
 // if ($db2->num_rows($query) > 0) {
 //     $Repo = $db2->fetch_array($query);
 //     $RepId = $Repo['id'];
-    
+
 //     $sql = "DELETE FROM report_key WHERE id = '$RepId'";
 //     $db2->query($sql);
 // } else {
@@ -79,7 +79,7 @@ $currentDate = new DateTime("now");
 
 foreach ($deals as $deal) {
     $dealEndDate = new DateTime($deal["endDate"]);
-    
+
     $endDate = $dealEndDate > $currentDate ? $currentDate->format("Y-m-d") : $dealEndDate->format("Y-m-d");
 
     $dealData = getDealData($deal["dealId"], $deal["campaignName"], $deal["startDate"], $endDate);
@@ -146,7 +146,8 @@ foreach ($deals as $deal) {
     }
 }
 
-function getCtr(array $supplySource): float {
+function getCtr(array $supplySource): float
+{
 
     if ($supplySource["adClicks"] == 0 || $supplySource["adImpressions"] == 0) {
         return 0;
@@ -161,7 +162,8 @@ function getCtr(array $supplySource): float {
     return $ctr;
 }
 
-function getVtr(array $supplySource): float {
+function getVtr(array $supplySource): float
+{
 
     if ($supplySource["adCompletedViews"] == 0 || $supplySource["adImpressions"] == 0) {
         return 0;
@@ -176,7 +178,8 @@ function getVtr(array $supplySource): float {
     return $vtr;
 }
 
-function getViewability(array $supplySource): float {
+function getViewability(array $supplySource): float
+{
 
     if ($supplySource["adViewableImps"] == 0 || $supplySource["adImpressions"] == 0) {
         return 0;
@@ -190,10 +193,11 @@ function getViewability(array $supplySource): float {
 
     return $viewability;
 }
-	
-function getDealData(string $dealId, string $campaignName, string $startDate, string $endDate): string {
+
+function getDealData(string $dealId, string $campaignName, string $startDate, string $endDate): string
+{
     $response = getCampaignDemandTagReportByDate($dealId, $campaignName, $startDate, $endDate);
-	
+
     if ($response === false) {
         echo "Loggin in... \n\n";
         logIn('Deals reports update');
@@ -205,7 +209,7 @@ function getDealData(string $dealId, string $campaignName, string $startDate, st
 
 function getActiveSources(string $dealId): string {
     $response = getSourcesByDealId($dealId);
-        
+
     if ($response === false) {
         echo "Loggin in... \n\n";
         logIn('Deals reports update');
