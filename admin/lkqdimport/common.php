@@ -2524,8 +2524,12 @@ function getDemandTagId(int $dealId, string $name): string
     return $demandTagId;
 }
 
-function getCaps(int $eventId, int $goal): array
+function getCaps($eventId, int $goal): array
 {
+    if (!$eventId) {
+        return [];
+    }
+
     $eventNames = [
         EVENT_IMPRESSION => 'ad impression',
         EVENT_CLICK => 'ad click',
@@ -2643,6 +2647,20 @@ function newDeal(
         ];
     }
 
+    $pacings = [];
+    if ($eventId) {
+        $pacings = [
+            [
+                "eventId" => $eventId,
+                "pacingPeriod" => "day",
+                "pacingType" => "throttled-even",
+                "timezone" => "UTC",
+                "goal" => $goal,
+                "frontLoadRatio" => null
+            ]
+        ];
+    }
+
     $payload = [
         "dealId" => $dealId,
         "orderId" => $orderId,
@@ -2658,18 +2676,9 @@ function newDeal(
         "costRev" => 0,
         "costCpm" => 0,
         "costType" => "none",
-        "caps" => getCaps($eventId ?: 0, $goal),
+        "caps" => getCaps($eventId, $goal),
         "frequencyCaps" => $frequencyCap,
-        "pacings" => [
-            [
-                "eventId" => $eventId,
-                "pacingPeriod" => "day",
-                "pacingType" => "throttled-even",
-                "timezone" => "UTC",
-                "goal" => $goal,
-                "frontLoadRatio" => null
-            ]
-        ],
+        "pacings" => $pacings,
         "frequencyCapKey" => getFrequencyCapKey($freqCap),
         "frequencyCapNoUid" => "use_ip",
         "activeTagCount" => null,
@@ -2767,6 +2776,20 @@ function updateDeal(
         ];
     }
 
+    $pacings = [];
+    if ($eventId) {
+        $pacings = [
+            [
+                "eventId" => $eventId,
+                "pacingPeriod" => "day",
+                "pacingType" => "throttled-even",
+                "timezone" => "UTC",
+                "goal" => $goal,
+                "frontLoadRatio" => null
+            ]
+        ];
+    }
+
     $payload = [
         "dealId" => $dealId,
         "orderId" => $orderId,
@@ -2782,18 +2805,9 @@ function updateDeal(
         "costRev" => 0,
         "costCpm" => 0,
         "costType" => "none",
-        "caps" => getCaps($eventId ?: 0, $goal),
+        "caps" => getCaps($eventId, $goal),
         "frequencyCaps" => $frequencyCap,
-        "pacings" => [
-            [
-                "eventId" => $eventId,
-                "pacingPeriod" => "day",
-                "pacingType" => "throttled-even",
-                "timezone" => "UTC",
-                "goal" => $goal,
-                "frontLoadRatio" => null
-            ]
-        ],
+        "pacings" => $pacings,
         "frequencyCapKey" => getFrequencyCapKey($freqCap),
         "frequencyCapNoUid" => "use_ip",
         "activeTagCount" => null,
@@ -3214,7 +3228,9 @@ function updateCreative(
     string $environments,
     string $countries,
     int $type,
-    $demandTagUrl
+    $demandTagUrl,
+    $partnerId,
+    $partnerName
 ) {
     global $cookie_file;
 
@@ -3241,36 +3257,6 @@ function updateCreative(
 
     $headers = DEFAULT_HEADER;
 
-    if (isVideo($type)) {
-        $tagAssociationsUrl = "https://api.lkqd.com/demand/creatives/tag-associations";
-        $tagAssociationsPayload = [
-            "adds" => [
-                [
-                "tagId" => $demandTagId,
-                "creativeId" => $creativeId
-                ]
-            ],
-            "removes" => []
-        ];
-
-        $tagAssociationsPayloadJson = json_encode($tagAssociationsPayload);
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $tagAssociationsUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $tagAssociationsPayloadJson);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-
-        $result = curl_exec($ch);
-        error_log('debug-- updateCreative video -- ' . $result);
-        curl_close($ch);
-    }
-
     $url = 'https://ui-api.lkqd.com/tags';
 
     $levels = [];
@@ -3295,7 +3281,9 @@ function updateCreative(
         $additions,
         $pixels,
         $type,
-        $demandTagUrl
+        $demandTagUrl,
+        $partnerId,
+        $partnerName
     );
 
     $payloadJson = json_encode($payload);
@@ -3432,9 +3420,11 @@ function getDemandTagPayload(
     array $additions,
     array $pixels,
     int $type,
-    $demandTagUrl
+    $demandTagUrl,
+    $partnerId = null,
+    $partnerName = null
 ) {
-    return [
+    $payload = [
         "tagId" => getTagId($demandTagId),
         "dealCpm" => 0,
         "dealCpmType" => $dealInfo['cpmType'],
@@ -3451,7 +3441,7 @@ function getDemandTagPayload(
         "frequencyCapNoUid" => $dealInfo['frequencyCapNoUid'],
         "environments" => $envsArray,
         "adType" => "video",
-          "adDeliveryType" => getAdDeliveryType($type),
+        "adDeliveryType" => getAdDeliveryType($type),
         "targeting" => [
             "deviceOses" => [],
             "browserTargetingEntries" => [],
@@ -3542,8 +3532,8 @@ function getDemandTagPayload(
         "sslAdTag" => null,
         "supportsSsl" => 1,
         "requiredMacros" => [],
-        "partnerId" => null,
-        "partnerName" => null,
+        "partnerId" => $partnerId,
+        "partnerName" => $partnerName,
         "programmaticBuyerId" => null,
         "isProgrammaticBuyerPrivateDealTag" => getIsProgrammaticBuyerPrivateDealTag($type),
         "clickthroughUrl" => getClickthroughUrl($type, $clickThroughUrl),
@@ -3552,12 +3542,6 @@ function getDemandTagPayload(
         "daypartStatus" => 'inactive',
         "daypartTimezone" => $dealInfo['daypartTimezone'],
         "daypartEntries" => [],
-        "tagSiteTargeting" => [
-            "additions" => $additions,
-            "deletions" => [],
-            "updates" => [],
-            "state" => "no-direct-changes"
-        ],
         "parentSiteApplicationType" => "all",
         "targetedParentSiteIds" => [],
         "verificationVendors" => [],
@@ -3607,6 +3591,21 @@ function getDemandTagPayload(
         "endTs" => null,
         "customFlightTimeZone" => null
     ];
+
+    if (getTagId($demandTagId)) {
+        $payload['dealName'] = $dealInfo['name'];
+        $payload['targeting']['requireAdsTxtEntry'] = false;
+        $payload['targeting']['verifiedSupplyOnly'] = false;
+        $payload['targeting']['publisherDirectOnly'] = false;
+        $payload['tagSiteTargeting'] = [
+            "additions" => $additions,
+            "deletions" => [],
+            "updates" => [],
+            "state" => "no-direct-changes"
+        ];
+    }
+
+    return $payload;
 }
 
 /**
@@ -3764,8 +3763,8 @@ function setSources(int $demandTagId, string $environments)
     $sources = json_decode($selectedSouces, true);
     $associations = $sources['associations'];
 
-    if (empty($associations)) {
-        return 'Select sources failed!';
+    if (!empty($associations)) {
+        return $demandTagId;
     }
 
     return $response;
@@ -3818,9 +3817,8 @@ function associateCreativityToDemandTag(int $demandTagId, int $creativeId)
         }
 
         $currentCreativeId = getTagCreativityId($demandTagId);
-
         if ($creativeId == $currentCreativeId) {
-            return $result;
+            return $currentCreativeId;
         }
 
         return 'Associate video to demand tag failed!';
