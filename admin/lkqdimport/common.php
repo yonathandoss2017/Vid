@@ -54,6 +54,7 @@ function logIn($Source = 'Unknown')
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
     $result = curl_exec($ch);
+    error_log('debug-- login -- first -- ' . $result);
     curl_close($ch);
     //echo $result;
     //exit(0);
@@ -78,6 +79,7 @@ function logIn($Source = 'Unknown')
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     //curl_setopt($ch, CURLINFO_HEADER_OUT, true);
     $result = curl_exec($ch);
+    error_log('debug-- login -- second -- ' . $result);
     //$information = curl_getinfo($ch);
     curl_close($ch);
 
@@ -108,6 +110,7 @@ function logIn($Source = 'Unknown')
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     //curl_setopt($ch, CURLINFO_HEADER_OUT, true);
     $result = curl_exec($ch);
+    error_log('debug-- login -- third -- ' . $result);
     $information = curl_getinfo($ch);
     curl_close($ch);
 
@@ -1191,6 +1194,7 @@ function getAdvertiserDemandReportCSV($Date, $DemandTags, int $HFrom, int $HTo)
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $result = curl_exec($ch);
+
     //echo $result;
 
     if (curl_errno($ch)) {
@@ -1353,6 +1357,7 @@ function getSupplyPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     $Data = json_decode($result, true);
@@ -1395,7 +1400,7 @@ function getCreativity(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getCreativity -- ' . $result);
+    error_log('debug-- getCreativity -- ' . $partnerId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1464,7 +1469,7 @@ function updateCreativity(int $partnerId, int $creativityId, string $name, strin
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateCreativity -- ' . $result);
+    error_log('debug-- updateCreativity -- ' . $partnerId . ' -- ' . $creativityId . ' -- ' . $name . ' -- ' . $type . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1514,7 +1519,7 @@ function newCreativity(int $partnerId, string $type, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- newCreativity -- ' . $result);
+    error_log('debug-- newCreativity -- ' . $partnerId . ' -- ' . $type . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1567,7 +1572,7 @@ function uploadCreativityVideo(int $creativityId, $file)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- uploadCreativityVideo -- ' . $result);
+    error_log('debug-- uploadCreativityVideo -- ' . $creativityId . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1601,6 +1606,7 @@ function getSupplySource(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     $Data = json_decode($result, true);
@@ -1620,7 +1626,7 @@ function getDemandPartner($supplyPartnerName)
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/demand/tree';
+    $URL = 'https://api.lkqd.com/demand/tree';
 
     $Headers = array(
         'Accept: application/json, text/plain, */*',
@@ -1640,7 +1646,6 @@ function getDemandPartner($supplyPartnerName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getDemandPartner -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1688,7 +1693,7 @@ function getTagCreativityId(int $tagId): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getTagCreativityId -- ' . $result);
+    error_log('debug-- getTagCreativityId -- ' . $tagId . ' -- ' . $result);
     curl_close($ch);
 
     $noCreativityFoundMessage = 'No creativity found with the given tag id!';
@@ -1722,7 +1727,7 @@ function getAgenciesData(): array
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/demand/tree';
+    $URL = 'https://api.lkqd.com/demand/tree';
 
     $Headers = array(
         'Accept: application/json, text/plain, */*',
@@ -1779,7 +1784,7 @@ function getOrder(int $partnerId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getOrder -- ' . $result);
+    error_log('debug-- getOrder -- ' . $partnerId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, true);
@@ -1803,7 +1808,7 @@ function newOrder(int $sourceId, string $name)
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/orders';
+    $URL = 'https://api.lkqd.com/orders';
 
     $payload = [
         "orderId" => null,
@@ -1834,7 +1839,7 @@ function newOrder(int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- newOrder -- ' . $result);
+    error_log('debug-- newOrder -- ' . $sourceId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1855,7 +1860,7 @@ function updateOrder(int $orderId, int $sourceId, string $name)
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/orders/' . $orderId;
+    $URL = 'https://api.lkqd.com/orders/' . $orderId;
 
     $payload = [
         "orderId" => $orderId,
@@ -1894,7 +1899,7 @@ function updateOrder(int $orderId, int $sourceId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateOrder -- ' . $result);
+    error_log('debug-- updateOrder -- ' . $orderId . ' -- ' . $sourceId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -1958,7 +1963,7 @@ function newDemandPartner(string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- newDemandPartner -- ' . $result);
+    error_log('debug-- newDemandPartner -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result);
@@ -2008,7 +2013,7 @@ function updateDemandPartner(int $demandPartnerId, string $name)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateDemandPartner -- ' . $result);
+    error_log('debug-- updateDemandPartner -- ' . $demandPartnerId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -2024,7 +2029,7 @@ function getTagInfo(int $tagId): array
 {
     global $cookie_file;
 
-    $url = "https://ui-api.lkqd.com/tags/" . $tagId;
+    $url = "https://api.lkqd.com/tags/" . $tagId;
 
     $Headers = array(
         'Accept: application/json, text/plain, */*',
@@ -2047,7 +2052,7 @@ function getTagInfo(int $tagId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- getTagInfo -- ' . $result);
+    error_log('debug-- getTagInfo -- ' . $tagId . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2097,7 +2102,7 @@ function getCreativityInfo(int $creativityId): string
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- getCreavitityInfo -- ' . $result);
+    error_log('debug-- getCreavitityInfo -- ' . $creativityId . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2123,17 +2128,17 @@ function getDealInfo(int $dealId): array
 {
     global $cookie_file;
 
-    $url = "https://ui-api.lkqd.com/deals/" . $dealId;
+    $url = "https://api.lkqd.com/deals/" . $dealId;
 
-    $Headers = array(
+    $Headers = [
         'Accept: application/json, text/plain, */*',
         'Content-Type: application/json;charset=UTF-8',
         'Origin: https://ui.lkqd.com',
-        'Referer: https://ui.lkqd.com/',
+        'Referer: https://ui.lkqd.com/login',
         'LKQD-Api-Version: 88',
         'Sec-Fetch-Mode: cors',
         'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-    );
+    ];
 
 
     $ch = curl_init();
@@ -2146,7 +2151,7 @@ function getDealInfo(int $dealId): array
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- getDealInfo -- ' . $result);
+    error_log('debug-- getDealInfo -- ' . $dealId . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2179,7 +2184,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
 {
     global $cookie_file;
 
-    $url = sprintf("https://ui-api.lkqd.com/tags/%d/status", $demandTagId);
+    $url = sprintf("https://api.lkqd.com/tags/%d/status", $demandTagId);
 
     $headers = DEFAULT_HEADER;
 
@@ -2197,7 +2202,7 @@ function updateDemandTagStatus(int $demandTagId, string $status)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateDemandTagStatus -- ' . $result);
+    error_log('debug-- updateDemandTagStatus -- ' . $demandTagId . ' -- ' . $status . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2414,6 +2419,7 @@ function getTopDealDomains(int $dealId, string $startDate, string $endDate): arr
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2440,7 +2446,7 @@ function getDeal(int $orderId, string $name)
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/demand/tree';
+    $URL = 'https://api.lkqd.com/demand/tree';
 
     $Headers = DEFAULT_HEADER;
 
@@ -2452,7 +2458,7 @@ function getDeal(int $orderId, string $name)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getDeal -- ' . $result);
+    error_log('debug-- getDeal -- ' . $orderId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2484,7 +2490,7 @@ function getDemandTagId(int $dealId, string $name): string
 {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/demand/tree';
+    $URL = 'https://api.lkqd.com/demand/tree';
 
     $Headers = DEFAULT_HEADER;
 
@@ -2496,7 +2502,7 @@ function getDemandTagId(int $dealId, string $name): string
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- getDemandTagId -- ' . $result);
+    error_log('debug-- getDemandTagId -- ' . $dealId . ' -- ' . $name . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2603,8 +2609,10 @@ function getAppliedRestrictoListsData($dealId)
         $dealInfo = getDealInfo($dealId);
     }
 
-    foreach ($dealInfo['appliedRestrictoListsData'] as $rule => $value) {
-        $restricToListData[$rule] = $value;
+    if (array_key_exists('appliedRestrictoListsData', $dealInfo)) {
+        foreach ($dealInfo['appliedRestrictoListsData'] as $rule => $value) {
+            $restricToListData[$rule] = $value;
+        }
     }
 
     return $restricToListData;
@@ -2623,7 +2631,7 @@ function newDeal(
 ) {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/deals';
+    $URL = 'https://api.lkqd.com/deals';
 
     $eventIds = [
         "1" => EVENT_IMPRESSION,
@@ -2722,7 +2730,7 @@ function newDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- newDeal -- ' . $result);
+    error_log('debug-- newDeal -- ' . $orderId . ' -- ' . $name . ' -- ' . $startDate . ' -- ' . $endDate . ' -- ' . $deliveryPacing . ' -- ' . $goal . ' -- ' . $status . ' -- ' . $dealId . ' -- ' . $freqCap . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2752,7 +2760,7 @@ function updateDeal(
 ) {
     global $cookie_file;
 
-    $URL = 'https://ui-api.lkqd.com/deals';
+    $URL = 'https://api.lkqd.com/deals';
 
     $eventIds = [
         "1" => EVENT_IMPRESSION,
@@ -2863,7 +2871,7 @@ function updateDeal(
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateDeal -- ' . $result);
+    error_log('debug-- updateDeal -- ' . $orderId . ' -- ' . $name . ' -- ' . $startDate . ' -- ' . $endDate . ' -- ' . $deliveryPacing . ' -- ' . $goal . ' -- ' . $status . ' -- ' . $dealId . ' -- ' . $freqCap . ' -- ' . $result);
     curl_close($ch);
 
     if (!isLoggedIn($result)) {
@@ -2945,6 +2953,8 @@ function keepDemandTagsSelected(array $tags): bool
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- keepDemandTagsSelected -- ' . $result);
+
     curl_close($ch);
 
     $data = json_decode($result, false);
@@ -3089,6 +3099,8 @@ function getSources()
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getSources -- ' . $result);
+
     curl_close($ch);
     $response = json_decode($result, false);
 
@@ -3224,7 +3236,6 @@ function updateCreative(
     string $status,
     $clickThroughUrl,
     string $trackingPixels,
-    $creativeId,
     string $environments,
     string $countries,
     int $type,
@@ -3257,7 +3268,7 @@ function updateCreative(
 
     $headers = DEFAULT_HEADER;
 
-    $url = 'https://ui-api.lkqd.com/tags';
+    $url = 'https://api.lkqd.com/tags';
 
     $levels = [];
     for ($j = 1; $j <= 40; $j++) {
@@ -3299,7 +3310,7 @@ function updateCreative(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- updateCreative -- ' . $result);
+    error_log('debug-- updateCreative -- ' . $demandTagId . ' -- ' . $dealId . ' -- ' . $name . ' -- ' . $status . ' -- ' . $clickThroughUrl . ' -- ' . $trackingPixels . ' -- ' . $environments . ' -- ' . $countries . ' -- ' . $type . ' -- ' . $demandTagUrl . ' -- ' . $partnerId . ' -- ' . $partnerName . ' -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3654,7 +3665,7 @@ function newDemandTag(
     $additions = getAdditions($filteredSources);
     $pixels = getTrackingPixels($trackingPixels);
 
-    $url = 'https://ui-api.lkqd.com/tags';
+    $url = 'https://api.lkqd.com/tags';
 
     $levels = [];
     for ($j = 1; $j <= 40; $j++) {
@@ -3697,7 +3708,7 @@ function newDemandTag(
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- newDemandTag -- ' . $result);
+    error_log('debug-- newDemandTag -- ' . $dealId . ' -- ' . $name . ' -- ' . $status . ' -- ' . $clickThroughUrl . ' -- ' . $trackingPixels . ' -- ' . $environments . ' -- ' . $countries . ' -- ' . $type . ' -- ' . $demandTagUrl . ' -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3749,7 +3760,7 @@ function setSources(int $demandTagId, string $environments)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
-    error_log('debug-- getSources -- ' . $result);
+    error_log('debug-- setSources -- ' . $demandTagId . ' -- ' . $environments . ' -- ' . $result);
     curl_close($ch);
 
     $response = json_decode($result, true);
@@ -3808,7 +3819,7 @@ function associateCreativityToDemandTag(int $demandTagId, int $creativeId)
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         $result = curl_exec($ch);
-        error_log('debug-- associateCreativityToDemandTag -- ' . $result);
+        error_log('debug-- associateCreativityToDemandTag -- ' . $demandTagId . ' -- ' . $creativeId . ' -- ' . $result);
         curl_close($ch);
 
         if (!isLoggedIn($result)) {
@@ -3891,6 +3902,7 @@ function newSupplyPartner($SPName)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newSupplyPartner -- ' . $result);
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -3938,6 +3950,8 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_VERBOSE, false);
     $result = curl_exec($ch);
+    error_log('debug-- newSupplySource -- first -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4048,6 +4062,8 @@ function newSupplySource($SName, $SPId, $Env = 1, $Rev = 40, $Loop = 12, $debug 
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- newSupplySource -- second -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4090,6 +4106,8 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateSupplySource -- first -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result, false);
@@ -4127,6 +4145,8 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateSupplySource -- second -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4234,6 +4254,8 @@ function updateSupplySource($sID, $Name = '', $Rev = 40, $Loop = 12, $debug = fa
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+    error_log('debug-- updateSupplySource -- third -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4272,6 +4294,7 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     $Data = json_decode($result, false);
@@ -4308,6 +4331,7 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4415,6 +4439,7 @@ function specialUpdateSupplySource($sID, $NewFloor, $debug = false)
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
 
     $result = curl_exec($ch);
+
     curl_close($ch);
 
     $Data = json_decode($result);
@@ -4452,6 +4477,8 @@ function getSupplySourceNameLoopRev($sID)
     curl_setopt($ch, CURLOPT_VERBOSE, false);
 
     $result = curl_exec($ch);
+    error_log('debug-- getSupplySourceNameLoopRev  -- ' . $result);
+
     curl_close($ch);
 
     $Data = json_decode($result, false);
@@ -4503,6 +4530,7 @@ function getStatsPlusCountry($Date)
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     $result = curl_exec($ch);
+
     curl_close($ch);
     $deco = json_decode($result);
 

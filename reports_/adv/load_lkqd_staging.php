@@ -332,11 +332,11 @@ function sanitizeRebate(array $campaignIds)
 
 function syncReport(DateTime $fromDate, DateTime $toDate, $filterCampaignIds = []): array
 {
-	echo $fromDate->format("Y-m-d H:i:s");
-	echo "\n";
-	echo $toDate->format("Y-m-d H:i:s");
-	echo "\n";
-	
+    echo $fromDate->format("Y-m-d H:i:s");
+    echo "\n";
+    echo $toDate->format("Y-m-d H:i:s");
+    echo "\n";
+
     $time =  microtime(true);
     debug('Start: syncReport');
 

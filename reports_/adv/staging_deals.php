@@ -207,7 +207,8 @@ function getDealData(string $dealId, string $campaignName, string $startDate, st
     return $response;
 }
 
-function getActiveSources(string $dealId): string {
+function getActiveSources(string $dealId): string
+{
     $response = getSourcesByDealId($dealId);
 
     if ($response === false) {
