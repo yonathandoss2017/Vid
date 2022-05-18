@@ -672,7 +672,7 @@ if (isset($_POST['csv'])) {
     } ?>,
   "recordsTotal": <?php echo $CntTotal; ?>,
   "recordsFiltered": <?php echo $CntTotal; ?>,
-  "data": <?php echo safe_json_encode($Data); ?>,
+  "data": <?php echo safe_json_encode($Data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); ?>,
   "dataT": <?php echo json_encode($DataT); ?>,
   "D": "<?php echo $SQLSuperQueryT; ?>"
 }
