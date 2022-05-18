@@ -195,7 +195,7 @@ $DimensionsSQL = array(
     'demand_tag' => [
         'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END) AS CreativityName",
         'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.name ELSE demand_tag.name END",
-        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
+        'InnerJoin'  => ['creativity' => "LEFT JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityName",
         'OrderVal'   => "CreativityName",
         'InvalInner' => '',
@@ -204,7 +204,7 @@ $DimensionsSQL = array(
     'creativity_id' => [
         'Name'       => "(CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END) AS CreativityId",
         'SearchName' => "CASE WHEN $ReportsTable.idCampaing = $ReportsTable.idCreativity THEN campaign.deal_id ELSE demand_tag.demand_tag_id END",
-        'InnerJoin'  => ['creativity' => "INNER JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
+        'InnerJoin'  => ['creativity' => "LEFT JOIN demand_tag ON demand_tag.id = $ReportsTable.idCreativity "],
         'GroupBy'    => "CreativityId",
         'OrderVal'   => "CreativityId",
         'InvalInner' => '',

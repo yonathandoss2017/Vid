@@ -179,6 +179,34 @@
 			}
 		}
 		
+		$EnvFilter = "";
+		$DevList = array();
+		$Devices = $_POST['Devices'];
+		if(isset($Devices)){
+			if(is_array($Devices)){
+				if(count($Devices) > 0 && count($Devices) < 4){
+					$DevList['DE'] = 'Desktop';
+					$DevList['MW'] = 'Mobile';
+					$DevList['MA'] = 'InApp';
+					$DevList['TV'] = 'TV';
+					
+					$EnvFilter = " AND (";
+					$OrE = "";
+					foreach($Devices as $Device){
+						if(array_key_exists($Device, $DevList)){
+							$idDev = $DevList[$Device];
+							$EnvFilter .= $OrE . "Device = '$idDev'";
+							$OrE = " OR ";
+						}
+					}
+					$EnvFilter .= ")";
+					if($OrE == ""){
+						$EnvFilter = "";
+					}
+				}
+			}
+		}
+		
 		$OrderC = array();
 		if(isset($_POST['order'])){
 			if(is_array($_POST['order'])){
@@ -487,7 +515,7 @@
 		}
 					
 		//CALCULA LOS TOTALES CON FILTROS
-		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM $DruidTable WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere ";
+		$SQLSuperQueryT = "SELECT '' $SQLMetrics FROM $DruidTable WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere $EnvFilter  ";
 		//error_log($SQLSuperQueryT);
 		
 		if($IncludeTime){
@@ -532,7 +560,7 @@
 			
 		$Nd = 0;
 		//CALCULA EL RESTO DE LA TABLA
-		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM $DruidTable WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere $SQLGroups";
+		$SQLQuery = "SELECT $SQLDimensions $SQLMetrics FROM $DruidTable WHERE __time BETWEEN TIMESTAMP '$DFrom' AND TIMESTAMP '$DTo' $AddHourRange $SQLWhere $EnvFilter $SQLGroups";
 		if($OrderParam != ""){
 			$SQLQuery .= " ORDER BY $OrderParam";
 			if($Start !== false || $Length !== false){
