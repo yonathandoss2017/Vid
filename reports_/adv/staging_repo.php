@@ -501,7 +501,7 @@ if ($DimensionsOK) {
 
                         $FVal = mysqli_real_escape_string($db->link, $FVal);
 
-                        $SQLWhere .= $And . $KeySearch . " NOT LIKE '$FVal'";
+                        $SQLWhere .= $And . sprintf("LOWER(%s) NOT LIKE BINARY LOWER('%s')", $KeySearch,$FVal);
                     } elseif ($KFilter == 'hour-range') {
                         $arFv = explode('-', $FVal);
                         $FilterHFrom = $arFv[0];
@@ -533,7 +533,7 @@ if ($DimensionsOK) {
                         }
 
                         $FVal = mysqli_real_escape_string($db->link, $FVal);
-                        $SQLWhere .= $Or . $KeySearch . " LIKE '$FVal'";
+                        $SQLWhere .= $Or . sprintf("LOWER(%s) LIKE BINARY LOWER('%s')", $KeySearch,$FVal);
                     } elseif ($KFilter == 'hour-range') {
                         $arFv = explode('-', $FVal);
                         $FilterHFrom = $arFv[0];
