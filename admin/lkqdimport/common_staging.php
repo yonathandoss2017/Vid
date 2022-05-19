@@ -2627,7 +2627,7 @@ function newDeal(
     int $goal,
     string $status,
     int $dealId = null,
-    int $freqCap = null
+    string $freqCap = null
 ) {
     global $cookie_file;
 
@@ -2643,14 +2643,14 @@ function newDeal(
 
     $frequencyCap = [];
 
-    if ($freqCap) {
+    if (!empty($freqCap)) {
         $frequencyCap = [
             [
                 "eventId" => 3,
                 "eventName" => "impression",
                 "timePeriod" => "day",
                 "timePeriodCount" => 1,
-                "capCount" => $freqCap
+                "capCount" => (int) $freqCap
             ]
         ];
     }
@@ -2756,7 +2756,7 @@ function updateDeal(
     int $goal,
     string $status,
     int $dealId = null,
-    int $freqCap = null
+    string $freqCap = null
 ) {
     global $cookie_file;
 
@@ -2772,14 +2772,14 @@ function updateDeal(
 
     $frequencyCap = [];
 
-    if ($freqCap) {
+    if (!empty($freqCap)) {
         $frequencyCap = [
             [
                 "eventId" => 3,
                 "eventName" => "impression",
                 "timePeriod" => "day",
                 "timePeriodCount" => 1,
-                "capCount" => $freqCap
+                "capCount" => (int) $freqCap
             ]
         ];
     }
