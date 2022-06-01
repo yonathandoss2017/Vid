@@ -3437,7 +3437,7 @@ function getDemandTagPayload(
 ) {
     $payload = [
         "tagId" => getTagId($demandTagId),
-        "dealCpm" => 0,
+        "dealCpm" => $dealInfo['cpm'],
         "dealCpmType" => $dealInfo['cpmType'],
         "dealId" => $dealId,
         "dealTier" => 1,
@@ -3598,6 +3598,9 @@ function getDemandTagPayload(
         "lkqdAccountPublishersSelected" => [],
         "supplyTargetingType" => "open",
         "googleImaSdkSupport" => false,
+        "requestPrebidAdapterId" => null,
+        "prebidAdapterId" => null,
+        "prebidAdapterParameters" => [],
         "startTs" => null,
         "endTs" => null,
         "customFlightTimeZone" => null
@@ -3608,6 +3611,7 @@ function getDemandTagPayload(
         $payload['targeting']['requireAdsTxtEntry'] = false;
         $payload['targeting']['verifiedSupplyOnly'] = false;
         $payload['targeting']['publisherDirectOnly'] = false;
+    } else {
         $payload['tagSiteTargeting'] = [
             "additions" => $additions,
             "deletions" => [],

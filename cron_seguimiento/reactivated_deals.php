@@ -101,7 +101,7 @@ function getUser($userId)
 function sendActivationNotice($Type, $idCampaing, $Today)
 {
     global $db, $advProd;
-    if ($idCampaing != 3521 && $idCampaing != 3707 && $idCampaing != 3552 && $idCampaing != 5417) {
+    if (!in_array($idCampaing, [3521, 3552, 5417, 11846, 11817, 11849])) {
         $db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 
         $sql = "SELECT user.email AS Email FROM account_manager_campaigns AS amc INNER JOIN user ON user.id = amc.user_id WHERE campaign_id = {$idCampaing}";
