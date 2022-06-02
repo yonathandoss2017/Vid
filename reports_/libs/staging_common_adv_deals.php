@@ -71,7 +71,7 @@ function utf8ize($mixed) {
 			'SearchName'	=>	"vp.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager' => "INNER JOIN user manager ON manager.id = campaign.sales_manager_id ",
 				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
 			),
@@ -85,7 +85,7 @@ function utf8ize($mixed) {
 			'SearchName'	=>	"manager_head.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
+				'manager' => "INNER JOIN user manager ON manager.id = campaign.sales_manager_id ",
 				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
 				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
 			),
@@ -99,7 +99,7 @@ function utf8ize($mixed) {
 			'SearchName'	=>	"user.id",
 			'InnerJoin'		=> 	array(
 				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
+				'user' => "INNER JOIN user ON user.id = campaign.sales_manager_id ",
 				//'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
 			),
 			'GroupBy'		=>	"SalesManager",

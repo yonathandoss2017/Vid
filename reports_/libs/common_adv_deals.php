@@ -1,5 +1,7 @@
 <?php
-function safe_json_encode($value, $options = 0, $depth = 512) {
+
+function safe_json_encode($value, $options = 0, $depth = 512)
+{
     $encoded = json_encode($value, $options, $depth);
     if ($encoded === false && $value && json_last_error() == JSON_ERROR_UTF8) {
         $encoded = json_encode(utf8ize($value), $options, $depth);
@@ -7,7 +9,8 @@ function safe_json_encode($value, $options = 0, $depth = 512) {
     return $encoded;
 }
 
-function utf8ize($mixed) {
+function utf8ize($mixed)
+{
     if (is_array($mixed)) {
         foreach ($mixed as $key => $value) {
             $mixed[$key] = utf8ize($value);
@@ -17,364 +20,365 @@ function utf8ize($mixed) {
     }
     return $mixed;
 }
-	$Locale = 'en_EN';
-	$ReportsTable = '{ReportsTable}';
 
-	$DimensionsSQL = array(
-		'campaign_name' => array(
-			'Name'	=>	"concat(campaign.name, '--',campaign.id) AS CampaignName",
-			'SearchName'	=>	"campaign.name",
-			'InnerJoin'		=> 	array(),
-			'GroupBy'		=>	"CampaignName",
-			'OrderVal'		=>	"CampaignName",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Campaign Name'
-		),
-		'deal_id' => array(
-			'Name'	=>	"campaign.deal_id AS DealID",
-			'SearchName'	=>	"campaign.deal_id",
-			'InnerJoin'		=> 	array(),
-			'GroupBy'		=>	"DealID",
-			'OrderVal'		=>	"DealID",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Deal ID'
-		),
-		'agency' => array(
-			'Name'	=>	"agency.name AS Agency",
-			'SearchName'	=>	"agency.name",
-			'InnerJoin'		=> 	array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign.agency_id "),
-			'GroupBy'		=>	"Agency",
-			'OrderVal'		=>	"Agency",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Agency'
-		),
-		'advertiser' => array(
-			'Name'	=>	"advertiser.name AS Advertiser",
-			'SearchName'	=>	"advertiser.name",
-			'InnerJoin'		=> 	array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign.advertiser_id "),
-			'GroupBy'		=>	"Advertiser",
-			'OrderVal'		=>	"Advertiser",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Advertiser'
-		),
-		'country' => array(
-			'Name'	=>	"country.nice_name AS Country",
-			'SearchName'	=>	"country.id",
-			'InnerJoin'		=> 	array('country' => "INNER JOIN country ON country.id = $ReportsTable.idCountry "),
-			'GroupBy'		=>	"Country",
-			'OrderVal'		=>	"Country",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Country'
-		),
-		'sales_vp' => array(
-			'Name'	=>	"vp.nick AS SalesVP",
-			'SearchName'	=>	"vp.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				'vp' 	=> "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
-			),
-			'GroupBy'		=>	"SalesVP",
-			'OrderVal'		=>	"SalesVP",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'VP'
-		),
-		'sales_manager_head' => array(
-			'Name'	=>	"manager_head.nick AS SalesManagerHead",
-			'SearchName'	=>	"manager_head.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'manager' => "INNER JOIN user manager ON manager.id = agency.sales_manager_id ",
-				'manager_head' 	=> "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
-				// 'smh'	=> "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
-			),
-			'GroupBy'		=>	"SalesManagerHead",
-			'OrderVal'		=>	"SalesManagerHead",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Manager Head'
-		),
-		'sales_manager' => array(
-			'Name'	=>	"user.nick AS SalesManager",
-			'SearchName'	=>	"user.id",
-			'InnerJoin'		=> 	array(
-				//'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
-				'user' => "INNER JOIN user ON user.id = agency.sales_manager_id ",
-				//'sm' 	=> "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
-			),
-			'GroupBy'		=>	"SalesManager",
-			'OrderVal'		=>	"SalesManager",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Sales Manager'
-		),
-		'dsp' => array(
-			'Name'	=>	"dsp.name AS DSP",
-			'SearchName'	=> 	"dsp.id",
-			'InnerJoin'		=> 	array('dsp' => "INNER JOIN dsp ON dsp.id = campaign.dsp_id "),
-			'GroupBy'		=>	"DSP",
-			'OrderVal'		=>	"DSP",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'DSP'
-		),
-		'domain' => array(
-			'Name'	=>	"{ReportsTable}.Domain AS Domain",
-			'SearchName'	=> 	"{ReportsTable}.Domain",
-			'InnerJoin'		=> 	array(),
-			'GroupBy'		=>	"Domain",
-			'OrderVal'		=>	"Domain",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Domain'
-		),
-		'device' => array(
-			'Name'	=>	"{ReportsTable}.Device AS Device",
-			'SearchName'	=> 	"{ReportsTable}.Device",
-			'InnerJoin'		=> 	array(),
-			'GroupBy'		=>	"Device",
-			'OrderVal'		=>	"Device",
-			'InvalInner'	=> '',
-			'HeadName'		=> 'Device'
-		),
-	);
+$Locale = 'en_EN';
+$ReportsTable = '{ReportsTable}';
 
-	$TimesSQL = array(
-		'monthly' => array(
-			'Name'	=> 	"concat(MONTHNAME($ReportsTable.Date), ' ', YEAR($ReportsTable.Date)) AS Month, concat(YEAR($ReportsTable.Date), MONTH($ReportsTable.Date)) AS MonthN",
-			'SearchName'	=> 	"",
-			'InnerJoin'		=> 	"",
-			'ShowName'		=> 	"Month",
-			'GroupBy'		=>	"MonthN",
-			'OrderVal'		=>	"MonthN"
-		),
-		'daily' => array(
-			'Name'	=> 	"$ReportsTable.Date AS Date",
-			'SearchName'	=> 	"",
-			'InnerJoin'		=> 	"",
-			'ShowName'		=> 	"Date",
-			'GroupBy'		=>	"$ReportsTable.Date",
-			'OrderVal'		=>	"Date"
-		),
-		'hourly' => array(
-			'Name'	=> 	"concat(DATE($ReportsTable.Date), ', ', TIME_FORMAT(CONCAT($ReportsTable.Hour,':00:00'), '%l%p')) AS HourO, CONCAT($ReportsTable.Date, ' ' ,LPAD($ReportsTable.Hour,2,'0') , ':00:00') AS HourOrder",
-			'SearchName'	=> 	"",
-			'InnerJoin'		=> 	"",
-			'ShowName'		=> 	"HourO",
-			'GroupBy'		=>	"HourOrder",
-			'OrderVal'		=>	"HourOrder"
-		),
-		'overall' => array(
-			'Name'	=> 	"'Overall' AS Overall",
-			'SearchName'	=> 	"",
-			'InnerJoin'		=> 	"",
-			'ShowName'		=> 	"Overall",
-			'GroupBy'		=>	false,
-			'OrderVal'		=>	"Overall"
-		)
-	);
+$DimensionsSQL = array(
+    'campaign_name' => array(
+        'Name'  =>  "concat(campaign.name, '--',campaign.id) AS CampaignName",
+        'SearchName'    =>  "campaign.name",
+        'InnerJoin' =>  array(),
+        'GroupBy'   =>  "CampaignName",
+        'OrderVal'  =>  "CampaignName",
+        'InvalInner'    => '',
+        'HeadName'  => 'Campaign Name'
+    ),
+    'deal_id' => array(
+        'Name'  =>  "campaign.deal_id AS DealID",
+        'SearchName'    =>  "campaign.deal_id",
+        'InnerJoin' =>  array(),
+        'GroupBy'   =>  "DealID",
+        'OrderVal'  =>  "DealID",
+        'InvalInner'    => '',
+        'HeadName'  => 'Deal ID'
+    ),
+    'agency' => array(
+        'Name'  =>  "agency.name AS Agency",
+        'SearchName'    =>  "agency.name",
+        'InnerJoin' =>  array(),//array('agency' => "INNER JOIN agency ON agency.id = campaign.agency_id "),
+        'GroupBy'   =>  "Agency",
+        'OrderVal'  =>  "Agency",
+        'InvalInner'    => '',
+        'HeadName'  => 'Agency'
+    ),
+    'advertiser' => array(
+        'Name'  =>  "advertiser.name AS Advertiser",
+        'SearchName'    =>  "advertiser.name",
+        'InnerJoin' =>  array('advertiser' => "INNER JOIN advertiser ON advertiser.id = campaign.advertiser_id "),
+        'GroupBy'   =>  "Advertiser",
+        'OrderVal'  =>  "Advertiser",
+        'InvalInner'    => '',
+        'HeadName'  => 'Advertiser'
+    ),
+    'country' => array(
+        'Name'  =>  "country.nice_name AS Country",
+        'SearchName'    =>  "country.id",
+        'InnerJoin' =>  array('country' => "INNER JOIN country ON country.id = $ReportsTable.idCountry "),
+        'GroupBy'   =>  "Country",
+        'OrderVal'  =>  "Country",
+        'InvalInner'    => '',
+        'HeadName'  => 'Country'
+    ),
+    'sales_vp' => array(
+        'Name'  =>  "vp.nick AS SalesVP",
+        'SearchName'    =>  "vp.id",
+        'InnerJoin' =>  array(
+            //'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
+            'manager' => "INNER JOIN user manager ON manager.id = campaign.sales_manager_id ",
+            'manager_head'  => "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+            'vp'    => "INNER JOIN user as vp ON vp.id = manager_head.manager_id ",
+        ),
+        'GroupBy'   =>  "SalesVP",
+        'OrderVal'  =>  "SalesVP",
+        'InvalInner'    => '',
+        'HeadName'  => 'VP'
+    ),
+    'sales_manager_head' => array(
+        'Name'  =>  "manager_head.nick AS SalesManagerHead",
+        'SearchName'    =>  "manager_head.id",
+        'InnerJoin' =>  array(
+            //'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
+            'manager' => "INNER JOIN user manager ON manager.id = campaign.sales_manager_id ",
+            'manager_head'  => "INNER JOIN user as manager_head ON manager_head.id = manager.manager_id ",
+            // 'smh'    => "INNER JOIN user smh ON sm.sales_manager_head_id = smh.id "
+        ),
+        'GroupBy'   =>  "SalesManagerHead",
+        'OrderVal'  =>  "SalesManagerHead",
+        'InvalInner'    => '',
+        'HeadName'  => 'Sales Manager Head'
+    ),
+    'sales_manager' => array(
+        'Name'  =>  "user.nick AS SalesManager",
+        'SearchName'    =>  "user.id",
+        'InnerJoin' =>  array(
+            //'agency' => "INNER JOIN agency ON agency.id = campaign.agency_id ",
+            'user' => "INNER JOIN user ON user.id = campaign.sales_manager_id ",
+            //'sm'  => "INNER JOIN user sm ON sm.id = purchase_order.sales_manager_id "
+        ),
+        'GroupBy'   =>  "SalesManager",
+        'OrderVal'  =>  "SalesManager",
+        'InvalInner'    => '',
+        'HeadName'  => 'Sales Manager'
+    ),
+    'dsp' => array(
+        'Name'  =>  "dsp.name AS DSP",
+        'SearchName'    =>  "dsp.id",
+        'InnerJoin' =>  array('dsp' => "INNER JOIN dsp ON dsp.id = campaign.dsp_id "),
+        'GroupBy'   =>  "DSP",
+        'OrderVal'  =>  "DSP",
+        'InvalInner'    => '',
+        'HeadName'  => 'DSP'
+    ),
+    'domain' => array(
+        'Name'  =>  "{ReportsTable}.Domain AS Domain",
+        'SearchName'    =>  "{ReportsTable}.Domain",
+        'InnerJoin' =>  array(),
+        'GroupBy'   =>  "Domain",
+        'OrderVal'  =>  "Domain",
+        'InvalInner'    => '',
+        'HeadName'  => 'Domain'
+    ),
+    'device' => array(
+        'Name'  =>  "{ReportsTable}.Device AS Device",
+        'SearchName'    =>  "{ReportsTable}.Device",
+        'InnerJoin' =>  array(),
+        'GroupBy'   =>  "Device",
+        'OrderVal'  =>  "Device",
+        'InvalInner'    => '',
+        'HeadName'  => 'Device'
+    ),
+);
 
-	$MetricsSQL = array(
-		'request' 	=> array(
-			'SQL' 		=>	", SUM($ReportsTable.Requests) AS Requests ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Requests), 0, '$Locale') AS Requests ",
-			'Name'		=>	"Requests",
-			'OrderVal' 	=>	"Requests",
-			'Base' 		=>	array("Requests"),
-			'NumberF'	=>	true,
-			'HeadName'	=> 'Requests'
-		),
-		'impressions' => array(
-			'SQL' 		=>	", SUM($ReportsTable.Impressions) AS Impressions ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Impressions), 0, '$Locale') AS Impressions ",
-			'Name'		=>	"Impressions",
-			'OrderVal' 	=>	"Impressions",
-			'Base' 		=>	array("Impressions"),
-			'NumberF'	=>	true,
-			'HeadName'		=> 'Impressions'
-		),
-		'viewable_impressions' => array(
-			'SQL' 		=>	", SUM($ReportsTable.VImpressions) AS VImpressions ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.VImpressions), 0, '$Locale') AS VImpressions ",
-			'Name'		=>	"VImpressions",
-			'OrderVal' 	=>	"VImpressions",
-			'Base' 		=>	array("VImpressions"),
-			'NumberF'	=>	true,
-			'HeadName'		=> 'Viewable Impressions'
-		),
-		'revenue'	=> array(
-			'SQL' 		=>	", SUM($ReportsTable.Revenue) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( SUM($ReportsTable.Revenue), 2, '$Locale') ) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
-			'Name'		=>	"Revenue",
-			'OrderVal' 	=>	"RevenueOrder",
-			'Base' 		=>	array("Revenue"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'Revenue'
-		),
-		'bids' 		=> array(
-			'SQL' 		=>	", SUM($ReportsTable.Bids) AS Bids ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Bids), 0, '$Locale') AS Bids ",
-			'Name'		=>	"Bids",
-			'OrderVal' 	=>	"Bids",
-			'Base' 		=>	array("Bids"),
-			'NumberF'	=>	true,
-			'HeadName'	=> 'Bids'
-		),
-		'clicks' 	=> array(
-			'SQL' 		=>	", SUM($ReportsTable.Clicks) AS Clicks ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Clicks), 0, '$Locale') AS Clicks ",
-			'Name'		=>	"Clicks",
-			'OrderVal' 	=>	"Clicks",
-			'Base' 		=>	array("Clicks"),
-			'NumberF'	=>	true,
-			'HeadName'	=> 'Clicks'
-		),
-		'complete_views' => array(
-			'SQL' 		=>	", SUM($ReportsTable.CompleteV) AS CompleteV ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.CompleteV), 0, '$Locale') AS CompleteV ",
-			'Name'		=>	"CompleteV",
-			'OrderVal' 	=>	"CompleteV",
-			'Base' 		=>	array("CompleteV"),
-			'NumberF'	=>	true,
-			'HeadName'	=> 'Complete Views'
-		),
-		'viewed25' => array(
-			'SQL' 		=>	", SUM($ReportsTable.Complete25) AS Complete25 ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete25), 0, '$Locale') AS Complete25 ",
-			'Name'		=>	"Complete25",
-			'OrderVal' 	=>	"Complete25",
-			'Base' 		=>	array("Complete25"),
-			'NumberF'	=>	false,
-			'HeadName'	=> '25% Views'
-		),
-		'viewed50' => array(
-			'SQL' 		=>	", SUM($ReportsTable.Complete50) AS Complete50 ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete50), 0, '$Locale') AS Complete50 ",
-			'Name'		=>	"Complete50",
-			'OrderVal' 	=>	"Complete50",
-			'Base' 		=>	array("Complete50"),
-			'NumberF'	=>	false,
-			'HeadName'	=> '50% Views'
-		),
-		'viewed75' => array(
-			'SQL' 		=>	", SUM($ReportsTable.Complete75) AS Complete75 ",
-			'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete75), 0, '$Locale') AS Complete75 ",
-			'Name'		=>	"Complete75",
-			'OrderVal' 	=>	"Complete75",
-			'Base' 		=>	array("Complete75"),
-			'NumberF'	=>	false,
-			'HeadName'	=> '75% Views'
-		),
-		'rebate_cost' 			=> array(
-			'SQL' 		=>	", SUM($ReportsTable.Rebate) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT(SUM($ReportsTable.Rebate), 2, '$Locale') ) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
-			'Name'		=>	"Rebate",
-			'OrderVal' 	=>	"RebateOrder",
-			'Base' 		=>	array("Rebate"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'Rebate Cost'
-		),
-		'cpm'	=> array(
-			'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.Impressions) * 1000),2) AS CPM ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.Impressions) * 1000), 2, '$Locale') ) AS CPM ",
-			'Name'		=>	"CPM",
-			'OrderVal' 	=>	"CPM",
-			'Base' 		=>	array("Revenue","Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'CPM'
-		),
-		'viewability_percent'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2) AS ViewabilityPercent ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale') , '%') AS ViewabilityPercent ",
-			'Name'		=>	"ViewabilityPercent",
-			'OrderVal' 	=>	"ViewabilityPercent",
-			'Base' 		=>	array("Impressions","VImpressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'Viewability Percent'
-		),
-		'rebate_percent' => array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2, '$Locale') , '%') AS RebatePercent ",
-			'Name'		=>	"RebatePercent",
-			'OrderVal' 	=>	"RebatePercent",
-			'Base' 		=>	array("Rebate", "Revenue"),
-			'NumberF'	=>	true,
-			'HeadName'		=> 'Rebate Percent'
-		),
-		'net_revenue' => array(
-			'SQL' 		=>	", (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2, '$Locale') ) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
-			'Name'		=>	"NetRevenue",
-			'OrderVal' 	=>	"NetRevenueOrder",
-			'Base' 		=>	array("Revenue","Rebate"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'Net Revenue'
-		),
-		'ctr' 		=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2) AS CTR ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS CTR ",
-			'Name'		=>	"CTR",
-			'OrderVal' 	=>	"CTR",
-			'Base' 		=>	array("Clicks", "Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'CTR'
-		),
-		'vtr'		=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100) ,2) AS VTR ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS VTR ",
-			'Name'		=>	"VTR",
-			'OrderVal' 	=>	"VTR",
-			'Base' 		=>	array("CompleteV", "Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'VTR'
-		),
-		'25perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100) ,2) AS FIRST ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS FIRST ",
-			'Name'		=>	"FIRST",
-			'OrderVal' 	=>	"FIRST",
-			'Base' 		=>	array("Complete25", "Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> '25%'
-		),
-		'50perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100) ,2) AS MID ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS MID ",
-			'Name'		=>	"MID",
-			'OrderVal' 	=>	"MID",
-			'Base' 		=>	array("Complete50", "Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> '50%'
-		),
-		'75perc'	=> array(
-			'SQL' 		=>	", round( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100) ,2) AS THIRD ",
-			'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS THIRD ",
-			'Name'		=>	"THIRD",
-			'OrderVal' 	=>	"THIRD",
-			'Base' 		=>	array("Complete75", "Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> '75%'
-		),
-		'budget_oc'		=> array(
-			'SQL' 		=>	", ROUND( IFNULL( $ReportsTable.Budget, '0' ), 2 ) AS Budget ",
-			'SQLCSV' 	=>	", concat('$', FORMAT( IFNULL( $ReportsTable.Budget, '0' ), 2, '$Locale') ) AS Budget ",
-			'Name'		=>	"Budget",
-			'OrderVal' 	=>	"Budget",
-			'Base' 		=>	array("Revenue","Impressions"),
-			'NumberF'	=>	false,
-			'HeadName'		=> 'Budget',
-			'InnerJoin'		=> 	array(
-				'purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id ",
-				'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
-			),
-		),
-	);
+$TimesSQL = array(
+    'monthly' => array(
+        'Name'  =>  "concat(MONTHNAME($ReportsTable.Date), ' ', YEAR($ReportsTable.Date)) AS Month, concat(YEAR($ReportsTable.Date), MONTH($ReportsTable.Date)) AS MonthN",
+        'SearchName'    =>  "",
+        'InnerJoin' =>  "",
+        'ShowName'  =>  "Month",
+        'GroupBy'   =>  "MonthN",
+        'OrderVal'  =>  "MonthN"
+    ),
+    'daily' => array(
+        'Name'  =>  "$ReportsTable.Date AS Date",
+        'SearchName'    =>  "",
+        'InnerJoin' =>  "",
+        'ShowName'  =>  "Date",
+        'GroupBy'   =>  "$ReportsTable.Date",
+        'OrderVal'  =>  "Date"
+    ),
+    'hourly' => array(
+        'Name'  =>  "concat(DATE($ReportsTable.Date), ', ', TIME_FORMAT(CONCAT($ReportsTable.Hour,':00:00'), '%l%p')) AS HourO, CONCAT($ReportsTable.Date, ' ' ,LPAD($ReportsTable.Hour,2,'0') , ':00:00') AS HourOrder",
+        'SearchName'    =>  "",
+        'InnerJoin' =>  "",
+        'ShowName'  =>  "HourO",
+        'GroupBy'   =>  "HourOrder",
+        'OrderVal'  =>  "HourOrder"
+    ),
+    'overall' => array(
+        'Name'  =>  "'Overall' AS Overall",
+        'SearchName'    =>  "",
+        'InnerJoin' =>  "",
+        'ShowName'  =>  "Overall",
+        'GroupBy'   =>  false,
+        'OrderVal'  =>  "Overall"
+    )
+);
+
+$MetricsSQL = array(
+    'request'   => array(
+        'SQL'   =>  ", SUM($ReportsTable.Requests) AS Requests ",
+        'SQLCSV'    =>  ", FORMAT(SUM($ReportsTable.Requests), 0, '$Locale') AS Requests ",
+        'Name'  =>  "Requests",
+        'OrderVal'  =>  "Requests",
+        'Base'  =>  array("Requests"),
+        'NumberF'   =>  true,
+        'HeadName'  => 'Requests'
+    ),
+    'impressions' => array(
+        'SQL' 		=>	", SUM($ReportsTable.Impressions) AS Impressions ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Impressions), 0, '$Locale') AS Impressions ",
+        'Name'		=>	"Impressions",
+        'OrderVal' 	=>	"Impressions",
+        'Base' 		=>	array("Impressions"),
+        'NumberF'	=>	true,
+        'HeadName'		=> 'Impressions'
+    ),
+    'viewable_impressions' => array(
+        'SQL' 		=>	", SUM($ReportsTable.VImpressions) AS VImpressions ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.VImpressions), 0, '$Locale') AS VImpressions ",
+        'Name'		=>	"VImpressions",
+        'OrderVal' 	=>	"VImpressions",
+        'Base' 		=>	array("VImpressions"),
+        'NumberF'	=>	true,
+        'HeadName'		=> 'Viewable Impressions'
+    ),
+    'revenue'	=> array(
+        'SQL' 		=>	", SUM($ReportsTable.Revenue) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
+        'SQLCSV' 	=>	", concat('$', FORMAT( SUM($ReportsTable.Revenue), 2, '$Locale') ) AS Revenue, SUM($ReportsTable.Revenue) AS RevenueOrder ",
+        'Name'		=>	"Revenue",
+        'OrderVal' 	=>	"RevenueOrder",
+        'Base' 		=>	array("Revenue"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'Revenue'
+    ),
+    'bids' 		=> array(
+        'SQL' 		=>	", SUM($ReportsTable.Bids) AS Bids ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Bids), 0, '$Locale') AS Bids ",
+        'Name'		=>	"Bids",
+        'OrderVal' 	=>	"Bids",
+        'Base' 		=>	array("Bids"),
+        'NumberF'	=>	true,
+        'HeadName'	=> 'Bids'
+    ),
+    'clicks' 	=> array(
+        'SQL' 		=>	", SUM($ReportsTable.Clicks) AS Clicks ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Clicks), 0, '$Locale') AS Clicks ",
+        'Name'		=>	"Clicks",
+        'OrderVal' 	=>	"Clicks",
+        'Base' 		=>	array("Clicks"),
+        'NumberF'	=>	true,
+        'HeadName'	=> 'Clicks'
+    ),
+    'complete_views' => array(
+        'SQL' 		=>	", SUM($ReportsTable.CompleteV) AS CompleteV ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.CompleteV), 0, '$Locale') AS CompleteV ",
+        'Name'		=>	"CompleteV",
+        'OrderVal' 	=>	"CompleteV",
+        'Base' 		=>	array("CompleteV"),
+        'NumberF'	=>	true,
+        'HeadName'	=> 'Complete Views'
+    ),
+    'viewed25' => array(
+        'SQL' 		=>	", SUM($ReportsTable.Complete25) AS Complete25 ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete25), 0, '$Locale') AS Complete25 ",
+        'Name'		=>	"Complete25",
+        'OrderVal' 	=>	"Complete25",
+        'Base' 		=>	array("Complete25"),
+        'NumberF'	=>	false,
+        'HeadName'	=> '25% Views'
+    ),
+    'viewed50' => array(
+        'SQL' 		=>	", SUM($ReportsTable.Complete50) AS Complete50 ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete50), 0, '$Locale') AS Complete50 ",
+        'Name'		=>	"Complete50",
+        'OrderVal' 	=>	"Complete50",
+        'Base' 		=>	array("Complete50"),
+        'NumberF'	=>	false,
+        'HeadName'	=> '50% Views'
+    ),
+    'viewed75' => array(
+        'SQL' 		=>	", SUM($ReportsTable.Complete75) AS Complete75 ",
+        'SQLCSV' 	=>	", FORMAT(SUM($ReportsTable.Complete75), 0, '$Locale') AS Complete75 ",
+        'Name'		=>	"Complete75",
+        'OrderVal' 	=>	"Complete75",
+        'Base' 		=>	array("Complete75"),
+        'NumberF'	=>	false,
+        'HeadName'	=> '75% Views'
+    ),
+    'rebate_cost' 			=> array(
+        'SQL' 		=>	", SUM($ReportsTable.Rebate) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
+        'SQLCSV' 	=>	", concat('$', FORMAT(SUM($ReportsTable.Rebate), 2, '$Locale') ) AS Rebate, SUM($ReportsTable.Rebate) AS RebateOrder ",
+        'Name'		=>	"Rebate",
+        'OrderVal' 	=>	"RebateOrder",
+        'Base' 		=>	array("Rebate"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'Rebate Cost'
+    ),
+    'cpm'	=> array(
+        'SQL' 		=>	", round((SUM($ReportsTable.Revenue)/SUM($ReportsTable.Impressions) * 1000),2) AS CPM ",
+        'SQLCSV' 	=>	", concat('$', FORMAT( ( SUM($ReportsTable.Revenue) / SUM($ReportsTable.Impressions) * 1000), 2, '$Locale') ) AS CPM ",
+        'Name'		=>	"CPM",
+        'OrderVal' 	=>	"CPM",
+        'Base' 		=>	array("Revenue","Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'CPM'
+    ),
+    'viewability_percent'	=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2) AS ViewabilityPercent ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.VImpressions) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale') , '%') AS ViewabilityPercent ",
+        'Name'		=>	"ViewabilityPercent",
+        'OrderVal' 	=>	"ViewabilityPercent",
+        'Base' 		=>	array("Impressions","VImpressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'Viewability Percent'
+    ),
+    'rebate_percent' => array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2) AS RebatePercent ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Rebate) / SUM($ReportsTable.Revenue) * 100), 2, '$Locale') , '%') AS RebatePercent ",
+        'Name'		=>	"RebatePercent",
+        'OrderVal' 	=>	"RebatePercent",
+        'Base' 		=>	array("Rebate", "Revenue"),
+        'NumberF'	=>	true,
+        'HeadName'		=> 'Rebate Percent'
+    ),
+    'net_revenue' => array(
+        'SQL' 		=>	", (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'SQLCSV' 	=>	", concat('$', FORMAT( (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)), 2, '$Locale') ) AS NetRevenue, (SUM($ReportsTable.Revenue) - SUM($ReportsTable.Rebate)) AS NetRevenueOrder ",
+        'Name'		=>	"NetRevenue",
+        'OrderVal' 	=>	"NetRevenueOrder",
+        'Base' 		=>	array("Revenue","Rebate"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'Net Revenue'
+    ),
+    'ctr' 		=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2) AS CTR ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Clicks) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS CTR ",
+        'Name'		=>	"CTR",
+        'OrderVal' 	=>	"CTR",
+        'Base' 		=>	array("Clicks", "Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'CTR'
+    ),
+    'vtr'		=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100) ,2) AS VTR ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.CompleteV) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS VTR ",
+        'Name'		=>	"VTR",
+        'OrderVal' 	=>	"VTR",
+        'Base' 		=>	array("CompleteV", "Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'VTR'
+    ),
+    '25perc'	=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100) ,2) AS FIRST ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete25) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS FIRST ",
+        'Name'		=>	"FIRST",
+        'OrderVal' 	=>	"FIRST",
+        'Base' 		=>	array("Complete25", "Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> '25%'
+    ),
+    '50perc'	=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100) ,2) AS MID ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete50) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS MID ",
+        'Name'		=>	"MID",
+        'OrderVal' 	=>	"MID",
+        'Base' 		=>	array("Complete50", "Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> '50%'
+    ),
+    '75perc'	=> array(
+        'SQL' 		=>	", round( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100) ,2) AS THIRD ",
+        'SQLCSV' 	=>	", concat( FORMAT( (SUM($ReportsTable.Complete75) / SUM($ReportsTable.Impressions) * 100), 2, '$Locale'), '%') AS THIRD ",
+        'Name'		=>	"THIRD",
+        'OrderVal' 	=>	"THIRD",
+        'Base' 		=>	array("Complete75", "Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> '75%'
+    ),
+    'budget_oc'		=> array(
+        'SQL' 		=>	", ROUND( IFNULL( $ReportsTable.Budget, '0' ), 2 ) AS Budget ",
+        'SQLCSV' 	=>	", concat('$', FORMAT( IFNULL( $ReportsTable.Budget, '0' ), 2, '$Locale') ) AS Budget ",
+        'Name'		=>	"Budget",
+        'OrderVal' 	=>	"Budget",
+        'Base' 		=>	array("Revenue","Impressions"),
+        'NumberF'	=>	false,
+        'HeadName'		=> 'Budget',
+        'InnerJoin'		=> 	array(
+            'purchase_order' => "INNER JOIN purchase_order ON purchase_order.id = campaign.purchase_order_id ",
+            'budget' => "INNER JOIN budget ON budget.purchase_order_id = purchase_order.id "
+        ),
+    ),
+);
 
 function checkTableExists($TableName){
-	global $db;
+    global $db;
 
-	$sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" . $db->dbname . "' AND table_name = '" . $TableName . "' LIMIT 1";
-	$chck = $db->getOne($sql);
-	if($chck == 0){
-		return false;
-	}else{
-		return true;
-	}
+    $sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" . $db->dbname . "' AND table_name = '" . $TableName . "' LIMIT 1";
+    $chck = $db->getOne($sql);
+    if($chck == 0){
+        return false;
+    }else{
+        return true;
+    }
 }
