@@ -42,15 +42,15 @@ function calcPercents($Perc, $Impressions, $Complete)
 }
 
 
-$Date1 = '2022-04-22';
-$Date2 = '2022-04-30';
+$Date1 = '2022-03-18';
+$Date2 = '2022-06-03';
 
 
 $DemandTags = array();
 $ActiveDeals = array();
 $CampaingData = array();
 // ids of the campaigns separated by comma
-$campaignIds = "11902";
+$campaignIds = "7717";
 
 
 $sql = "SELECT * FROM campaign WHERE id in ({$campaignIds})";

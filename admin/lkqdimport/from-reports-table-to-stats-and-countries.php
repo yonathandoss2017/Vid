@@ -52,32 +52,6 @@ if ($db->num_rows($query) > 0) {
         $Clicks = $S['Clicks'];
         $formatLoads = $S['formatLoads'];
 
-        /*
-        //CONVERSION A EUROS
-        if(array_key_exists($Date, $DateSRate)){
-            $Rate = $DateSRate[$Date];
-        }else{
-            $DateForRate = new DateTime($Date);
-            $DateForRate->modify('-1 day');
-
-            $JsonRates = file_get_contents('https://api.exchangeratesapi.io/' . $DateForRate->format('Y-m-d') . '?access_key=7df9c3b2eb8318c2294112c50f5209c8');
-            $Rates = json_decode($JsonRates);
-            $Rate = $Rates->rates->USD;
-
-            $DateSRate[$Date] = $Rate;
-        }
-
-        if($Revenue > 0){
-            $RevenueEur = $Revenue / $Rate;
-        }else{
-            $RevenueEur = 0;
-        }
-        if($Coste > 0){
-            $CosteEur = $Coste / $Rate;
-        }else{
-            $CosteEur = 0;
-        }
-        */
         $idSite = $S['idSite'];
         $idUser = $S['idUser'];
         $idTag = $S['idTag'];
@@ -85,36 +59,6 @@ if ($db->num_rows($query) > 0) {
         $timeAdded = time();
         $lastUpdate = time();
 
-        /*
-        if($idSite == 11513 && date('d', time() - 3600) == 27){
-            $Impressions = $formatLoads / 10.8;
-            $Coste = $Impressions * 0.0015;
-            $Revenue = $Coste * 1.4286;
-        }
-        */
-        /*
-        if($idSite == 11630){
-            $Impressions = $formatLoads / 4;
-            $Coste = $Impressions * 0.0015;
-            $Revenue = $Coste * 1.4286;
-        }
-
-        if(array_key_exists($Date, $DateSRate)){
-            $Rate = $DateSRate[$Date];
-        }else{
-            $DateForRate = new DateTime($Date);
-            $DateForRate->modify('-1 day');
-
-            $JsonRates = file_get_contents('https://api.exchangeratesapi.io/' . $DateForRate->format('Y-m-d'));
-            $Rates = json_decode($JsonRates);
-            $Rate = $Rates->rates->USD;
-
-            $DateSRate[$Date] = $Rate;
-        }
-        */
-
-        //$CosteEur = $Coste / $Rate;
-        //$RevenueEur = $Revenue / $Rate;
 
         $sql = "SELECT id FROM " . STATS . " WHERE idUser = '$idUser' AND idTag = '$idTag' AND Date = '$Date' AND Manual = 0";
         $idStat = $db->getOne($sql);
@@ -128,7 +72,7 @@ if ($db->num_rows($query) > 0) {
     }
 }
 
-echo "OK 1 \n";
+echo "Report Server stats updated\n";
 
 //exit(0);
 $sql = "SELECT 
@@ -169,7 +113,7 @@ if ($TotalRows > 0) {
     }
 }
 
-echo "OK 1B \n";
+echo "Report Server stats_country_r2020 updated\n";
 
 $Day = $Date;
 $Nv = 0;
@@ -224,7 +168,7 @@ if ($db->num_rows($query) > 0) {
     }
 }
 
-echo "OK 2 \n";
+echo "Publishers Panel stats updated\n";
 
 $CountryOld = array();
 $sql = "SELECT * FROM stats_country_r2020 WHERE Date = '$Day'";
@@ -293,7 +237,7 @@ if ($db->num_rows($query) > 0) {
     }
 }
 
-echo " OK 2B \n";
+echo "Publishers Panel stats_country2020 and stats_country_last updated\n";
 
 $db3 = new SQL($pubStaging['host'], $pubStaging['db'], $pubStaging['user'], $pubStaging['pass']);
 
@@ -355,7 +299,7 @@ if ($db->num_rows($query) > 0) {
     }
 }
 
-echo "OK 3 \n";
+echo "Publishers Panel (staging) stats updated\n";
 
 $CountryOld = array();
 $sql = "SELECT * FROM stats_country_r2020 WHERE Date = '$Day'";
@@ -423,4 +367,4 @@ if ($db->num_rows($query) > 0) {
     }
 }
 
-echo " OK 3B \n";
+echo "Publishers Panel (staging) stats_country2020 and stats_country_last updated\n";

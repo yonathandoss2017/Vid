@@ -533,19 +533,12 @@ function calcPercents($Perc , $Impressions, $Complete){
 										
 										$Multiplier = (25 - $HourI) / 100;
 										
-										
-										if(($Domain == 'independent.co.uk') && $Country == 'United Kingdom' && ($Date != '2022-03-18' || intval($Hour) >= 14)){
+										if(($Domain == 'independent.co.uk') && $Country == 'United Kingdom'){
 										
 											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 130 \n";
 											$Multiplier = (130 - $HourI) / 100;
 										
-										}elseif($Domain == 'independent.co.uk' && $Country == 'United Kingdom'){
-											
-											echo $Domain . ': ' . $Date . ':' . $Hour . " -> 70 \n";
-											$Multiplier = (70 - $HourI) / 100;
-											
 										}
-										
 										
 										$Impressions = intval($formatLoads * $Multiplier);
 										
