@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * File to regenerate a tag js file
+ *
+ * Execute on command line regeneratejs websiteid. ej. regenerate 19906
+ */
+
 @session_start();
 // Guardamos cualquier error //
 ini_set('display_errors', 0);
@@ -23,5 +29,5 @@ if($db->num_rows($query) > 0){
     }
 }
 */
-newGenerateJS(19892);
-//newGenerateJS(5805);
+
+newGenerateJS($argv[1]);
