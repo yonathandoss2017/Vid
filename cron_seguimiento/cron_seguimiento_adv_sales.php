@@ -587,6 +587,7 @@ $UserEmail = 'antonio.simarro@vidoomy.com';
 $mail->addAddress($UserEmail, $UserName);
 $mail->AddBCC('federico.izuel@vidoomy.com');
 $mail->AddBCC('gadiel.reyesdelrosario@vidoomy.com');
+$mail->AddBCC('guillermo.alvarez@vidoomy.com');
 
 $mail->Subject = $Subject;
 $mail->msgHTML(str_replace('#MarcosEric#','Tony',$MailContent));

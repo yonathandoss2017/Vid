@@ -10,7 +10,8 @@ class AdsTxt {
      *
      * @return void
      */
-    public function run() {
+    public function run()
+    {
         $scans = [];
         if (!$this->isValid()) {
             return $this->doResponse($scans);
@@ -36,7 +37,8 @@ class AdsTxt {
      * @param string $text
      * @return array
      */
-    private function performSiteScanFromContent(array $row, string $content, string $text): array {
+    private function performSiteScanFromContent(array $row, string $content, string $text): array
+    {
         $hasString = $this->contentHasText($content, $text);
 
         $scan = [
@@ -62,7 +64,8 @@ class AdsTxt {
      * @param string $text
      * @return boolean
      */
-    private function contentHasText(string $content, string $text): bool {
+    private function contentHasText(string $content, string $text): bool
+    {
         $text = $this->cleanRecord($text);
 
         $records = explode("\n", $content);
@@ -88,7 +91,8 @@ class AdsTxt {
      * @param string $text
      * @return string
      */
-    private function cleanRecord(string $text): string {
+    private function cleanRecord(string $text): string
+    {
         $text = strtolower($text);
         $text = preg_replace('/\s+/', '', $text);
 
@@ -101,7 +105,8 @@ class AdsTxt {
      * @param array $rows array of urls ['url' => 'https://domain/ads.txt', 'index' => 1]
      * @return array
      */
-    private function getSitesContent(array $rows): array {
+    private function getSitesContent(array $rows): array
+    {
         stream_context_set_default([
             'ssl' => [
                 'verify_peer' => false,
@@ -142,7 +147,8 @@ class AdsTxt {
      *
      * @return boolean
      */
-    private function isValid() : bool {
+    private function isValid(): bool
+    {
         return $_SERVER['REQUEST_METHOD'] === 'POST' || isset($_POST['rows'], $_POST['txt']);
     }
 
@@ -152,7 +158,8 @@ class AdsTxt {
      * @param array $result
      * @return void
      */
-    private function doResponse(array $result) {
+    private function doResponse(array $result)
+    {
         $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
         if ($http_origin) {
             header("Access-Control-Allow-Origin: $http_origin");

@@ -7,32 +7,25 @@
 	$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	$db2 = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
-	$Alim = 2;
+	$Campaign = 26;
+	$Questions = 2;
+	$Cookie = 1;
 	
-	for($Q = 1; $Q <= 4; $Q++){
+	$Question[1] = 2;
+	$Question[2] = 2;
+	//$Question[3] = 2;
+	//$Question[4] = 2;
+	//$Question[5] = 2;
+	
+	
+	
+	for($Q = 1; $Q <= $Questions; $Q++){
 		
 		echo "\nPregunta $Q \n";
-		
-		
-		if($Q == 4){
-			$Alim = 5;
-		}
-		
-		if($Q == 3){
-			$Alim = 2;
-		}
-		
-		if($Q == 2){
-			$Alim = 5;
-		}
-		
-		if($Q == 1){
-			$Alim = 5;
-		}
-		
-		for($A = 1; $A <= $Alim; $A++){
+				
+		for($A = 1; $A <= $Question[$Q]; $A++){
 			
-			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = 1 AND Campaign = 23";
+			$sql = "SELECT COUNT(*) FROM `surveys` WHERE Question = $Q AND Answer = $A AND Cookie = $Cookie AND Campaign = $Campaign";
 			$Cnt = $db->getOne($sql);
 			
 			echo "Respuesta $A: $Cnt \n";

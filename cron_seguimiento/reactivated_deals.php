@@ -194,6 +194,7 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->AddBCC('mayte.santos@vidoomy.com');
             $mail->AddBCC('nicolle.garcia@vidoomy.com');
             $mail->addBCC('rocio.ocampo@vidoomy.com');
+            $mail->addBCC('guillermo.alvarez@vidoomy.com');
 
             foreach ($managers as $managerEmail) {
                 $mail->AddBCC($managerEmail);
