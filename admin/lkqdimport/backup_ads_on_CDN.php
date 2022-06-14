@@ -39,12 +39,13 @@ $zip->close();
 $conn_id = ftp_connect("push-24.cdn77.com");
 
  // login with username and password
- $login_result = ftp_login($conn_id, 'user_xx81b7nd','IRYdRJpG5WemTvD2FxLF');
+ $login_result = ftp_login($conn_id, 'user_xx81b7nd','5pSdLMysEAcPzp3M');
 ftp_pasv($conn_id, true);
 
  // upload a file
  if (ftp_put($conn_id, "/www/backs_adsx3219/$NoZipName" , $ZipName, FTP_BINARY)) {
     echo "successfully uploaded\n";
+    unlink($ZipName);
     exit;
  } else {
     echo "There was a problem while uploading\n";

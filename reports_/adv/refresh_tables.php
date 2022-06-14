@@ -564,16 +564,16 @@ UPDATE
     demand_tag
 SET
     campaign_id = {$creativityCampaignId},
-    size = '{$creativitySize}',
-    image = '{$creativityImage}',
-    click_url = '{$creativityClickUrl}',
-    video = '{$creativityVideo}',
+    size = "{$creativitySize}",
+    image = "{$creativityImage}",
+    click_url = "{$creativityClickUrl}",
+    video = "{$creativityVideo}",
     status = {$creativityStatus},
-    name = '{$creativityName}',
+    name = "{$creativityName}",
     device = {$creativityDevice},
     lkqd_id = {$creativityLKQDId},
     demand_tag_id = {$creativityDemandTagId},
-    demand_tag_url = '{$creativityDemandTagUrl}',
+    demand_tag_url = "{$creativityDemandTagUrl}",
     type = {$creativityType}
 WHERE
     id = {$creativityId}

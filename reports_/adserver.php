@@ -37,7 +37,7 @@
 	} elseif ($_POST['env'] == 'integration') {
 		$db2 = new SQL($pubIntegration['host'], $pubIntegration['db'], $pubIntegration['user'], $pubIntegration['pass']);
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'prod' || $_POST['env'] == 'local') {
+	} elseif ($_POST['env'] == 'prod' || $_POST['env'] == 'local' || $_POST['env'] == 'pro') {
 		$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	} else {

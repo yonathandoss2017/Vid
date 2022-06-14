@@ -144,11 +144,11 @@
 	$mail->Port = 465;
 	$mail->SMTPSecure = 'ssl';
 	$mail->SMTPAuth = true;
-	$mail->Username = "notify@vidoomy.net";
-	$mail->Password = "NosdFiY-#98";
+	$mail->Username = $emailing1Cred['user'];
+	$mail->Password = $emailing1Cred['password'];
 	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+	$mail->setFrom($emailing1Cred['user'], 'Vidoomy');
+	$mail->addReplyTo($emailing1Cred['user'], 'Vidoomy');
 	$mail->addAddress('federico.izuel@vidoomy.com');
 	$mail->Subject = $Subject;
 	$mail->msgHTML($message);

@@ -86,11 +86,11 @@
 					$mail->Port = 465;
 					$mail->SMTPSecure = 'ssl';
 					$mail->SMTPAuth = true;
-					$mail->Username = "notifysystem@vidoomy.net";
-					$mail->Password = "NoTyFUCK05-1";
+					$mail->Username = $emailing2Cred['user'];
+					$mail->Password = $emailing2Cred['password'];
 					$mail->CharSet = 'UTF-8';
-					$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
-					$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+					$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+					$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 					
 					//$EmailSalesManager = 'federicoizuel@gmail.com';
 					$mail->addAddress($EmailSalesManager, $NameSalesManager);
@@ -126,11 +126,11 @@
 					$mail->Port = 465;
 					$mail->SMTPSecure = 'ssl';
 					$mail->SMTPAuth = true;
-					$mail->Username = "notifysystem@vidoomy.net";
-					$mail->Password = "NoTyFUCK05-1";
+					$mail->Username = $emailing2Cred['user'];
+					$mail->Password = $emailing2Cred['password'];
 					$mail->CharSet = 'UTF-8';
-					$mail->setFrom('notify@vidoomy.net', 'Vidoomy');
-					$mail->addReplyTo('notify@vidoomy.net', 'Vidoomy');
+					$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+					$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 					
 					$mail->addAddress('federico.izuel@vidoomy.com', 'Antonio Simarro');
 					$mail->addAddress('gadiel.reyesdelrosario@vidoomy.com', 'Gadiel Reyes');

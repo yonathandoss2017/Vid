@@ -118,6 +118,17 @@ $lkqdCred = [
     "password" => $_ENV["LKQD_PASS"],
 ];
 
-$mongoUrl = "mongodb://admin:NPJWtBzZPbZ7qWZv@34.222.80.6:27017";
+$emailing1Cred = [
+    "user" => $_ENV["EMAILING1_USER"],
+    "password" => $_ENV["EMAILING1_PASS"],
+];
+
+$emailing2Cred = [
+    "user" => $_ENV["EMAILING2_USER"],
+    "password" => $_ENV["EMAILING2_PASS"],
+];
+
+$mongoUrl = $_ENV["MONGO_URL"];
+$druidUrl = $_ENV["DRUID_URL"];
 
 date_default_timezone_set('US/Eastern');

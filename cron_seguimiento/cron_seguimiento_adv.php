@@ -569,11 +569,11 @@ $mail->Host = 'smtp.gmail.com';
 $mail->Port = 465;
 $mail->SMTPSecure = 'ssl';
 $mail->SMTPAuth = true;
-$mail->Username = "notifysystem@vidoomy.net";
-$mail->Password = "NoTyFUCK05-1";
+$mail->Username = $emailing2Cred['user'];
+$mail->Password = $emailing2Cred['password'];
 $mail->CharSet = 'UTF-8';
-$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 
 $UserName = 'Antonio Simarro';
@@ -603,11 +603,11 @@ $mail2->Host = 'smtp.gmail.com';
 $mail2->Port = 465;
 $mail2->SMTPSecure = 'ssl';
 $mail2->SMTPAuth = true;
-$mail2->Username = "notifysystem@vidoomy.net";
-$mail2->Password = "NoTyFUCK05-1";
+$mail2->Username = $emailing2Cred['user'];
+$mail2->Password = $emailing2Cred['password'];
 $mail2->CharSet = 'UTF-8';
-$mail2->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-$mail2->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+$mail2->setFrom($emailing2Cred['user'], 'Vidoomy');
+$mail2->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 
 $UserName = 'Eric Raventos';
@@ -654,11 +654,11 @@ foreach ($ArrayRowsSalesManagers as $idUser => $RowSalesManager) {
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->SMTPAuth = true;
-    $mail->Username = "notifysystem@vidoomy.net";
-    $mail->Password = "NoTyFUCK05-1";
+    $mail->Username = $emailing2Cred['user'];
+    $mail->Password = $emailing2Cred['password'];
     $mail->CharSet = 'UTF-8';
-    $mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-    $mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+    $mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+    $mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 
     $UserName = $SalesNames[$idUser];

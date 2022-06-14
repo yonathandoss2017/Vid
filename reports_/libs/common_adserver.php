@@ -282,7 +282,8 @@
 
 
 function druidQuery($Query, $Limit = 30000){
-	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+	global $druidUrl;
+	$ch = curl_init( $druidUrl );
 		
 	$context = new \stdClass();
 	$context->sqlOuterLimit = $Limit;

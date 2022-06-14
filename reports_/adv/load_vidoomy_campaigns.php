@@ -135,7 +135,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			
 			
-			$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+			$ch = curl_init( $druidUrl );
 	
 			$Query = "SELECT  __time, Country, SUM(sum_TagRequests) AS TagRequests, 0, SUM(sum_FirstQuartiles) AS FirstQuartile, SUM(sum_MidPoints) AS Midpoint, SUM(sum_ThirdQuartiles) AS ThirdQuartile, SUM(sum_VideoCompletes) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_AdViewableImpression) AS VImpressions, SUM(sum_ClickThrus) AS Clicks FROM production_enriched_event_demand_2 WHERE __time >= CURRENT_TIMESTAMP - INTERVAL '1' DAY AND DemandTag = 'FCH_SCJ_GeoIP:Latam_(Almapp&PHD)_CPM_USD:3.35_BRL:17.63_GeoIP:BR_vtr:70_va:80_SCJohnson_ExposisSUL_800.000_13Feb' GROUP BY __time, Country ORDER BY 1 DESC";
 			//echo $Query . "\n\n";

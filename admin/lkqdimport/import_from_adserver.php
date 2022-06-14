@@ -104,7 +104,7 @@ function calcPercents($Perc , $Impressions, $Complete){
 	$DateEST1 = $DateDruid1;
 	$DateEST2 = $DateDruid2;
 	
-	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+	$ch = curl_init( $druidUrl );
 	
 	$Query = "SELECT __time, Country, Domain, Zone, Publisher, SUM(sum_FormatLoads) AS FormatLoads, SUM(sum_Impressions) AS Impressions, SUM(sum_ClickThrus) AS Clicks, SUM(sum_FirstQuartiles) AS FirstQuartiles, SUM(sum_MidPoints) AS MidPoints, SUM(sum_ThirdQuartiles) AS ThirdQuartiles, SUM(sum_VideoCompletes) AS VideoCompletes FROM production_enriched_event_supply WHERE __time >= '$DateD1' AND  __time <= '$DateD2' GROUP BY __time, Country, Domain, Zone, Publisher ORDER BY 5 DESC";
 	echo $Query . "\n\n";

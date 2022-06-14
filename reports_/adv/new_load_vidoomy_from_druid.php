@@ -150,7 +150,7 @@ function calcPercents($Perc , $Impressions, $Complete){
             
             
             
-            $ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+            $ch = curl_init( $druidUrl );
     
             $Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1	WHERE __time >= '$DateHourFrom:00:00' AND  __time <= '$DateHourTo:00:00' AND Deal = '$DealID' GROUP BY __time, Country ORDER BY 3 DESC";
             //echo $Query . "\n\n";
@@ -258,7 +258,8 @@ function calcPercents($Perc , $Impressions, $Complete){
                             $sql = "UPDATE reports SET 
                                 Requests = '$Requests', Bids = '$Bids', Impressions = '$Impressions', Revenue = '$Revenue',
                                 VImpressions = '$VImpressions', Clicks = '$Clicks', CompleteV = '$CompleteV', 
-                                Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate'
+                                Complete25 = '$Complete25', Complete50 = '$Complete50', Complete75 = '$Complete75', Rebate = '$Rebate',
+                                budgetConsumed = '$Revenue'
                                 WHERE id = $idStat LIMIT 1";
                             //exit(0);
                             $db->query($sql);

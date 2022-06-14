@@ -1070,34 +1070,8 @@ function calcPercents($Perc , $Impressions, $Complete){
 			
 			
 			echo "Resume Ready \n";
-		}else{
-			$Subject = 'Hourly Update KO - 0 Registros ' . $LastU;
-			$message = "$Ni registros insertados. Hour: $HFrom - $HTo Date: $Date - Bucle 1: $Bucle1 Bucle 2: $Bucle2";
 		}
 	}else{
 		echo 'Error 0';
-		$Subject = 'Hourly Update Error';
-		$message = "Error 0";
 	}
-	
-	$mail = new PHPMailer;
-								
-	$mail->isSMTP();
-	$mail->SMTPDebug = 0;
-	$mail->Debugoutput = 'html';
-	
-	$mail->Host = 'smtp.gmail.com';
-	$mail->Port = 465;
-	$mail->SMTPSecure = 'ssl';
-	$mail->SMTPAuth = true;
-	$mail->Username = "notifysystem@vidoomy.net";
-	$mail->Password = "NoTyFUCK05-1";
-	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail->addAddress('federico.izuel@vidoomy.com');
-	
-	$mail->Subject = $Subject;
-	$mail->msgHTML($message);
-	$mail->send();
 	

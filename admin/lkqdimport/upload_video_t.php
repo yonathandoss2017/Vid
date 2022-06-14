@@ -11,6 +11,7 @@
 	$db = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 
 function notifyFailure($Log = ''){
+	global $emailing2Cred;
 	$mail = new PHPMailer;
 								
 	$mail->isSMTP();
@@ -21,11 +22,11 @@ function notifyFailure($Log = ''){
 	$mail->Port = 465;
 	$mail->SMTPSecure = 'ssl';
 	$mail->SMTPAuth = true;
-	$mail->Username = "notifysystem@vidoomy.net";
-	$mail->Password = "NoTyFUCK05-1";
+	$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+	$mail->addReplyTo($emailing2Cred['password'], 'Vidoomy');
 	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+	$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 	$mail->addAddress('federico.izuel@vidoomy.com');
 	
 	$mail->Subject = 'Video Upload FAIL (Creador de demos)';

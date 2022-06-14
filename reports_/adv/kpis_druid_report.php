@@ -18,7 +18,7 @@
 	require('/var/www/html/login/reports_/adv/common.php');
 	require('/var/www/html/login/admin/lkqdimport/common.php');
 
-	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+	$ch = curl_init( $druidUrl );
 	
 	$Query = "SELECT Domain, Device, SUM(sum_Impressions) AS Impressions, SUM(sum_Complete) AS Complete, SUM(sum_Clicks) AS Clicks, SUM(sum_Vimpression) AS VImpressions
 	FROM prd_rtb_event_production_1

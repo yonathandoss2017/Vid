@@ -20,7 +20,7 @@
 	$Hour1 = '08';
 	$Hour2 = $Hour1;
 			
-	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+	$ch = curl_init( $druidUrl );
 	/*
 	$Query = "SELECT __time, Country, SUM(sum_BidRequests) AS Requests, SUM(sum_BidResponses) AS Responses, SUM(sum_FirstQuartile) AS FirstQuartile, SUM(sum_Midpoint) AS Midpoint, SUM(sum_ThirdQuartile) AS ThirdQuartile, SUM(sum_Complete) AS Complete, SUM(sum_Impressions) AS Impressions, SUM(sum_Vimpression) AS VImpressions, SUM(sum_Clicks) AS Clicks, SUM(sum_Money) AS Money FROM prd_rtb_event_production_1 WHERE __time >= '$Date $Hour1:00:00' AND  __time <= '$Date $Hour2:00:00' AND AdType = 'Display' GROUP BY __time, Country ORDER BY 3 DESC LIMIT 1";
 	*/

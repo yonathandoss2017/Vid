@@ -26,7 +26,7 @@
 	
 	$Query = "SELECT Domain, SUM(sum_FormatLoads) AS FormatLoads FROM production_enriched_event_supply WHERE __time >= '2021-06-27 00:00:00' AND  __time <= '2021-06-27 23:00:00' GROUP BY Domain ORDER BY 2 DESC";
 	
-	$ch = curl_init( 'http://vdmdruidadmin:U9%3DjPvAPuyH9EM%40%26@ec2-3-120-137-168.eu-central-1.compute.amazonaws.com:8888/druid/v2/sql' );
+	$ch = curl_init( $druidUrl );
 	
 	$context = new \stdClass();
 	$context->sqlOuterLimit = 30000;//;

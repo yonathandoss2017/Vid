@@ -163,13 +163,11 @@ function getTodayMore1000FL($LimitForNew = 1000){
 										$mail->Port = 465;
 										$mail->SMTPSecure = 'ssl';
 										$mail->SMTPAuth = true;
-										//$mail->Username = "notify@vidoomy.net";
-										//$mail->Password = "NosdFiY-98";
-										$mail->Username = "notifysystem@vidoomy.net";
-										$mail->Password = "NoTyFUCK05-1";
+										$mail->Username = $emailing2Cred['user'];
+										$mail->Password = $emailing2Cred['password'];
 										$mail->CharSet = 'UTF-8';
-										$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-										$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+										$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+										$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 										
 										//$EmailPubManager = 'federicoizuel@gmail.com';
 										$mail->addAddress($EmailPubManager, $NamePubManager);

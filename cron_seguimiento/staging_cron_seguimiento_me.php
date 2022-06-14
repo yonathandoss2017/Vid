@@ -817,11 +817,11 @@ function getGlobal($Date1, $Date2, $idAccM){
 	$mail->Port = 465;
 	$mail->SMTPSecure = 'ssl';
 	$mail->SMTPAuth = true;
-	$mail->Username = "notifysystem@vidoomy.net";
-	$mail->Password = "NoTyFUCK05-1";
+	$mail->Username = $emailing2Cred['user'];
+	$mail->Password = $emailing2Cred['password'];
 	$mail->CharSet = 'UTF-8';
-	$mail->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	$mail->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	$mail->setFrom($emailing2Cred['user'], 'Vidoomy');
+	$mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 	
 	$UserName = 'Marcos Cuesta';
@@ -847,11 +847,11 @@ function getGlobal($Date1, $Date2, $idAccM){
 	// $mail2->Port = 465;
 	// $mail2->SMTPSecure = 'ssl';
 	// $mail2->SMTPAuth = true;
-	// $mail2->Username = "notifysystem@vidoomy.net";
-	// $mail2->Password = "NoTyFUCK05-1";
+	// $mail2->Username = $emailing2Cred['user'];
+	// $mail2->Password = $emailing2Cred['password'];
 	// $mail2->CharSet = 'UTF-8';
-	// $mail2->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	// $mail2->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail2->setFrom($emailing2Cred['user'], 'Vidoomy');
+	// $mail2->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 	
 	// $UserName = 'Eric Raventos';
@@ -874,11 +874,11 @@ function getGlobal($Date1, $Date2, $idAccM){
 	// $mail3->Port = 465;
 	// $mail3->SMTPSecure = 'ssl';
 	// $mail3->SMTPAuth = true;
-	// $mail3->Username = "notifysystem@vidoomy.net";
-	// $mail3->Password = "NoTyFUCK05-1";
+	// $mail3->Username = $emailing2Cred['user'];
+	// $mail3->Password = $emailing2Cred['password'];
 	// $mail3->CharSet = 'UTF-8';
-	// $mail3->setFrom('notifysystem@vidoomy.net', 'Vidoomy');
-	// $mail3->addReplyTo('notifysystem@vidoomy.net', 'Vidoomy');
+	// $mail3->setFrom($emailing2Cred['user'], 'Vidoomy');
+	// $mail3->addReplyTo($emailing2Cred['user'], 'Vidoomy');
 
 	
 	// $UserName = 'Angel Burgos';
