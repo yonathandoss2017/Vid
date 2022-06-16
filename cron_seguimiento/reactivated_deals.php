@@ -5,7 +5,6 @@
 ini_set('display_errors', 0);
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 define('CONST', 1);
-define('AAL_DEAL_ID', '1053459');
 
 if (file_exists('/var/www/html/login/config.php')) {
     require '/var/www/html/login/config.php';
@@ -230,10 +229,6 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->addReplyTo($emailing1Cred['user'], 'Vidoomy');
 
             $mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
-
-            if (AAL_DEAL_ID == $DealId) {
-                $mail->AddBCC('ernesto.gonzalez@vidoomy.com', 'Ernesto Gonzalez');
-            }
 
             $mail->Subject = $EmailTitle;
             $mail->msgHTML(str_replace($NameSalesManager, 'Tony', $EmailText));
