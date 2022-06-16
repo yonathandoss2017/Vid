@@ -27,7 +27,7 @@
 
 		require('config_pre.php');
 		$db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
-	} elseif ($_POST['env'] == 'prod') {
+	} elseif ($_POST['env'] == 'prod' || $_POST['env'] == 'pro') {
 		$db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 
 		require('config.php');

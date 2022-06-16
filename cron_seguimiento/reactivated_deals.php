@@ -8,16 +8,16 @@ define('CONST', 1);
 define('AAL_DEAL_ID', '1053459');
 
 if (file_exists('/var/www/html/login/config.php')) {
-    require('/var/www/html/login/config.php');
-    require('/var/www/html/login/constantes.php');
-    require('/var/www/html/login/db.php');
-    require('/var/www/html/login/common.lib.php');
+    require '/var/www/html/login/config.php';
+    require '/var/www/html/login/constantes.php';
+    require '/var/www/html/login/db.php';
+    require '/var/www/html/login/common.lib.php';
     require '/var/www/html/site/include/PHPMailer/PHPMailerAutoload.php';
 } else {
-    require('./../config_local.php');
-    require('./../constantes.php');
-    require('./../db.php');
-    require('./../common.lib.php');
+    require './../config_local.php';
+    require './../constantes.php';
+    require './../db.php';
+    require './../common.lib.php';
     require './../include/PHPMailer/PHPMailerAutoload.php';
 }
 
@@ -100,7 +100,7 @@ function getUser($userId)
 
 function sendActivationNotice($Type, $idCampaing, $Today)
 {
-    global $db, $advProd;
+    global $db, $advProd, $emailing2Cred, $emailing1Cred;
     if (!in_array($idCampaing, [3521, 3552, 5417, 11846, 11817, 11849])) {
         $db3 = new SQL($advProd["host"], $advProd["db"], $advProd["user"], $advProd["pass"]);
 
@@ -178,8 +178,8 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->Username = $emailing2Cred['user'];
             $mail->Password = $emailing2Cred['password'];
             $mail->CharSet = 'UTF-8';
-            $mail->setFrom($emailing2Cred['user'], 'Vidoomy');
-            $mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
+            $mail->setFrom($emailing1Cred['user'], 'Vidoomy');
+            $mail->addReplyTo($emailing1Cred['user'], 'Vidoomy');
 
             //$EmailSalesManager = 'federicoizuel@gmail.com';
             $mail->addAddress($EmailSalesManager, $NameSalesManager);
@@ -195,6 +195,7 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->AddBCC('nicolle.garcia@vidoomy.com');
             $mail->addBCC('rocio.ocampo@vidoomy.com');
             $mail->addBCC('guillermo.alvarez@vidoomy.com');
+            $mail->addBCC('mario.tronca@vidoomy.com');
 
             foreach ($managers as $managerEmail) {
                 $mail->AddBCC($managerEmail);
@@ -225,8 +226,8 @@ function sendActivationNotice($Type, $idCampaing, $Today)
             $mail->Username = $emailing2Cred['user'];
             $mail->Password = $emailing2Cred['password'];
             $mail->CharSet = 'UTF-8';
-            $mail->setFrom($emailing2Cred['user'], 'Vidoomy');
-            $mail->addReplyTo($emailing2Cred['user'], 'Vidoomy');
+            $mail->setFrom($emailing1Cred['user'], 'Vidoomy');
+            $mail->addReplyTo($emailing1Cred['user'], 'Vidoomy');
 
             $mail->addAddress('antonio.simarro@vidoomy.com', 'Antonio Simarro');
 

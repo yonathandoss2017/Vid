@@ -15,7 +15,7 @@
 		exit(0);
 	}
 	
-	if ($_POST['env'] == 'prod') {
+	if ($_POST['env'] == 'prod' || $_POST['env'] == 'pro') {
 		$db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 	} else {
 		$db2 = new SQL($pubDev01['host'], $pubDev01['db'], $pubDev01['user'], $pubDev01['pass']);

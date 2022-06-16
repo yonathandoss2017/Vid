@@ -20,7 +20,7 @@ if (
 }
 
 /*
-if($_POST['env'] == 'prod'){
+if($_POST['env'] == 'prod' || $_POST['env'] == 'pro'){
     $db2 = new SQL($advProd['host'], $advProd['db'], $advProd['user'], $advProd['pass']);
 }else{
     $db2 = new SQL($advPre['host'], $advPre['db'], $advPre['user'], $advPre['pass']);
