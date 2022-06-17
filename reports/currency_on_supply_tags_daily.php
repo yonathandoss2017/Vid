@@ -1,5 +1,4 @@
-<?php	
-//exit();
+<?php
 
 @session_start();
 // Guardamos cualquier error //
