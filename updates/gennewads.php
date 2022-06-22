@@ -16,17 +16,9 @@
 	$db2 = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 	
 	
-	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 19681";
+	$sql = "SELECT * FROM sites WHERE deleted = 0 AND id > 20155"; //20155 was the last generated ad id, on 2022/06/16
 	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 1977";
-/*
-	$sql = "SELECT DISTINCT(idSite) FROM `supplytag` WHERE `Old` = 1";
-	$query2 = $db2->query($sql);
-	if($db2->num_rows($query2) > 0){
-		while($St = $db2->fetch_array($query2)){
-			$idSite = $St['idSite'];
-			*/
-	
-	//$sql = "SELECT * FROM sites WHERE deleted = 0 AND id = 10048";
+
 	$query = $db->query($sql);
 	if($db->num_rows($query) > 0){
 		while($Site = $db->fetch_array($query)){
@@ -91,5 +83,3 @@ top.document.head.appendChild(scr);";
 		}
 	}
 	
-	//}
-	//}

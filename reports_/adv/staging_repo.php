@@ -343,7 +343,7 @@ if (isset($_POST['csv'])) {
         $CSVResponse = true;
     }
 }
-
+$Metrics = [];
 if ($DatesOK && $TypeOK) {
     if (isset($_POST['Metrics'])) {
         $Metrics = $_POST['Metrics'];

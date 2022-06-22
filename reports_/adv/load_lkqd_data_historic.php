@@ -23,13 +23,13 @@ $cookie_file = '/var/www/html/login/admin/lkqdimport/cookie.txt';
 require('/var/www/html/login/reports_/adv/common.php');
 require('/var/www/html/login/admin/lkqdimport/common.php');
 
-$fromDate = new DateTime(date('2022-06-02 00:00'));
-$toDate   = new DateTime(date('2022-06-02 23:59'));
+$fromDate = new DateTime(date('2022-06-20 00:00'));
+$toDate   = new DateTime(date('2022-06-21 23:59'));
 
 // synchronizeCampaignsWithNewBudget();
 // $campaignIds = getCampaignsIdsWithBudgetOverflow();
 // synchronizeCampaignsWithBudgetOverflow($campaignIds);
-$campaignIds = syncReport($fromDate, $toDate, [12418]);
+$campaignIds = syncReport($fromDate, $toDate, [12465]);
 // synchronizeCampaignsWithBudgetOverflow($campaignIds);
 // updateReportCards($db3, $fromDate->format('Y-m-d'));
 

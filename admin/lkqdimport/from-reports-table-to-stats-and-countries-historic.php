@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Import data from reports_resume tables to stats and countries table on report server and panel
+ * This script delete and insert the data
+ *
+ * Execute on command line reportstostatsandcountries year month day. ej. reportstostatsandcountries 2021 07 02
+ */
+
 @session_start();
 // Guardamos cualquier error //
 ini_set('display_errors', 0);
@@ -12,10 +19,10 @@ require('/var/www/html/login/db.php');
 require('/var/www/html/login/common.lib.php');
 $db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 
-$Date = date('Y-m-d', time() - (4800 * 1));
- echo $Date = '2022-04-04';
-$MonthT = date('Ym', time() - (4800 * 1));
-$MonthT = '202006';
+// $Date = date('Y-m-d', time() - (4800 * 1));
+ echo $Date = sprintf('%s-%s-%s', $argv[1], $argv[2], $argv[3]);
+// $MonthT = date('Ym', time() - (4800 * 1));
+$MonthT = $argv[1] . $argv[2];
 
 $DateSRate = array();
 $ArrayCurrency = array();
