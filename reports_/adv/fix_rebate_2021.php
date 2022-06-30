@@ -42,15 +42,15 @@ function calcPercents($Perc, $Impressions, $Complete)
 }
 
 
-$Date1 = '2022-01-01';
-$Date2 = '2022-06-01';
+$Date1 = '2022-04-01';
+$Date2 = '2022-04-08';
 
 
 $DemandTags = array();
 $ActiveDeals = array();
 $CampaingData = array();
 // ids of the campaigns separated by comma
-$campaignIds = "8610, 8611";
+$campaignIds = "8813";
 
 
 $sql = "SELECT * FROM campaign WHERE id in ({$campaignIds})";
@@ -125,7 +125,7 @@ if ($db->num_rows($query) > 0) {
         $RebatePer = $CampaingData[$idCamp]['Rebate'];
         $Rebate = $RebatePer * $Revenue / 100;
 
-        $sql = "UPDATE reports SET Rebate = $Rebate WHERE id = $idRow LIMIT 1";
+        $sql = "UPDATE reports SET Rebate = $Rebate, rebatePercentage = $RebatePer WHERE id = $idRow LIMIT 1";
         echo $sql . " Percent: $RebatePer %  \n";
         $db->query($sql);
     }

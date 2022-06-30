@@ -16,7 +16,7 @@ $db = new SQL($dbhost, $dbname, $dbuser, $dbpass);
 $db2 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 $db3 = new SQL($pubProd['host'], $pubProd['db'], $pubProd['user'], $pubProd['pass']);
 
-$idAcc = 9203;
+$idAcc = 8845;
 
 $sql = "SELECT COUNT(*) FROM publisher WHERE finance_account_id = $idAcc";
 $CNT = intval($db2->getOne($sql));
@@ -33,7 +33,7 @@ if ($CNT == 1) {
 }
 
 $From = 1;
-$To = 12;
+$To = 5;
 
 $USDT = 0;
 $EURT = 0;
